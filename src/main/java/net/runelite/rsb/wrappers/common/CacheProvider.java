@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public interface CacheProvider<T> {
-    boolean[] cacheLoads = new boolean[3];
     HashMap<String, File> fileCache = new HashMap<>();
     HashMap<String, Object> definitionCache = new HashMap<>();
 
