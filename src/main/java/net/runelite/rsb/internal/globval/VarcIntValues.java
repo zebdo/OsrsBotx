@@ -70,6 +70,29 @@ public enum VarcIntValues {
         }
     }
 
+    private static final Map<Object, Object> hashMap2 = new HashMap<>();
+    static {
+       VarcIntValues[] arr = {
+           TAB_COMBAT_OPTIONS,
+           TAB_SKILLS,
+           TAB_QUEST_LIST,
+           TAB_INVENTORY,
+           TAB_WORN_EQUIPMENT,
+           TAB_PRAYER,
+           TAB_SPELLBOOK,
+           TAB_CHAT_CHANNEL,
+           TAB_ACC_MANAGEMENT,
+           TAB_FRIEND_LIST,
+           TAB_LOGOUT,
+           TAB_SETTINGS,
+           TAB_EMOTES,
+           TAB_MUSIC};
+
+       for (VarcIntValues e : arr) {
+           hashMap2.put(e.value, e);
+        }
+    }
+
     private final int value;
 
     VarcIntValues(int value) {
@@ -78,6 +101,10 @@ public enum VarcIntValues {
 
     public static VarcIntValues valueOf(int varcEnum) {
         return (VarcIntValues) hashMap.get(varcEnum);
+    }
+
+    public static VarcIntValues valueOf2(int varcEnum) {
+        return (VarcIntValues) hashMap2.get(varcEnum);
     }
 
     public int getValue() {
