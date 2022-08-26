@@ -373,6 +373,12 @@ public class Bank extends MethodProvider {
 		return bankInterface.isValid() && bankInterface.isVisible();
 	}
 
+
+	public boolean isCollectionOpen() {
+		RSWidget widget = methods.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
+		return widget.isValid() && widget.isVisible();
+	}
+
 	/**
 	 * Checks whether or not the deposit box is open.
 	 *
