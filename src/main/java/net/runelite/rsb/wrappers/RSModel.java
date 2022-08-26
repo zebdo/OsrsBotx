@@ -1,5 +1,4 @@
 package net.runelite.rsb.wrappers;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Model;
 import net.runelite.api.Perspective;
@@ -117,15 +116,20 @@ public class RSModel extends MethodProvider {
 	 */
 	public boolean doClick(boolean leftClick) {
 		try {
-			for (int i = 0; i < 10; i++) {
-				methods.mouse.move(getPoint());
-				if (this.contains(methods.mouse.getLocation())) {
-					methods.mouse.click(leftClick);
+                        methods.mouse.move(getPoint());
+			for (int i = 0; i < 4; i++) {
+                                methods.mouse.hop(getPoint());
+                                sleep(random(50, 100));
+
+                                if (methods.mouse.click(leftClick)) {
 					return true;
-				}
+                                }
+
+                                sleep(random(350, 700));
+                                methods.mouse.move(getPoint());
 			}
 		} catch (Exception ignored) {
-			log.debug("Model click error", ignored);
+			log.warn("Model click error", ignored);
 		}
 		return false;
 	}
@@ -139,13 +143,17 @@ public class RSModel extends MethodProvider {
 	 */
 	public boolean doAction(String action, String target) {
 		try {
-			for (int i = 0; i < 10; i++) {
-				methods.mouse.move(getPoint());
-				if (this.contains(methods.mouse.getLocation())) {
-					if (methods.menu.doAction(action, target)) {
-						return true;
-					}
-				}
+                        methods.mouse.move(getPoint());
+			for (int i = 0; i < 4; i++) {
+                                methods.mouse.hop(getPoint());
+                                sleep(random(50, 100));
+
+                                if (methods.menu.doAction(action, target)) {
+                                    return true;
+                                }
+
+                                sleep(random(350, 700));
+                                methods.mouse.move(getPoint());
 			}
 		} catch (Exception ignored) {
 			log.debug("Model action perform error", ignored);
@@ -275,7 +283,7 @@ public class RSModel extends MethodProvider {
 				}
 			}
 		} catch (Exception ignored) {
-			log.debug("Model failed to get points on screen", ignored);
+			log.warn("Model failed to get points on screen", ignored);
 		}
 		return list.size() > 0 ? list.get(random(0, list.size())) : null;
 	}
