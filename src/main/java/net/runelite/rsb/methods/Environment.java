@@ -1,6 +1,5 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.rsb.script.Random;
 import net.runelite.rsb.script.ScriptManifest;
 import net.runelite.rsb.util.ScreenshotUtil;
 
@@ -55,64 +54,4 @@ public class Environment extends MethodProvider {
 		return ScreenshotUtil.takeScreenshot(methods.runeLite, hideUsername);
 	}
 
-	/**
-	 * Enables a random event solver.
-	 *
-	 * @param name the anti-random's (manifest) name (case insensitive)
-	 * @return <code>true</code> if random was found and set to enabled; otherwise
-	 *         <code>false</code>
-	 */
-	public boolean enableRandom(String name) {
-		for (final Random random : methods.runeLite.getScriptHandler().getRandoms()) {
-			if (random.getClass().getAnnotation(ScriptManifest.class).name().toLowerCase().equals(name.toLowerCase())) {
-				if (!random.isEnabled()) {
-					random.setEnabled(true);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Disables a random event solver.
-	 *
-	 * @param name the anti-random's (manifest) name (case insensitive)
-	 * @return <code>true</code> if random was found and set to disabled; otherwise
-	 *         <code>false</code>
-	 */
-	public boolean disableRandom(String name) {
-		for (final Random random : methods.runeLite.getScriptHandler().getRandoms()) {
-			if (random.getClass().getAnnotation(ScriptManifest.class).name().toLowerCase().equals(name.toLowerCase())) {
-				if (random.isEnabled()) {
-					random.setEnabled(false);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Enables all random event solvers.
-	 */
-	public void enableRandoms() {
-		for (final Random random : methods.runeLite.getScriptHandler().getRandoms()) {
-			if (!random.isEnabled()) {
-				random.setEnabled(true);
-			}
-		}
-	}
-
-	/**
-	 * Disables all randoms.
-	 *
-	 */
-	public void disableRandoms() {
-		for (final Random random : methods.runeLite.getScriptHandler().getRandoms()) {
-			if (random.isEnabled()) {
-				random.setEnabled(false);
-			}
-		}
-	}
 }

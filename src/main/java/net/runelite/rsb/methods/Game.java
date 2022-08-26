@@ -8,8 +8,6 @@ import net.runelite.rsb.internal.globval.VarcIntValues;
 import net.runelite.rsb.internal.globval.WidgetIndices;
 import net.runelite.rsb.internal.globval.enums.InterfaceTab;
 import net.runelite.rsb.internal.globval.enums.ViewportLayout;
-import net.runelite.rsb.script.Random;
-import net.runelite.rsb.script.randoms.*;
 import net.runelite.rsb.wrappers.*;
 
 import java.awt.*;

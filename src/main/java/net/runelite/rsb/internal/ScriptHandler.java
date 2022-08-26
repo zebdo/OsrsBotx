@@ -4,13 +4,11 @@ import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.script.ScriptManifest;
 import net.runelite.rsb.internal.listener.ScriptListener;
-import net.runelite.rsb.script.randoms.LoginBot;
 
 import java.util.*;
 
 public class ScriptHandler {
 
-	private final ArrayList<net.runelite.rsb.script.Random> randoms = new ArrayList<>();
 	private final HashMap<Integer, Script> scripts = new HashMap<>();
 	private final HashMap<Integer, Thread> scriptThreads = new HashMap<>();
 
@@ -23,43 +21,6 @@ public class ScriptHandler {
 	}
 
 	public void init() {
-		try {
-
-			randoms.add(new LoginBot());
-			/*
-			randoms.add(new BankPins());
-			randoms.add(new BeehiveSolver());
-			randoms.add(new CapnArnav());
-			randoms.add(new Certer());
-			randoms.add(new CloseAllInterface());
-			randoms.add(new DrillDemon());
-			randoms.add(new FreakyForester());
-			randoms.add(new FrogCave());
-			randoms.add(new GraveDigger());
-			randoms.add(new ImprovedRewardsBox());
-			randoms.add(new LostAndFound());
-			randoms.add(new Maze());
-			randoms.add(new Mime());
-			randoms.add(new Molly());
-			randoms.add(new Exam());
-			randoms.add(new Pillory());
-			randoms.add(new Pinball());
-			randoms.add(new Prison());
-			randoms.add(new QuizSolver());
-			randoms.add(new SandwhichLady());
-			randoms.add(new ScapeRuneIsland());
-			randoms.add(new TeleotherCloser());
-			randoms.add(new FirstTimeDeath());
-			randoms.add(new LeaveSafeArea());
-			randoms.add(new SystemUpdate());
-
-			 */
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		for (net.runelite.rsb.script.Random r : randoms) {
-			r.init(bot.getMethodContext());
-		}
 	}
 
 	public void addScriptListener(ScriptListener l) {
@@ -86,10 +47,6 @@ public class ScriptHandler {
 
 	public BotLite getBot() {
 		return bot;
-	}
-
-	public Collection<net.runelite.rsb.script.Random> getRandoms() {
-		return randoms;
 	}
 
 	public Map<Integer, Script> getRunningScripts() {
@@ -121,19 +78,7 @@ public class ScriptHandler {
 			}
 		}
 	}
-
-	public boolean onBreak(int id) {
-		Script script = scripts.get(id);
-		return script != null && script.onBreakStart();
-	}
-
-	public void onBreakConclude(int id) {
-		Script script = scripts.get(id);
-		if (script != null) {
-			script.onBreakFinish();
-		}
-	}
-
+    
 	public void runScript(Script script) {
 		script.init(bot.getMethodContext());
 		for (ScriptListener l : listeners) {
@@ -165,38 +110,6 @@ public class ScriptHandler {
 			if (script != null && script.isRunning()) {
 				if (scriptThreads.get(i) == curThread) {
 					stopScript(i);
-				}
-			}
-		}
-		if (curThread == null) {
-			throw new ThreadDeath();
-		}
-	}
-
-	public boolean onBreak() {
-		Thread curThread = Thread.currentThread();
-		for (int i = 0; i < scripts.size(); i++) {
-			Script script = scripts.get(i);
-			if (script != null && script.isRunning()) {
-				if (scriptThreads.get(i) == curThread) {
-					return onBreak(i);
-				}
-			}
-		}
-		if (curThread == null) {
-			throw new ThreadDeath();
-		}
-		return false;
-	}
-
-	public void onBreakResume() {
-		Thread curThread = Thread.currentThread();
-		for (int i = 0; i < scripts.size(); i++) {
-			Script script = scripts.get(i);
-			if (script != null && script.isRunning()) {
-				if (scriptThreads.get(i) == curThread) {
-					onBreakConclude(i);
-					return;
 				}
 			}
 		}

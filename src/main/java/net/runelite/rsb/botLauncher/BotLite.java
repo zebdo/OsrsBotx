@@ -9,7 +9,6 @@ import net.runelite.client.modified.RuneLite;
 import net.runelite.rsb.event.EventManager;
 import net.runelite.rsb.event.events.PaintEvent;
 import net.runelite.rsb.event.events.TextPaintEvent;
-import net.runelite.rsb.internal.BreakHandler;
 import net.runelite.rsb.internal.InputManager;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
@@ -42,7 +41,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     private Image image;
     private InputManager im;
     private ScriptHandler sh;
-    private BreakHandler bh;
     private Map<String, EventListener> listeners;
     private boolean kill_passive = false;
     private Canvas canvas;
@@ -57,16 +55,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
      * Whether or not user input is allowed despite a script's preference.
      */
     public volatile boolean overrideInput = false;
-
-    /**
-     * Whether or not all anti-randoms are enabled.
-     */
-    public volatile boolean disableRandoms = true;
-
-    /**
-     * Whether or not the login screen anti-random is enabled.
-     */
-    public volatile boolean disableAutoLogin = true;
 
     /**
      * Whether or not rendering is enabled.
@@ -111,10 +99,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
 
     public InputManager getInputManager() {
         return im;
-    }
-
-    public BreakHandler getBreakHandler() {
-        return bh;
     }
 
     public ScriptHandler getScriptHandler() {
@@ -295,7 +279,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         im = new InputManager(this);
         eventManager = new EventManager();
         sh = new ScriptHandler(this);
-        bh = new BreakHandler(this);
         paintEvent = new PaintEvent();
         textPaintEvent = new TextPaintEvent();
         listeners = new TreeMap<>();

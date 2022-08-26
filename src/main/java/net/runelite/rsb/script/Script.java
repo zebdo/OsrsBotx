@@ -8,10 +8,8 @@ import net.runelite.rsb.util.Timer;
 
 
 import net.runelite.rsb.plugin.AccountManager;
-import net.runelite.rsb.internal.BreakHandler;
 import net.runelite.rsb.event.EventMulticaster;
 import net.runelite.rsb.event.listener.PaintListener;
-import net.runelite.rsb.script.randoms.LoginBot;
 
 
 import java.util.EventListener;
@@ -54,24 +52,6 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 */
 	public boolean onStart() {
 		return true;
-	}
-
-	/**
-	 * Called when a break is initiated, before the logout.
-	 * Override it to implement in your script.
-	 *
-	 * @return <code>true</code> if a break can be initiated.
-	 */
-	public boolean onBreakStart() {
-		return true;
-	}
-
-	/**
-	 * Called when a break is initiated, before the logout.
-	 * Override it to implement in your script.
-	 */
-	public void onBreakFinish() {
-
 	}
 
 	/**
@@ -244,29 +224,6 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 			try {
 				while (running) {
 					if (!paused) {
-						if (account.getName() != null && AccountManager.isTakingBreaks(account.getName())) {
-							BreakHandler h = ctx.runeLite.getBreakHandler();
-							if (h.isBreaking()) {
-								if (System.currentTimeMillis() - lastNotice > 600000) {
-									lastNotice = System.currentTimeMillis();
-									log.info("Breaking for " + Timer.format(h.getBreakTime()));
-								}
-								if (game.isLoggedIn() && h.getBreakTime() > 60000) {
-									game.logout();
-								}
-								try {
-									sleep(5000);
-								} catch (ThreadDeath td) {
-									break;
-								}
-								continue;
-							} else {
-								h.tick();
-							}
-						}
-						if (checkForRandoms()) {
-							continue;
-						}
 						int timeOut = -1;
 						try {
 							timeOut = loop();
@@ -314,25 +271,6 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 		ctx.runeLite.getEventManager().removeListener(this);
 		ctx.runeLite.getScriptHandler().stopScript(id);
 		id = -1;
-	}
-
-	private boolean checkForRandoms() {
-		if (ctx.runeLite.disableRandoms) {
-			return false;
-		}
-		for (Random random : ctx.runeLite.getScriptHandler().getRandoms()) {
-			if (random.isEnabled() && !(ctx.runeLite.disableAutoLogin && random instanceof LoginBot)) {
-				if (random.activateCondition()) {
-					this.random = true;
-					blockEvents(false);
-					random.run(this);
-					unblockEvents();
-					this.random = false;
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	private void blockEvents(boolean paint) {
