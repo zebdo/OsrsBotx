@@ -386,15 +386,43 @@ public class RSModel extends MethodProvider {
 				minY = (minY > tilePoly.xpoints[i]) ? tilePoly.xpoints[i] : minY;
 				maxY = (maxY < tilePoly.xpoints[i]) ? tilePoly.xpoints[i] : maxY;
 			}
+                        // XXX this needs to centre, and then return normally distrubted.
 			return (new Point(random(minX, maxX), random(minY, maxY)));
 		}
-		for (int i = start; i < end; i++) {
-			if (i < triangles.length) {
-				for (int n = 0; n < triangles[i].npoints; n++) {
-					return new Point(triangles[i].xpoints[n], triangles[i].ypoints[n]);
-				}
+
+                // choose a number between start and end, set i
+                int t = random(start, end);
+                if (t < triangles.length) {
+                    Polygon tri = triangles[t];
+                    if (tri.npoints == 3) {
+			int minX = 0, maxX = 0, minY = 0, maxY = 0;
+			for (int i = 0; i < tri.npoints; i++) {
+                            int x = tri.xpoints[i];
+                            int y = tri.ypoints[i];
+
+                            if (i == 0) {
+                                minX = maxX = x;
+                                minY = maxY = y;
+                            }
+
+                            minX = Math.min(x, minX);
+                            maxX = Math.max(x, maxX);
+                            minY = Math.min(y, minY);
+                            maxY = Math.max(y, maxY);
 			}
-		}
+
+			//log.info(String.format("HERE3 tri (# = %d, i = %d)", triangles.length, t));
+                        return new Point((minX + maxX) / 2, (minY + maxY) / 2);
+                    }
+
+                    int n = random(0, tri.npoints);
+                    if (n < tri.npoints) {
+			//log.info(String.format("HERE2 tri (t# = %d, v# = %d, t = %d, n = %d)",
+                        //                       triangles.length, tri.npoints, t, n));
+                        return new Point(tri.xpoints[n], tri.ypoints[n]);
+                    }
+                }
+
 		return null;
 	}
 
