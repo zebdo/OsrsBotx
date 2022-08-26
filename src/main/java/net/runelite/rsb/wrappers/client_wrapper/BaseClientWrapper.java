@@ -248,6 +248,11 @@ public abstract class BaseClientWrapper extends Applet implements Client {
     }
 
     @Override
+    public int getSceneMaxPlane() {
+        return wrappedClient.getSceneMaxPlane();
+    }
+
+    @Override
     public Scene getScene() {
         return wrappedClient.getScene();
     }
