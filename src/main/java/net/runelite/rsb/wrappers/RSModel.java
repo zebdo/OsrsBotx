@@ -117,17 +117,11 @@ public class RSModel extends MethodProvider {
 	public boolean doClick(boolean leftClick) {
 		try {
                         methods.mouse.move(getPoint());
-			for (int i = 0; i < 4; i++) {
-                                methods.mouse.hop(getPoint());
-                                sleep(random(50, 100));
 
-                                if (methods.mouse.click(leftClick)) {
-					return true;
-                                }
+                        methods.mouse.fastMove(getPoint());
+                        sleep(random(30, 80));
+                        methods.mouse.click(leftClick);
 
-                                sleep(random(350, 700));
-                                methods.mouse.move(getPoint());
-			}
 		} catch (Exception ignored) {
 			log.warn("Model click error", ignored);
 		}
@@ -141,19 +135,18 @@ public class RSModel extends MethodProvider {
 	 * @param target the option of the action to be clicked in the menu
 	 * @return true if clicked, false if failed.
 	 */
-	public boolean doAction(String action, String target) {
+        public boolean doAction(String action, String target) {
 		try {
                         methods.mouse.move(getPoint());
 			for (int i = 0; i < 4; i++) {
-                                methods.mouse.hop(getPoint());
-                                sleep(random(50, 100));
+                                methods.mouse.fastMove(getPoint());
+                                sleep(random(30, 80));
 
                                 if (methods.menu.doAction(action, target)) {
                                     return true;
                                 }
 
                                 sleep(random(350, 700));
-                                methods.mouse.move(getPoint());
 			}
 		} catch (Exception ignored) {
 			log.debug("Model action perform error", ignored);

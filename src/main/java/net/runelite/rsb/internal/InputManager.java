@@ -59,7 +59,8 @@ public class InputManager {
 	public void dragMouse(final int x, final int y) {
 		pressMouse(getX(), getY(), true);
 		sleepNoException(random(300, 500));
-		windMouse(getX(), getY(), x, y);
+                // XXX this wasn't using naturalmouse, but now is
+                windMouse(x, y);
 		sleepNoException(random(300, 500));
 		releaseMouse(x, y, true);
 	}
@@ -179,52 +180,6 @@ public class InputManager {
 					y, 0, false);
 			bot.getMethodContext().virtualMouse.sendEvent(me);
 		}
-	}
-
-	/**
-	 * @param x       the x value
-	 * @param y       the y value
-	 * @param randomX x-axis randomness (added to x)
-	 * @param randomY y-axis randomness (added to y)
-	 */
-	public void moveMouse(final int x, final int y, final int randomX, final int randomY) {
-		moveMouse(MouseHandler.DEFAULT_MOUSE_SPEED, x, y, randomX, randomY);
-	}
-
-	/**
-	 * Moves the mouse to the specified point at a certain sped.
-	 *
-	 * @param speed   the lower, the faster.
-	 * @param x       the x value
-	 * @param y       the y value
-	 * @param randomX x-axis randomness (added to x)
-	 * @param randomY y-axis randomness (added to y)
-	 */
-	public void moveMouse(final int speed, final int x, final int y, final int randomX, final int randomY) {
-		int thisX = getX(), thisY = getY();
-		if (!isOnCanvas(thisX, thisY)) {
-			// on which side of canvas should it enter
-			switch (side) {
-				case 1:
-					thisX = -1;
-					thisY = random(0, bot.getCanvas().getHeight());
-					break;
-				case 2:
-					thisX = random(0, bot.getCanvas().getWidth());
-					thisY = bot.getCanvas().getHeight() + 1;
-					break;
-				case 3:
-					thisX = bot.getCanvas().getWidth() + 1;
-					thisY = random(0, bot.getCanvas().getHeight());
-					break;
-				case 4:
-					thisX = random(0, bot.getCanvas().getWidth());
-					thisY = -1;
-					break;
-			}
-		}
-		windMouse(x, y);
-		//windMouse(speed, thisX, thisY, random(x, x + randomX), random(y, y + randomY));
 	}
 
 	public void pressKey(final char ch) {
@@ -373,35 +328,12 @@ public class InputManager {
 		}
 	}
 
-	/**
-	 * Moves the mouse from a certain point to another at the default speed.
-	 *
-	 * @param curX    the x value to move from
-	 * @param curY    the y value to move from
-	 * @param targetX the x value to move to
-	 * @param targetY the y value to move to
-	 * @see #windMouse(int, int, int, int, int)
-	 */
-	public void windMouse(final int curX, final int curY, final int targetX, final int targetY) {
-		windMouse(MouseHandler.DEFAULT_MOUSE_SPEED, curX, curY, targetX, targetY);
-	}
-
-	/**
-	 * Moves the mouse from a certain point to another, with specified speed.
-	 *
-	 * @param speed   the lower, the faster.
-	 * @param curX    the x value to move from
-	 * @param curY    the y value to move from
-	 * @param targetX the x value to move to
-	 * @param targetY the y value to move to
-	 */
-	@Deprecated
-	public void windMouse(final int speed, final int curX, final int curY, final int targetX, final int targetY) {
-		mouseHandler.moveMouse(speed, curX, curY, targetX, targetY, 0, 0);
-	}
-
 	public void windMouse(final int x, final int y) {
 		mouseHandler.moveMouse(x, y);
+	}
+
+    	public void windMouse2(final int x, final int y) {
+		mouseHandler.moveMouse2(x, y);
 	}
 
 }

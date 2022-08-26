@@ -138,12 +138,11 @@ public class Menu extends MethodProvider {
         int xOff = random(1, (fm.stringWidth(item) + MENU_SIDE_BORDER) - 1);
         int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
 
-        sleep(random(100, 250));
+        sleep(random(100, 150));
 
-        // needs to be fast and accurate XXX  - better just add a simple mouse move.
-        methods.mouse.hop(menu.x + xOff, menu.y + yOff);
+        methods.mouse.fastMove(menu.x + xOff, menu.y + yOff);
 
-        sleep(random(50, 200));
+        sleep(random(50, 100));
 
         if (this.isOpen()) {
             methods.mouse.click(true);

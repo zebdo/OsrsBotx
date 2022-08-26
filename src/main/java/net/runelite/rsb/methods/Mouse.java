@@ -10,6 +10,11 @@ import net.runelite.api.Point;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Mouse extends MethodProvider {
+	/**
+	 * The maximum distance (in pixels) to move the mouse after clicks in either
+	 * direction on both axes.
+	 */
+	public static final int DEFAULT_MAX_MOVE_AFTER = 20;
 
 	Mouse(final MethodContext ctx) {
 		super(ctx);
@@ -136,7 +141,7 @@ public class Mouse extends MethodProvider {
 	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
 	 */
 	public void click(final boolean leftClick) {
-		click(leftClick, MouseHandler.DEFAULT_MAX_MOVE_AFTER);
+		click(leftClick, DEFAULT_MAX_MOVE_AFTER);
 	}
 
 	public synchronized void click(final boolean leftClick,
@@ -175,7 +180,7 @@ public class Mouse extends MethodProvider {
 	                               final int randY, final boolean leftClick) {
 		move(x, y, randX, randY);
 		sleep(random(50, 350));
-		click(leftClick, MouseHandler.DEFAULT_MAX_MOVE_AFTER);
+		click(leftClick, DEFAULT_MAX_MOVE_AFTER);
 	}
 
 	/**
@@ -228,15 +233,18 @@ public class Mouse extends MethodProvider {
 		click(p.getX(), p.getY(), x, y, leftClick, moveAfterDist);
 	}
 
-	public void move(final int x, final int y) {
+	public void fastMove(final int x, final int y) {
+            methods.inputManager.windMouse2(x, y);
+	}
+
+	public void fastMove(final Point p) {
+		fastMove(p.getX(), p.getY());
+	}
+
+       public void move(final int x, final int y) {
 		move(x, y, 0, 0);
 	}
 
-	/**
-	 * Moves the mouse to the specified point
-	 *
-	 * @param p           The x and y destination.
-	 */
 	public void move(final Point p) {
 		move(p.getX(), p.getY(), 0, 0);
 	}
