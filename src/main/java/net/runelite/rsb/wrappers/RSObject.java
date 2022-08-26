@@ -129,6 +129,7 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	public RSModel getModel() {
 		try {
 			Model model;
+                        // XXX TODO check these, does getRenderable() return model? XXX
 			if (obj instanceof WallObject) {
 				model = (Model) ((WallObject) obj).getRenderable1();
 				if (model != null && model.getVerticesX() != null)
