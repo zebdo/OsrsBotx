@@ -12,10 +12,6 @@ public class ChooseOption extends Menu {
         super(ctx);
     }
 
-    public RSMenuNode getLastMenuNode() {
-        return getMenuNodes()[lastIndex];
-    }
-
     public RSMenuNode[] getMenuNodes() {
         MenuEntry[] entries = methods.client.getMenuEntries();
         RSMenuNode[] reversed = new RSMenuNode[entries.length];
@@ -50,10 +46,6 @@ public class ChooseOption extends Menu {
         return new Point(calculateX(), calculateY());
     }
 
-    public String[] getOptions() {
-        return getActions();
-    }
-
     public boolean isOptionValid(String... options) {
         MenuEntry[] entries = getEntries();
         for (String option : options) {
@@ -64,10 +56,6 @@ public class ChooseOption extends Menu {
             }
         }
         return false;
-    }
-
-    public int getOptionCount() {
-        return getActions().length;
     }
 
     public String getHoverText() {
