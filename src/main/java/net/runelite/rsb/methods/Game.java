@@ -134,7 +134,7 @@ public class Game extends MethodProvider {
 	 */
 	public InterfaceTab getCurrentTab() {
 		int varcIntValue = methods.client.getVarcIntValue(VarcIntIndices.CURRENT_INTERFACE_TAB);
-		return switch (VarcIntValues.valueOf(varcIntValue)) {
+		return switch (VarcIntValues.valueOf2(varcIntValue)) {
 			case TAB_COMBAT_OPTIONS -> InterfaceTab.COMBAT;
 			case TAB_SKILLS -> InterfaceTab.SKILLS;
 			case TAB_QUEST_LIST -> InterfaceTab.QUESTS;
@@ -165,29 +165,29 @@ public class Game extends MethodProvider {
 		return methods.walking.getEnergy();
 	}
 
-	/**
-	 * Excludes Loginbot, BankPin, TeleotherCloser, CloseAllInterface,
-	 * ImprovedRewardsBox
-	 *
-	 * @return True if player is in a random
-	 * TODO: this feels broken
-	 */
-	public Boolean inRandom() {
-		for (Random random : methods.runeLite.getScriptHandler().getRandoms()) {
-			if (random.getClass().equals(new LoginBot())) {
-					//|| random.getClass().equals(new BankPins())
-					//|| random.getClass().equals(new TeleotherCloser())
-					//|| random.getClass().equals(new CloseAllInterface())
-					//|| random.getClass().equals(new ImprovedRewardsBox())) {
-				continue;
-			} else {
-				if (random.activateCondition()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	// /**
+	//  * Excludes Loginbot, BankPin, TeleotherCloser, CloseAllInterface,
+	//  * ImprovedRewardsBox
+	//  *
+	//  * @return True if player is in a random
+	//  * TODO: this feels broken
+	//  */
+	// public Boolean inRandom() {
+	// 	for (Random random : methods.runeLite.getScriptHandler().getRandoms()) {
+	// 		if (random.getClass().equals(new LoginBot())) {
+	// 				//|| random.getClass().equals(new BankPins())
+	// 				//|| random.getClass().equals(new TeleotherCloser())
+	// 				//|| random.getClass().equals(new CloseAllInterface())
+	// 				//|| random.getClass().equals(new ImprovedRewardsBox())) {
+	// 			continue;
+	// 		} else {
+	// 			if (random.activateCondition()) {
+	// 				return true;
+	// 			}
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 	/**
 	 * Returns the valid chat component.
@@ -262,9 +262,9 @@ public class Game extends MethodProvider {
 	 *
 	 * @return <code>true</code> if random was run; otherwise <code>false</code>.
 	 */
-	public boolean login() {
-		return new LoginBot().activateCondition();
-	}
+	//public boolean login() {
+	//	return new LoginBot().activateCondition();
+	//
 
 
 	/**
