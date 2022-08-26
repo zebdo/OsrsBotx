@@ -55,7 +55,7 @@ public class Walking extends MethodProvider {
 	 * @return <code>true</code> if local; otherwise <code>false</code>.
 	 */
 	public boolean isLocal(final RSTile tile) {
-		int[][] flags = methods.client.getCollisionMaps()[methods.game.getPlane()].getFlags();
+		int[][] flags = getCollisionData();
 		int x = tile.getWorldLocation().getX() - methods.game.getBaseX();
 		int y = tile.getWorldLocation().getY() - methods.game.getBaseY();
 		return (flags != null && x >= 0 && y >= 0 && x < flags.length && y < flags.length);
@@ -486,5 +486,10 @@ public class Walking extends MethodProvider {
 			rez[i] = randomize(path[i], maxXDeviation, maxYDeviation);
 		}
 		return rez;
+	}
+
+
+    public int[][] getCollisionData() {
+		return methods.client.getCollisionMaps()[methods.game.getPlane()].getFlags();
 	}
 }
