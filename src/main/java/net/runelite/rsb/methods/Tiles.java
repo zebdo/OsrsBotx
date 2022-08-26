@@ -69,15 +69,17 @@ public class Tiles extends MethodProvider {
 	 */
 	public boolean doAction(final RSTile tile, final String action, final String option) {
 		try {
-			for (int i = 0; i++ < 5;) {
-				Point location = methods.calc.tileToScreen(tile);
-				if (location.getX() == -1 || location.getY() == -1) {
-					return false;
-				}
-				methods.mouse.move(location, 5, 5);
-				if (methods.menu.doAction(action, option)) {
-					return true;
-				}
+			for (int i = 0; i < 5; i++) {
+			        Point location = methods.calc.tileToScreen(tile, 0.5, 0.5, 0);
+                                if (location.getX() == -1 || location.getY() == -1) {
+                                        return false;
+                                }
+
+                                // XXX TODO should calculate randomness to pass in
+                                methods.mouse.move(location, 10, 10);
+                                if (methods.menu.doAction(action, option)) {
+                                    return true;
+                                }
 			}
 			return false;
 		} catch (Exception e) {
