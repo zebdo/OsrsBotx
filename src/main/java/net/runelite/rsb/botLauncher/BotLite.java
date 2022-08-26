@@ -293,7 +293,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
 
     public BotLite() throws Exception {
         im = new InputManager(this);
-        psh = new PassiveScriptHandler(this);
         eventManager = new EventManager();
         sh = new ScriptHandler(this);
         bh = new BreakHandler(this);
