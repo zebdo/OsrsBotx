@@ -8,10 +8,13 @@ import net.runelite.client.ui.FontManager;
 
 import java.awt.*;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Context menu related operations.
  */
+
+@Slf4j
 public class Menu extends MethodProvider {
     private static final Pattern HTML_TAG = Pattern
             .compile("(^[^<]+>|<[^>]+>|<[^>]+$)");
@@ -21,11 +24,16 @@ public class Menu extends MethodProvider {
     protected static final int MENU_SIDE_BORDER = 7;
     protected static final int MAX_DISPLAYABLE_ENTRIES = 32;
 
-    protected int lastIndex = -1;
+    private boolean DEBUG = false;
+
+    public void enableDebug(boolean v) {
+        DEBUG = v;
+    }
 
     protected Menu(final MethodContext ctx) {
         super(ctx);
     }
+
 
     /**
      * Clicks the menu target. Will left-click if the menu item is the first,
@@ -36,7 +44,7 @@ public class Menu extends MethodProvider {
      * <code>false</code>.
      */
     public boolean doAction(String action) {
-        return doAction(action, (String[]) null);
+        return doAction(action, null);
     }
 
     /**
@@ -48,30 +56,30 @@ public class Menu extends MethodProvider {
      * @return <code>true</code> if the menu item was clicked; otherwise
      * <code>false</code>.
      */
-    public boolean doAction(final String action, final String... target) {
+    public boolean doAction(final String action, String target) {
         int idx = getIndex(action, target);
-        if (!isOpen()) {
-            if (idx == -1) {
-                return false;
-            }
-            if (idx > MAX_DISPLAYABLE_ENTRIES) {
-                return false;
-            }
-            if (idx == 0) {
-                methods.mouse.click(true);
-                return true;
-            }
-            methods.mouse.click(false);
-            sleep(random(50,90));
-            idx = getIndex(action, target);
-            return clickIndex(idx);
-        } else if (idx == -1) {
+        if (idx == -1) {
             while (isOpen()) {
                 methods.mouse.moveRandomly(750);
                 sleep(random(100, 500));
             }
             return false;
         }
+
+        if (!isOpen()) {
+            if (idx == -1 || idx > MAX_DISPLAYABLE_ENTRIES) {
+                return false;
+            }
+
+            if (idx == 0) {
+                methods.mouse.click(true);
+                return true;
+            }
+
+            methods.mouse.click(false);
+            sleep(random(150,300));
+        }
+
         return clickIndex(idx);
     }
 
@@ -105,17 +113,20 @@ public class Menu extends MethodProvider {
      * @param i The index of the item.
      * @return <code>true</code> if the mouse was clicked; otherwise <code>false</code>.
      */
-    public boolean clickIndex(final int i) {
+    private boolean clickIndex(final int i) {
         if (!isOpen()) {
             return false;
         }
+
         MenuEntry[] entries = getEntries();
         if (entries.length <= i) {
             return false;
         }
+
         if (!isCollapsed()) {
             return clickMain(i);
         }
+
         return false;
     }
 
@@ -126,12 +137,19 @@ public class Menu extends MethodProvider {
         FontMetrics fm = methods.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
         int xOff = random(1, (fm.stringWidth(item) + MENU_SIDE_BORDER) - 1);
         int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
-        methods.mouse.move(menu.x + xOff, menu.y + yOff);
-        sleep(random(100, 200));
-        if (isOpen()) {
+
+        sleep(random(100, 250));
+
+        // needs to be fast and accurate XXX  - better just add a simple mouse move.
+        methods.mouse.hop(menu.x + xOff, menu.y + yOff);
+
+        sleep(random(50, 200));
+
+        if (this.isOpen()) {
             methods.mouse.click(true);
             return true;
         }
+
         return false;
     }
 
@@ -231,6 +249,7 @@ public class Menu extends MethodProvider {
     }
 
     public MenuEntry[] getEntries() {
+        // gets from runelite
         MenuEntry[] entries = methods.client.getMenuEntries();
         MenuEntry[] reversed = new MenuEntry[entries.length];
         for (int i = entries.length - 1, x = 0; i >= 0; i--, x++)
@@ -247,49 +266,30 @@ public class Menu extends MethodProvider {
         return entryStrings;
     }
 
-    public String[] getActions() {
-        MenuEntry[] entries = getEntries();
-        String[] actions = new String[entries.length];
-        for (int i = 0; i < entries.length; i++) {
-            if (entries[i] != null) {
-                actions[i] = entries[i].getOption();
-            }
-            else {
-                actions[i] = "";
-            }
-        }
-        return actions;
-    }
-
-    public String[] getTargets() {
-        MenuEntry[] entries = getEntries();
-        String[] targets = new String[entries.length];
-        for (int i = 0; i < entries.length; i++) {
-            if (entries[i] != null) {
-                targets[i] = entries[i].getTarget();
-            }
-            else {
-                targets[i] = "";
-            }
-        }
-        return targets;
-    }
-
     /**
      * Returns the index in the menu for a given action. Starts at 0.
      *
      * @param action The action that you want the index of.
      * @return The index of the given target in the context menu; otherwise -1.
      */
-    public int getIndex(String action) {
-        MenuEntry[] entries = getEntries();
+    private int getIndex(String action) {
+        // note this can return the first one, which might not be what you want
         action = action.toLowerCase();
+
+        MenuEntry[] entries = getEntries();
         for (int i = 0; i < entries.length; i++) {
-            if (entries[i].getOption().toLowerCase().contains(action)) {
-                lastIndex = i;
+            if (entries[i] == null) {
+                continue;
+            }
+
+            // XXX can this be null?
+            String menuAction = entries[i].getOption().toLowerCase();
+
+            if (menuAction.contains(action)) {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -302,53 +302,29 @@ public class Menu extends MethodProvider {
      *               If target is null, operates like getIndex(String action).
      * @return The index of the given target in the context menu; otherwise -1.
      */
-    public int getIndex(String action, String... target) {
+    private int getIndex(String action, String target) {
         if (target == null) {
             return getIndex(action);
         }
-        action = action.toLowerCase();
-        String[] actions = getActions();
-        String[] targets = getTargets();
-        /* Throw exception if lengths unequal? */
-        if (action != null) {
-            for (int i = 0; i < Math.min(actions.length, targets.length); i++) {
-                if (actions[i].toLowerCase().contains(action)) {
-                    lastIndex = checkTargetMatch(target, targets, i);
-                    return lastIndex;
-                }
-            }
-        }
-        else {
-            for (int i = 0; i < targets.length; i++) {
-                lastIndex = checkTargetMatch(target, targets, i);
-                return lastIndex;
-            }
-        }
-        return -1;
-    }
 
-    /**
-     * Checks the target list to the menu targets for matches and returns the first index that matches
-     * @param target The list of targets to check
-     * @param targets The targets in the menu
-     * @param index The index of the last iteration of the loop acted upon this method
-     * @return The index of a matching target or -1
-     */
-    private int checkTargetMatch(String[] target, String[] targets, int index) {
-        boolean targetMatch = false;
-        if (target[0] != null) {
-            for (String targetPart : target) {
-                if (targets[index].toLowerCase().contains(targetPart.toLowerCase())) {
-                    targetMatch = true;
-                } else {
-                    targetMatch = false;
-                }
+        action = action.toLowerCase();
+        target = target.toLowerCase();
+
+        MenuEntry[] entries = getEntries();
+        for (int i = 0; i < entries.length; i++) {
+            if (entries[i] == null) {
+                continue;
             }
-            if (targetMatch)
-                return index;
-        } else {
-            return index;
+
+            // XXX can these be null?
+            String menuAction = entries[i].getOption().toLowerCase();
+            String menuTarget = entries[i].getTarget().toLowerCase();
+
+            if (menuAction.contains(action) && menuTarget.contains(target)) {
+                return i;
+            }
         }
+
         return -1;
     }
 
