@@ -233,14 +233,6 @@ public class Mouse extends MethodProvider {
 		click(p.getX(), p.getY(), x, y, leftClick, moveAfterDist);
 	}
 
-	public void fastMove(final int x, final int y) {
-            methods.inputManager.windMouse2(x, y);
-	}
-
-	public void fastMove(final Point p) {
-		fastMove(p.getX(), p.getY());
-	}
-
        public void move(final int x, final int y) {
 		move(x, y, 0, 0);
 	}

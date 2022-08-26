@@ -117,8 +117,6 @@ public class RSModel extends MethodProvider {
 	public boolean doClick(boolean leftClick) {
 		try {
                         methods.mouse.move(getPoint());
-
-                        methods.mouse.fastMove(getPoint());
                         sleep(random(30, 80));
                         methods.mouse.click(leftClick);
 
@@ -139,7 +137,7 @@ public class RSModel extends MethodProvider {
 		try {
                         methods.mouse.move(getPoint());
 			for (int i = 0; i < 4; i++) {
-                                methods.mouse.fastMove(getPoint());
+                                methods.mouse.hop(getPoint());
                                 sleep(random(30, 80));
 
                                 if (methods.menu.doAction(action, target)) {

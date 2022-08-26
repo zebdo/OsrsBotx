@@ -332,8 +332,4 @@ public class InputManager {
 		mouseHandler.moveMouse(x, y);
 	}
 
-    	public void windMouse2(final int x, final int y) {
-		mouseHandler.moveMouse2(x, y);
-	}
-
 }
