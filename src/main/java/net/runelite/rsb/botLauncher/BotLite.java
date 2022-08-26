@@ -11,7 +11,6 @@ import net.runelite.rsb.event.events.PaintEvent;
 import net.runelite.rsb.event.events.TextPaintEvent;
 import net.runelite.rsb.internal.BreakHandler;
 import net.runelite.rsb.internal.InputManager;
-import net.runelite.rsb.internal.PassiveScriptHandler;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
 import net.runelite.rsb.methods.Environment;
@@ -43,7 +42,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     private Image image;
     private InputManager im;
     private ScriptHandler sh;
-    private PassiveScriptHandler psh;
     private BreakHandler bh;
     private Map<String, EventListener> listeners;
     private boolean kill_passive = false;
@@ -121,10 +119,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
 
     public ScriptHandler getScriptHandler() {
         return sh;
-    }
-
-    public PassiveScriptHandler getPassiveScriptHandler() {
-        return psh;
     }
 
     public void addListener(Class<?> clazz) {
@@ -268,7 +262,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         getLoader().setVisible(false);
         eventManager.killThread(false);
         sh.stopScript();
-        psh.stopScript();
         kill_passive = true;
     }
 
