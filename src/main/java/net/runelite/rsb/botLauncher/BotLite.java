@@ -61,12 +61,12 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     /**
      * Whether or not all anti-randoms are enabled.
      */
-    public volatile boolean disableRandoms = false;
+    public volatile boolean disableRandoms = true;
 
     /**
      * Whether or not the login screen anti-random is enabled.
      */
-    public volatile boolean disableAutoLogin = false;
+    public volatile boolean disableAutoLogin = true;
 
     /**
      * Whether or not rendering is enabled.
