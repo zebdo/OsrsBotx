@@ -6,9 +6,10 @@ import net.runelite.api.Point;
 /**
  * Mouse related operations.
  */
-public class Mouse extends MethodProvider {
 
-	private int mouseSpeed = MouseHandler.DEFAULT_MOUSE_SPEED;
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
+public class Mouse extends MethodProvider {
 
 	Mouse(final MethodContext ctx) {
 		super(ctx);
@@ -227,130 +228,8 @@ public class Mouse extends MethodProvider {
 		click(p.getX(), p.getY(), x, y, leftClick, moveAfterDist);
 	}
 
-	/**
-	 * Moves the mouse slightly depending on where it currently is and clicks.
-	 */
-	public void clickSlightly() {
-		Point p = new Point(
-				(int) (getLocation().getX() + (Math.random() * 50 > 25 ? 1 : -1)
-						* (30 + Math.random() * 90)), (int) (getLocation()
-						.getY() + (Math.random() * 50 > 25 ? 1 : -1)
-						* (30 + Math.random() * 90)));
-		if (p.getX() < 1 || p.getY() < 1 || p.getX() > 761 || p.getY() > 499) {
-			clickSlightly();
-			return;
-		}
-		click(p, true);
-	}
-
-	/**
-	 * Gets the mouse speed.
-	 *
-	 * @return the current mouse speed.
-	 * @see #setSpeed(int)
-	 */
-	public int getSpeed() {
-		return mouseSpeed;
-	}
-
-	/**
-	 * Changes the mouse speed
-	 *
-	 * @param speed The speed to move the mouse at. 4-10 is advised, 1 being the
-	 *              fastest.
-	 * @see #getSpeed()
-	 */
-	public void setSpeed(final int speed) {
-		mouseSpeed = speed;
-	}
-
-	/**
-	 * Moves mouse to location (x,y) at default speed.
-	 *
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @see #move(int, int, int, int)
-	 * @see #setSpeed(int)
-	 */
 	public void move(final int x, final int y) {
 		move(x, y, 0, 0);
-	}
-
-	/**
-	 * Moves the mouse to the specified point and then by a randomized offset at default speed.
-	 *
-	 * @param x     The x destination.
-	 * @param y     The y destination.
-	 * @param afterOffset The maximum distance in pixels to move on both axes shortly
-	 *                    after moving to the destination.
-	 * @see #move(int, int, int, int, int, int)
-	 */
-	public void move(final int x, final int y, final int afterOffset) {
-		move(getSpeed(), x, y, 0, 0, afterOffset);
-	}
-
-	/**
-	 * Moves the mouse to the specified point with a randomized variation at default speed.
-	 *
-	 * @param x     The x destination.
-	 * @param y     The y destination.
-	 * @param randX x-axis randomness (added to x).
-	 * @param randY y-axis randomness (added to y).
-	 * @see #move(int, int, int, int, int, int)
-	 * @see #setSpeed(int)
-	 */
-	public void move(final int x, final int y, final int randX, final int randY) {
-		move(getSpeed(), x, y, randX, randY, 0);
-	}
-
-	/**
-	 * Moves the mouse to the specified point at a certain speed.
-	 *
-	 * @param speed The lower, the faster.
-	 * @param x     The x destination.
-	 * @param y     The y destination.
-	 * @param randX x-axis randomness (added to x).
-	 * @param randY y-axis randomness (added to y).
-	 * @see #move(int, int, int, int, int, int)
-	 */
-	public void move(final int speed, final int x, final int y,
-	                 final int randX, final int randY) {
-		move(speed, x, y, randX, randY, 0);
-	}
-
-	/**
-	 * Moves the mouse to the specified point at a certain speed with variance in the x and y, then moves a
-	 * random distance up to <code>afterOffset</code>.
-	 *
-	 * @param speed       The lower, the faster.
-	 * @param x           The x destination.
-	 * @param y           The y destination.
-	 * @param randX       X-axis randomness (added to x).
-	 * @param randY       X-axis randomness (added to y).
-	 * @param afterOffset The maximum distance in pixels to move on both axes shortly
-	 *                    after moving to the destination.
-	 */
-	public synchronized void move(final int speed, final int x, final int y,
-	                              final int randX, final int randY, final int afterOffset) {
-		if (x != -1 || y != -1) {
-			methods.inputManager.moveMouse(speed, x, y, randX, randY);
-			if (afterOffset > 0) {
-				sleep(random(60, 300));
-				Point pos = getLocation();
-				move(pos.getX() - afterOffset, pos.getY() - afterOffset, afterOffset * 2,
-						afterOffset * 2);
-			}
-		}
-	}
-
-	/**
-	 * Moves the mouse to the specified point at a certain speed
-	 *
-	 * @param speed       The lower, the faster.
-	 * @param p           The x and y destination.
-	 */
-	public void move(final int speed, final Point p) {
-		move(speed, p.getX(), p.getY(), 0, 0, 0);
 	}
 
 	/**
@@ -363,17 +242,6 @@ public class Mouse extends MethodProvider {
 	}
 
 	/**
-	 * Moves the mouse to the specified point then adds random distance up to <code>afterOffset</code>.
-	 * @param p           The x and y destination.
-	 * @param afterOffset The maximum distance in pixels to move on both axes shortly
-	 *                    after moving to the destination.
-	 *
-	 */
-	public void move(final Point p, final int afterOffset) {
-		move(getSpeed(), p.getX(), p.getY(), 0, 0, afterOffset);
-	}
-
-	/**
 	 * Moves the mouse to the specified point then adds random distance within to randX and randY
 	 * @param p           The x and y destination.
 	 * @param randX       X-axis randomness (added to x).
@@ -383,22 +251,19 @@ public class Mouse extends MethodProvider {
 		move(p.getX(), p.getY(), randX, randY);
 	}
 
-	/**
-	 * Moves the mouse to the specified point at a certain speed with variance in the x and y, then moves a
-	 * random distance up to <code>afterOffset</code>.
-	 *
-	 * @param p           The x and y destination.
-	 * @param randX       X-axis randomness (added to x).
-	 * @param randY       X-axis randomness (added to y).
-	 * @param afterOffset The maximum distance in pixels to move on both axes shortly
-	 *                    after moving to the destination.
-	 */
-	public void move(final Point p, final int randX, final int randY,
-	                 final int afterOffset) {
-		move(getSpeed(), p.getX(), p.getY(), randX, randY, afterOffset);
+	public void move(int x, int y, final int randX, final int randY) {
+            if (randX > 0) {
+                x += random(-randX, randX, randX * 2);
+            }
+
+            if (randY > 0) {
+                y += random(-randY, randY, randY * 2);
+            }
+
+            methods.inputManager.windMouse(x, y);
 	}
 
-	/**
+       /**
 	 * Hops mouse to the specified coordinate.
 	 *
 	 * @param x The x coordinate.
@@ -416,31 +281,6 @@ public class Mouse extends MethodProvider {
 	 */
 	public void hop(final Point p) {
 		hop(p.getX(), p.getY());
-	}
-
-	/**
-	 * Hops mouse to the certain coordinate.
-	 *
-	 * @param x     The x coordinate.
-	 * @param y     The y coordinate.
-	 * @param randX The x coordinate randomization.
-	 * @param randY The y coordinate randomization.
-	 * @see #hop(int, int)
-	 */
-	public void hop(final int x, final int y, final int randX, final int randY) {
-		hop(x + random(-randX, randX), y + random(-randX, randY));
-	}
-
-	/**
-	 * Hops mouse to the certain point.
-	 *
-	 * @param p     The coordinate point.
-	 * @param randX The x coordinate randomization.
-	 * @param randY The y coordinate randomization.
-	 * @see #hop(int, int, int, int)
-	 */
-	public void hop(final Point p, final int randX, final int randY) {
-		hop(p.getX(), p.getY(), randX, randY);
 	}
 
 	/**
