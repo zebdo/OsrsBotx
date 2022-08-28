@@ -81,13 +81,13 @@ public class Bank extends MethodProvider {
 		if (isOpen()) {
 			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_DYNAMIC_CONTAINER)
 					.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 600));
+			sleep(random(500, 1000));
 			return !isOpen();
 		}
 		if (isDepositOpen()) {
 			methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_DYNAMIC_COMPONENTS)
 					.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 600));
+			sleep(random(500, 1000));
 			return !isDepositOpen();
 		}
 		return false;
@@ -377,6 +377,19 @@ public class Bank extends MethodProvider {
 	public boolean isCollectionOpen() {
 		RSWidget widget = methods.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
 		return widget.isValid() && widget.isVisible();
+	}
+
+	public boolean closeCollection() {
+		if (isCollectionOpen()) {
+			RSWidget w = methods.interfaces.getComponent(WidgetIndices.CollectionBox.GROUP_INDEX,
+														 WidgetIndices.CollectionBox.DYNAMIC_CONTAINER);
+
+			w.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
+			sleep(random(500, 1000));
+			return !isOpen();
+		}
+
+		return false;
 	}
 
 	/**
