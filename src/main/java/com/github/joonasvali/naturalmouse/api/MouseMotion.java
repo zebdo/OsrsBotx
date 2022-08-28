@@ -80,7 +80,8 @@ public class MouseMotion {
    */
   public void move(MouseMotionObserver observer) throws InterruptedException {
     updateMouseInfo();
-    log.info("Starting to move mouse to ({}, {}), current position: ({}, {})", xDest, yDest, mousePosition.x, mousePosition.y);
+
+    log.trace("Starting to move mouse to ({}, {}), current position: ({}, {})", xDest, yDest, mousePosition.x, mousePosition.y);
 
     MovementFactory movementFactory = new MovementFactory(xDest, yDest, speedManager, overshootManager, screenSize);
     ArrayDeque<Movement> movements = movementFactory.createMovements(mousePosition);
@@ -192,8 +193,8 @@ public class MouseMotion {
         // Let's start next step from pre-calculated location to prevent errors from accumulating.
         // But print warning as this is not expected behavior.
         log.warn("Mouse off from step endpoint (adjustment was done) " +
-            "x: (" + mousePosition.x + " -> " + movement.destX + ") " +
-            "y: (" + mousePosition.y + " -> " + movement.destY + ") "
+				 "x: (" + mousePosition.x + " -> " + movement.destX + ") " +
+				 "y: (" + mousePosition.y + " -> " + movement.destY + ") "
         );
         systemCalls.setMousePosition(movement.destX, movement.destY);
         // Let's wait a bit before getting mouse info.
@@ -207,7 +208,8 @@ public class MouseMotion {
       }
       log.debug("Steps completed, mouse at " + mousePosition.x + " " + mousePosition.y);
     }
-    log.info("Mouse movement to ({}, {}) completed", xDest, yDest);
+
+    log.trace("Mouse movement to ({}, {}) completed", xDest, yDest);
   }
 
   private int limitByScreenWidth(int value) {
