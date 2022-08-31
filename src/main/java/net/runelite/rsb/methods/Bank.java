@@ -42,7 +42,8 @@ public class Bank extends MethodProvider {
 		try {
 			for (Field i : ObjectIDs.getClass().getDeclaredFields()) {
 				i.setAccessible(true);
-				if (i.getName().contains("BANK_BOOTH")) {
+				if (i.getName().contains("BANK_BOOTH") &&
+					!i.getName().contains("CLOSED")) {
 					bankBooths.add(Integer.valueOf(i.get(ObjectIDs).toString()));
 				} else if (i.getName().contains("BANK_DEPOSIT_BOX")) {
 					bankDepositBox.add(Integer.valueOf(i.get(ObjectIDs).toString()));
