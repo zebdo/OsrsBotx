@@ -5,7 +5,6 @@ plugins {
 repositories {
     mavenLocal()
     maven { url 'https://repo.runelite.net' }
-    maven { url 'https://jitpack.io' }
     mavenCentral()
 }
 
@@ -81,7 +80,6 @@ dependencies {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
 
-    //implementation group: 'com.github.joonasvali.naturalmouse', name: 'naturalmouse', version: '2.0.3'
     implementation group: 'javassist', name: 'javassist', version: '3.12.1.GA'
     implementation group: 'net.sf.jopt-simple', name:'jopt-simple', version: '5.0.4'
 }
@@ -91,13 +89,16 @@ sourceSets {
         java {
             srcDirs= ["src/main/java"]
         }
+        resources {
+            srcDirs= ["src/main/resources"]
+        }
     }
 }
 
 project.configurations.implementation.setCanBeResolved(true)
 jar {
     manifest.attributes('Main-Class': 'net.runelite.rsb.botLauncher.Application')
-    from{
+    from {
         configurations.implementation.collect {it.isDirectory() ? it: zipTree(it)}
     }
 
@@ -106,8 +107,6 @@ jar {
     exclude 'META-INF/*.DSA'
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    destinationDirectory.set(file("$rootDir"))
 }
 
 tasks.withType(JavaCompile) {
