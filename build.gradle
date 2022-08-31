@@ -113,6 +113,19 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+task connectedVPN {
+    def nord = "nordvpn status".execute().text.trim()
+    if (nord.find("connected") != -1) {
+        println "Connected"
+
+    } else {
+        println "NOT Connected"
+        println "NOT Connected"
+        println "NOT Connected"
+        throw new GradleException('NOT Connected')
+   }
+}
+
 task botRun(type: JavaExec) {
     group = "Execution"
     description = "Runs the main method within RSB"
@@ -120,6 +133,9 @@ task botRun(type: JavaExec) {
     getMainClass() set "net.runelite.rsb.botLauncher.Application"
     jvmArgs "-debug"
     args "--bot-runelite --developer-mode".split(" ")
+
+    dependsOn(connectedVPN)
+    dependsOn(jar)
 }
 
 task headlessBotRun(type: JavaExec) {
