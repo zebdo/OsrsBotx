@@ -14,12 +14,21 @@ public class Mouse extends MethodProvider {
 	 * The maximum distance (in pixels) to move the mouse after clicks in either
 	 * direction on both axes.
 	 */
-	public static final int DEFAULT_MAX_MOVE_AFTER = 20;
+	private int defaultMaxMoveAfter = 10;
+	private int tempDefaultMaxMoveAfter = 0;
 
 	Mouse(final MethodContext ctx) {
 		super(ctx);
 	}
 
+	public void pushDefaultMoveAfter(int moveAfter) {
+		tempDefaultMaxMoveAfter = defaultMaxMoveAfter;
+		defaultMaxMoveAfter = moveAfter;
+	}
+
+	public void popDefaultMoveAfter() {
+		defaultMaxMoveAfter = tempDefaultMaxMoveAfter;
+	}
 
 	/**
 	 * Author - Enfilade Moves the mouse a random distance between 1 and
@@ -141,7 +150,7 @@ public class Mouse extends MethodProvider {
 	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
 	 */
 	public void click(final boolean leftClick) {
-		click(leftClick, DEFAULT_MAX_MOVE_AFTER);
+		click(leftClick, defaultMaxMoveAfter);
 	}
 
 	public synchronized void click(final boolean leftClick,
@@ -180,7 +189,7 @@ public class Mouse extends MethodProvider {
 	                               final int randY, final boolean leftClick) {
 		move(x, y, randX, randY);
 		sleep(random(50, 350));
-		click(leftClick, DEFAULT_MAX_MOVE_AFTER);
+		click(leftClick, defaultMaxMoveAfter);
 	}
 
 	/**
