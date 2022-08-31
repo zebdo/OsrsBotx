@@ -24,12 +24,6 @@ public class Menu extends MethodProvider {
     protected static final int MENU_SIDE_BORDER = 7;
     protected static final int MAX_DISPLAYABLE_ENTRIES = 32;
 
-    private boolean DEBUG = false;
-
-    public void enableDebug(boolean v) {
-        DEBUG = v;
-    }
-
     protected Menu(final MethodContext ctx) {
         super(ctx);
     }
@@ -58,29 +52,79 @@ public class Menu extends MethodProvider {
      */
     public boolean doAction(final String action, String target) {
         int idx = getIndex(action, target);
-        if (idx == -1) {
+        log.info(String.format("action: %s, target: %s, indx: %d", action, target, idx));
+
+        if (idx == -1 || idx > MAX_DISPLAYABLE_ENTRIES) {
+			for (String s : getEntriesString()) {
+				log.info("..... {}", s);
+			}
+
             while (isOpen()) {
                 methods.mouse.moveRandomly(750);
-                sleep(random(100, 500));
+                sleep(random(150, 250));
             }
+
             return false;
         }
 
         if (!isOpen()) {
-            if (idx == -1 || idx > MAX_DISPLAYABLE_ENTRIES) {
-                return false;
-            }
-
             if (idx == 0) {
+				log.info(String.format("left clicking action"));
                 methods.mouse.click(true);
                 return true;
             }
 
-            methods.mouse.click(false);
-            sleep(random(150,300));
+            log.info(String.format("right click - open menu"));
+
+            // ensure we don't move after
+            methods.mouse.click(false, 0);
+            for (int ii=0; ii<5; ii++) {
+                sleep(random(150, 250));
+                if (isOpen()) {
+                    log.info(String.format("menu is now open"));
+                    break;
+                }
+            }
         }
 
-        return clickIndex(idx);
+        if (!isOpen()) {
+            log.info(String.format("menu NOT open in doAction: %d", idx));
+            return false;
+        }
+
+		// recalculate index, and then if not changed, click
+        if (idx != getIndex(action, target)) {
+            log.warn("menu changed underneath feet");
+			return false;
+		}
+
+        return clickMain(idx);
+    }
+
+
+    private boolean clickMain(final int i) {
+        MenuEntry[] entries = getEntries();
+        String item = (entries[i].getOption() + " " + entries[i].getTarget().replaceAll("<.*?>", ""));
+        Point menu = getLocation();
+        FontMetrics fm = methods.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+
+        int width = (fm.stringWidth(item) + MENU_SIDE_BORDER) / 2;
+        int rwidth = Math.max(2, (int) (width * 0.8));
+        int xOff = width + random(-rwidth, rwidth);
+
+        log.info(String.format("width %d, rwidth %d, xOff %d", width, rwidth, xOff));
+        int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
+
+        methods.mouse.move(menu.x + xOff, menu.y + yOff);
+        sleep(random(75, 150));
+
+        if (this.isOpen()) {
+            methods.mouse.click(true);
+            return true;
+        }
+
+        log.info(String.format("NOT OPEN in clickMain() :("));
+        return false;
     }
 
     /**
@@ -104,48 +148,6 @@ public class Menu extends MethodProvider {
                 }
             }
         }
-        return false;
-    }
-
-    /**
-     * Left clicks at the given index.
-     *
-     * @param i The index of the item.
-     * @return <code>true</code> if the mouse was clicked; otherwise <code>false</code>.
-     */
-    private boolean clickIndex(final int i) {
-        if (!isOpen()) {
-            return false;
-        }
-
-        MenuEntry[] entries = getEntries();
-        if (entries.length <= i) {
-            return false;
-        }
-
-        if (!isCollapsed()) {
-            return clickMain(i);
-        }
-
-        return false;
-    }
-
-    private boolean clickMain(final int i) {
-        MenuEntry[] entries = getEntries();
-        String item = (entries[i].getOption() + " " + entries[i].getTarget().replaceAll("<.*?>", ""));
-        Point menu = getLocation();
-        FontMetrics fm = methods.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
-        int xOff = random(1, (fm.stringWidth(item) + MENU_SIDE_BORDER) - 1);
-        int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
-
-        methods.mouse.move(menu.x + xOff, menu.y + yOff);
-        sleep(random(50, 100));
-
-        if (this.isOpen()) {
-            methods.mouse.click(true);
-            return true;
-        }
-
         return false;
     }
 

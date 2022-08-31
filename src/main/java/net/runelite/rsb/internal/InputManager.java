@@ -133,40 +133,33 @@ public class InputManager {
 
 
 	private void moveMouse(final int x, final int y) {
-		final long curTime = System.currentTimeMillis();
-
-		interface SendEvent {
-			void send(int id);
-		}
-
-		SendEvent event = evt -> {
-			final MouseEvent me = new MouseEvent(getTarget(),
-												 evt, curTime,
-												 0,
-												 x, y,
-												 0, false);
-			bot.getMethodContext().virtualMouse.sendEvent(me);
-		};
+		long curTime = System.currentTimeMillis();
 
 		// Firstly invoke drag events
 		if (bot.getMethodContext().mouse.isPressed()) {
-			event.send(MouseEvent.MOUSE_DRAGGED);
+			final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_DRAGGED, curTime, 0, x, y, 0, false);
+
+			bot.getMethodContext().virtualMouse.sendEvent(me);
 			if ((dragLength & 0xFF) != 0xFF) {
 				dragLength++;
 			}
 		}
 
 		if (!bot.getMethodContext().mouse.isPresent()) {
-			if (isOnCanvas(x, y)) {
-				event.send(MouseEvent.MOUSE_ENTERED);
+			if (isOnCanvas(x, y)) { // Entered
+				final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_ENTERED, curTime, 0, x, y, 0, false);
+				bot.getMethodContext().virtualMouse.sendEvent(me);
 			} else {
-				event.send(MouseEvent.MOUSE_MOVED);
+				final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED, curTime, 0, x, y, 0, false);
+				bot.getMethodContext().virtualMouse.sendEvent(me);
 			}
 		} else if (!isOnCanvas(x, y)) {
-			event.send(MouseEvent.MOUSE_EXITED);
+			final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_EXITED, curTime, 0, x, y, 0, false);
+			bot.getMethodContext().virtualMouse.sendEvent(me);
 
 		} else if (!bot.getMethodContext().mouse.isPressed()) {
-			event.send(MouseEvent.MOUSE_MOVED);
+			final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED, curTime, 0, x, y, 0, false);
+			bot.getMethodContext().virtualMouse.sendEvent(me);
 		}
 	}
 
