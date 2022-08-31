@@ -157,10 +157,10 @@ public class Mouse extends MethodProvider {
 	                               final int moveAfterDist) {
 		methods.inputManager.clickMouse(leftClick);
 		if (moveAfterDist > 0) {
-			sleep(random(50, 350));
+			sleep(random(100, 350));
 			Point pos = getLocation();
 			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
-					moveAfterDist * 2, moveAfterDist * 2);
+				 moveAfterDist * 2, moveAfterDist * 2);
 		}
 	}
 
