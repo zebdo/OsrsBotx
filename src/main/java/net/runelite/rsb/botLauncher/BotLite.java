@@ -14,7 +14,6 @@ import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
 import net.runelite.rsb.methods.Environment;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.plugin.AccountManager;
 import net.runelite.rsb.plugin.ScriptSelector;
 import net.runelite.rsb.service.ScriptDefinition;
 
@@ -31,7 +30,6 @@ import java.util.concurrent.Executors;
 @Slf4j
 @SuppressWarnings("removal")
 public class BotLite extends RuneLite implements BotLiteInterface {
-    private String account;
     private MethodContext methods;
     private Component panel;
     private PaintEvent paintEvent;
@@ -75,10 +73,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
             return;
         }
         getLoader().setVisible(true);
-    }
-
-    public String getAccountName() {
-        return account;
     }
 
     public Client getClient() {
@@ -189,24 +183,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     }
 
     /**
-     * Sets an account for the RuneLite (Bot) instance
-     * @param name  The name of the account
-     * @return  If the account existed already
-     */
-    public boolean setAccount(final String name) {
-        if (name != null) {
-            for (String s : AccountManager.getAccountNames()) {
-                if (s.toLowerCase().equals(name.toLowerCase())) {
-                    account = name;
-                    return true;
-                }
-            }
-        }
-        account = null;
-        return false;
-    }
-
-    /**
      * Gets the canvas object while checking to make sure we don't do this before it has actually
      * loaded
      * @return  The Canvas if the client is loaded otherwise null
@@ -295,8 +271,7 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         });
     }
 
-    public void runScript(String account, String scriptName) {
-        getInjectorInstance().setAccount(account);
+    public void runScript(String scriptName) {
         ScriptSelector ss = new ScriptSelector(getInjectorInstance());
         ss.load();
         ScriptDefinition def = ss.getScripts().stream().filter(x -> x.name.replace(" ", "").equals(scriptName)).findFirst().get();

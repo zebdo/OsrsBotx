@@ -7,7 +7,6 @@ import net.runelite.rsb.methods.Methods;
 import net.runelite.rsb.util.Timer;
 
 
-import net.runelite.rsb.plugin.AccountManager;
 import net.runelite.rsb.event.EventMulticaster;
 import net.runelite.rsb.event.listener.PaintListener;
 

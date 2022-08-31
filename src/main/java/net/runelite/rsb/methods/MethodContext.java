@@ -122,11 +122,6 @@ public class MethodContext {
 	public final ClientLocalStorage clientLocalStorage = new ClientLocalStorage(this);
 
 	/**
-	 * the singleton of Account
-	 */
-	public final Account account = new Account(this);
-
-	/**
 	 * The singleton of Combat
 	 */
 	public final Combat combat = new Combat(this);

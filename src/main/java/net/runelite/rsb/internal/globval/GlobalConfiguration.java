@@ -43,29 +43,6 @@ public class GlobalConfiguration {
 		public static final String SCRIPTS_NAME_SRC = "scripts";
 		public static final String SCRIPTS_NAME_OUT = "Scripts";
 
-
-		/**
-		 * Retrieves the file containing account information by checking the OS to determine
-		 * the path and file name to use
-		 *
-		 * @return	the accounts file
-		 */
-		public static String getAccountsFile() {
-			final String path;
-			if (GlobalConfiguration.getCurrentOperatingSystem() == OperatingSystem.WINDOWS) {
-				path = System.getenv("APPDATA") + File.separator
-						+ GlobalConfiguration.NAME + "_Accounts.ini";
-			} else if (GlobalConfiguration.getCurrentOperatingSystem() == OperatingSystem.LINUX) {
-				path = Paths.getUnixHome() + File.separator
-						+ ".config" + File.separator
-						+ GlobalConfiguration.NAME_LOWERCASE + "_acct.ini";
-			} else {
-				path = Paths.getUnixHome() + File.separator + "."
-						+ GlobalConfiguration.NAME_LOWERCASE + "acct";
-			}
-			return path;
-		}
-
 		/**
 		 * Retrieves the home directory using the operating system specific
 		 * method and concatenates it with our API specific path.

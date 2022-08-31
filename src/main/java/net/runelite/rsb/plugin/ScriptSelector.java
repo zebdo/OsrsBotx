@@ -53,7 +53,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	private BotLite bot;
 	public JTable table;
 	public JTextField search;
-	public JComboBox accounts;
 	public MaterialTab buttonStart;
 	public MaterialTab buttonPause;
 	public MaterialTab buttonStop;
@@ -161,7 +160,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 			buttonStart.setEnabled(available && table.getSelectedRow() != -1);
 			table.setEnabled(available);
 			search.setEnabled(available);
-			accounts.setEnabled(available);
 			table.clearSelection();
 		}
 	}
@@ -261,7 +259,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	public boolean buttonReloadActionPerformed() {
 
 		stopAction();
-		accounts = getAccounts();
 		//
 		//Make a search area
 		getSearch();
@@ -288,7 +285,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	private void startAction() {
 		ScriptDefinition def = model.getDefinition(table.getSelectedRow());
 		try {
-			bot.setAccount((String) accounts.getSelectedItem());
 			bot.getScriptHandler().runScript(def.source.load(def));
 			bot.getScriptHandler().removeScriptListener(this);
 		} catch (ServiceException exception) {
@@ -370,21 +366,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		});
 		return search;
 	}
-
-	/**
-	 * Generates and returns the accounts from the AccountManager
-	 *
-	 * @return account combo box
-	 */
-	public JComboBox<?> getAccounts(){
-		accounts = new JComboBox(AccountManager.getAccountNames());
-		accounts.setMaximumRowCount(100);
-		accounts.setMinimumSize(new Dimension(200, 20));
-		accounts.setPreferredSize(new Dimension(200, 20));
-		return accounts;
-	}
-
-
 
 
 	private void setColumnWidths(JTable table, int... widths) {

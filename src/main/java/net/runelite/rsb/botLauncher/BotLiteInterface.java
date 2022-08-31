@@ -2,7 +2,7 @@ package net.runelite.rsb.botLauncher;
 
 public interface BotLiteInterface {
 
-    void runScript(String account, String scriptName);
+    void runScript(String scriptName);
 
     void stopScript();
 

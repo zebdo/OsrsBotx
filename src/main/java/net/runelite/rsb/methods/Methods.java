@@ -107,10 +107,6 @@ public class Methods {
 	 */
 	protected GroundItems groundItems;
 	/**
-	 * The singleton of Account
-	 */
-	protected Account account;
-	/**
 	 * The singleton of Environment
 	 */
 	protected Environment env;
@@ -172,7 +168,6 @@ public class Methods {
 		this.inventory = ctx.inventory;
 		this.equipment = ctx.equipment;
 		this.groundItems = ctx.groundItems;
-		this.account = ctx.account;
 		this.env = ctx.env;
 		this.prayer = ctx.prayer;
 		this.web = ctx.web;
