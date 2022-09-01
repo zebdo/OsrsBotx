@@ -74,6 +74,30 @@ public class Bank extends MethodProvider {
 	}
 
 	/**
+	 * Checks whether or not the bank is open.
+	 *
+	 * @return <code>true</code> if the bank interface is open; otherwise <code>false</code>.
+	 */
+	public boolean isOpen() {
+		RSWidget bankInterface = getInterface();
+		return bankInterface.isValid() && bankInterface.isVisible();
+	}
+
+	/**
+	 * Checks whether or not the deposit box is open.
+	 *
+	 * @return <code>true</code> if the deposit box interface is open; otherwise <code>false</code>.
+	 */
+	public boolean isDepositOpen() {
+		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX).isValid();
+	}
+
+	public boolean isCollectionOpen() {
+		RSWidget widget = methods.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
+		return widget.isValid() && widget.isVisible();
+	}
+
+	/**
 	 * Closes the bank interface. Supports deposit boxes.
 	 *
 	 * @return <code>true</code> if the bank interface is no longer open.
@@ -92,6 +116,37 @@ public class Bank extends MethodProvider {
 			return !isDepositOpen();
 		}
 		return false;
+	}
+
+	public boolean closeCollection() {
+		if (isCollectionOpen()) {
+			RSWidget w = methods.interfaces.getComponent(WidgetIndices.CollectionBox.GROUP_INDEX,
+														 WidgetIndices.CollectionBox.DYNAMIC_CONTAINER);
+
+			w.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
+			sleep(random(500, 1000));
+			return !isOpen();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the bank interface.
+	 *
+	 * @return The bank <code>RSWidget</code>.
+	 */
+	public RSWidget getInterface() {
+		return methods.interfaces.get(WidgetIndices.Bank.GROUP_INDEX);
+	}
+
+	/**
+	 * Gets the deposit box interface.
+	 *
+	 * @return The deposit box <code>RSWidget</code>.
+	 */
+	public RSWidget getBoxInterface() {
+		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX);
 	}
 
 	public int getAvailableBankSpace() {
@@ -171,20 +226,6 @@ public class Bank extends MethodProvider {
 	}
 
 	/**
-	 * Deposits all items in methods.inventory. Supports deposit boxes.
-	 *
-	 * @return <code>true</code> on success.
-	 */
-	public boolean depositAll() {
-		if (isOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_CARRIED_ITEMS).doClick();
-		} else if (isDepositOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_INVENTORY_ITEMS).doClick();
-		}
-		return false;
-	}
-
-	/**
 	 * Deposits all items in inventory except for the given IDs. Supports
 	 * deposit boxes.
 	 *
@@ -220,19 +261,6 @@ public class Bank extends MethodProvider {
 			return deposit;
 		}
 		return false;
-	}
-
-	/**
-	 * Deposit everything your player has equipped. Supports deposit boxes.
-	 *
-	 * @return <code>true</code> on success.
-	 * @since 6 March 2009.
-	 */
-	public boolean depositAllEquipped() {
-		if (isOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
-		}
-		return isDepositOpen() && methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
 	}
 
 	/**
@@ -276,15 +304,6 @@ public class Bank extends MethodProvider {
 	}
 
 	/**
-	 * Gets the deposit box interface.
-	 *
-	 * @return The deposit box <code>RSWidget</code>.
-	 */
-	public RSWidget getBoxInterface() {
-		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX);
-	}
-
-	/**
 	 * Gets the <code>RSWidget</code> of the given item at the specified index.
 	 *
 	 * @param index The index of the item.
@@ -300,15 +319,6 @@ public class Bank extends MethodProvider {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Gets the bank interface.
-	 *
-	 * @return The bank <code>RSWidget</code>.
-	 */
-	public RSWidget getInterface() {
-		return methods.interfaces.get(WidgetIndices.Bank.GROUP_INDEX);
 	}
 
 	/**
@@ -364,193 +374,6 @@ public class Bank extends MethodProvider {
 		return items;
 	}
 
-	/**
-	 * Checks whether or not the bank is open.
-	 *
-	 * @return <code>true</code> if the bank interface is open; otherwise <code>false</code>.
-	 */
-	public boolean isOpen() {
-		RSWidget bankInterface = getInterface();
-		return bankInterface.isValid() && bankInterface.isVisible();
-	}
-
-
-	public boolean isCollectionOpen() {
-		RSWidget widget = methods.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
-		return widget.isValid() && widget.isVisible();
-	}
-
-	public boolean closeCollection() {
-		if (isCollectionOpen()) {
-			RSWidget w = methods.interfaces.getComponent(WidgetIndices.CollectionBox.GROUP_INDEX,
-														 WidgetIndices.CollectionBox.DYNAMIC_CONTAINER);
-
-			w.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 1000));
-			return !isOpen();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks whether or not the deposit box is open.
-	 *
-	 * @return <code>true</code> if the deposit box interface is open; otherwise <code>false</code>.
-	 */
-	public boolean isDepositOpen() {
-		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX).isValid();
-	}
-
-	private static class ReachableBankerFilter implements Filter<RSNPC> {
-		@Override
-		public boolean test(RSNPC npc) {
-			final int id = npc.getID();
-			final RSTile location = npc.getLocation();
-			for (int banker : BANKERS) {
-				if (banker == id) {
-					for (Point unreachableBanker : UNREACHABLE_BANKERS) {
-						if (unreachableBanker.equals(location)) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-
-	public Object getNearest() {
-		RSObject bankBooth = methods.objects.getNearest(BANK_BOOTHS);
-		RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
-		RSObject bankChest = methods.objects.getNearest(BANK_CHESTS);
-		/* Find the closest one, others are set to null. Remember distance and tile. */
-		int lowestDist = Integer.MAX_VALUE;
-		RSTile tile;
-		if (bankBooth != null) {
-			tile = bankBooth.getLocation();
-			lowestDist = methods.calc.distanceTo(tile);
-		}
-		if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
-			tile = banker.getLocation();
-			lowestDist = methods.calc.distanceTo(tile);
-			bankBooth = null;
-		}
-		if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
-			bankBooth = null;
-			banker = null;
-		}
-		return (bankChest == null) ? (banker == null) ? bankBooth : banker : bankChest;
-	}
-
-	/**
-	 * Opens one of the supported banker NPCs, booths, or chests nearby. If they
-	 * are not nearby, and they are not null, it will automatically walk to the
-	 * closest one.
-	 *
-	 * @return <code>true</code> if the bank was opened; otherwise <code>false</code>.
-	 */
-	public boolean open() {
-		if (isOpen()) { return true; }
-		try {
-			if (methods.menu.isOpen()) {
-				methods.mouse.moveSlightly();
-				sleep(random(20, 30));
-			}
-			RSObject bankBooth = methods.objects.getNearest(BANK_BOOTHS);
-			RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
-			RSObject bankChest = methods.objects.getNearest(BANK_CHESTS);
-			/* Find the closest one, others are set to null. Remember distance and tile. */
-			int lowestDist = Integer.MAX_VALUE;
-			RSTile tile = null;
-			if (bankBooth != null) {
-				tile = bankBooth.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
-			}
-			if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
-				tile = banker.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
-				bankBooth = null;
-			}
-			if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
-				tile = bankChest.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
-				bankBooth = null;
-				banker = null;
-			}
-			/* Open closest one, if any found */
-			if (lowestDist < 5 && methods.calc.tileOnMap(tile) && methods.calc.canReach(tile, true)) {
-				boolean didAction = false;
-				if (bankBooth != null) {
-					didAction = bankBooth.doAction("Bank") || bankBooth.doAction("Use-Quickly");
-				} else if (banker != null) {
-					didAction = banker.doAction("Bank", "Banker");
-				} else if (bankChest != null) {
-					didAction = bankChest.doAction("Bank") || methods.menu.doAction("Use");
-				}
-				if (didAction) {
-					int count = 0;
-					while (!isOpen() && ++count < 10) {
-						sleep(random(200, 400));
-						if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
-							count = 0;
-						}
-					}
-				} else {
-					methods.camera.turnTo(tile);
-				}
-			} else if (tile != null) {
-				methods.walking.walkTileMM(tile);
-			}
-			return isOpen();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * Opens one of the supported deposit boxes nearby. If they are not nearby, and they are not null,
-	 * it will automatically walk to the closest one.
-	 *
-	 * @return <code>true</code> if the deposit box was opened; otherwise
-	 *         <code>false</code>.
-	 */
-	public boolean openDepositBox() {
-		try {
-			if (!isDepositOpen()) {
-				if (methods.menu.isOpen()) {
-					methods.mouse.moveSlightly();
-					sleep(random(20, 30));
-				}
-				RSObject depositBox = methods.objects.getNearest(BANK_DEPOSIT_BOX);
-				if (depositBox != null && methods.calc.distanceTo(depositBox) < 8 && methods.calc.tileOnMap(
-						depositBox.getLocation()) && methods.calc.canReach(
-						depositBox.getLocation(), true)) {
-					if (depositBox.doAction("Deposit")) {
-						int count = 0;
-						while (!isDepositOpen() && ++count < 10) {
-							sleep(random(200, 400));
-							if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
-								count = 0;
-							}
-						}
-					} else {
-						methods.camera.turnTo(depositBox, 20);
-					}
-				} else {
-					if (depositBox != null) {
-						methods.walking.walkTo(depositBox.getLocation());
-					}
-				}
-			}
-			return isDepositOpen();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 
 	/**
 	 * Opens the bank tab.
