@@ -24,7 +24,6 @@ public class ScriptPanel extends PluginPanel {
 	private JButton buttonStart;
 	private JButton buttonPause;
 	private JButton buttonStop;
-	private MaterialTab buttonScriptsFolder;
 	private ScriptSelector scriptSelector;
 	private MaterialTabGroup scriptPanelToolbar;
 
@@ -34,33 +33,9 @@ public class ScriptPanel extends PluginPanel {
 		initComponents();
 	}
 
-
-	/**
-	 * Opens the scripts folder in the default file explorer
-	 *
-	 * @param e ActionEvent
-	 */
-	private void openScriptsFolderPerformed(ActionEvent e) {
-		String folderPath = GlobalConfiguration.Paths.getScriptsPrecompiledDirectory();
-		try {
-			switch (GlobalConfiguration.getCurrentOperatingSystem()) {
-				case WINDOWS:
-					Runtime.getRuntime().exec("explorer.exe " + folderPath);
-					break;
-				case LINUX:
-					Runtime.getRuntime().exec("xdg-open " + folderPath);
-					break;
-				case MAC:
-					Runtime.getRuntime().exec("open " + folderPath);
-					break;
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
 	private void initComponents() {
 		scriptsSelectionScrollPane = new JScrollPane();
+
 		//Make a search area
 		scriptSelector.getSearch();
 		scriptSelector.load();
@@ -145,20 +120,6 @@ public class ScriptPanel extends PluginPanel {
 			}
 		});
 		scriptPanelToolbar.addTab(scriptSelector.buttonReload);
-
-		//---- buttonScriptsFolder ----
-		final BufferedImage folder = ImageUtil.loadImageResource(getClass(), "open-folder.png");
-		buttonScriptsFolder = new MaterialTab(new ImageIcon(folder.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		buttonScriptsFolder.setToolTipText("Open scripts folder");
-		buttonScriptsFolder.setOpaque(true);
-		buttonScriptsFolder.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent mouseEvent)
-			{
-				openScriptsFolderPerformed(null);
-			}
-		});
-		scriptPanelToolbar.addTab(buttonScriptsFolder);
 
 		assignLayouts();
 	}

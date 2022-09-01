@@ -39,7 +39,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 
 	private static final long serialVersionUID = 5475451138208522511L;
 
-	private static final String[] COLUMN_NAMES = new String[]{"", "Name", "Version", "Author", "Description"};
+	private static final String[] COLUMN_NAMES = new String[]{"", "Name", "Author"};
 	private static final String JAVA_EXT = ".java";
 	private static final String CLASS_EXT = ".class";
 	private static final String NO_EXT = "";
@@ -176,7 +176,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		scripts.addAll(SRC_PRECOMPILED.list());
 		scripts.addAll(SRC_SOURCES.list());
                 for (ScriptDefinition def: scripts) {
-                    System.out.println(String.format("loading '%s' : %s", def.name, def.description));
+                    System.out.println(String.format("loading '%s'", def.name));
                 }
 
 		//generateTestScripts();
@@ -184,7 +184,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		if (search != null)
 			model.search(search.getText());
 		deleteTemporaryFiles();
-		table = (table == null) ? getTable(0, 70, 45, 30) : table;
+		table = (table == null) ? getTable(0, 150) : table;
 	}
 
 	/**
@@ -193,10 +193,9 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	 * @param icon 		The icon for the script
 	 * @param name 		The name of the script
 	 * @param version   The version of the script
-	 * @param desc		The description of the script
 	 * @return script table
 	 */
-	public JTable getTable(int icon, int name, int version, int desc) {
+	public JTable getTable(int icon, int name) {
 		bot.getScriptHandler().addScriptListener(ScriptSelector.this);
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -249,7 +248,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		table.setShowGrid(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(new TableSelectionListener());
-		setColumnWidths(table, icon, name, version, desc);
+		setColumnWidths(table, icon, name);
 		return table;
 	}
 
@@ -452,17 +451,11 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 					return def.name;
 				}
 				if (columnIndex == 2) {
-					return def.version;
-				}
-				if (columnIndex == 3) {
 					StringBuilder b = new StringBuilder();
 					for (String author : def.authors) {
 						b.append(author).append(", ");
 					}
 					return b.replace(b.length() - 2, b.length(), "");
-				}
-				if (columnIndex == 4) {
-					return def.description;
 				}
 			}
 			return null;
