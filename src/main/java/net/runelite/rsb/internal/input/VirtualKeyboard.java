@@ -31,7 +31,7 @@ public class VirtualKeyboard implements KeyListener {
 
     }
 
-    public void sendEvent(KeyEvent e){
+    public void sendEvent(KeyEvent e) {
 
         if (e.getID() == KeyEvent.KEY_TYPED) {
             keyTyped(e);
