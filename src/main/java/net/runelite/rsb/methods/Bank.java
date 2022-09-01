@@ -42,6 +42,8 @@ public class Bank extends MethodProvider {
 		try {
 			for (Field i : ObjectIDs.getClass().getDeclaredFields()) {
 				i.setAccessible(true);
+				// note not all runelite fields are reporting closed correctly
+				// XXX do we sumbit a PR to runelite...?
 				if (i.getName().contains("BANK_BOOTH") &&
 					!i.getName().contains("CLOSED")) {
 					bankBooths.add(Integer.valueOf(i.get(ObjectIDs).toString()));
@@ -155,6 +157,206 @@ public class Bank extends MethodProvider {
 					- Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.BANK_ITEM_COUNT).getText());
 		}
 		return -1;
+	}
+
+	private static class ReachableBankerFilter implements Filter<RSNPC> {
+		@Override
+		public boolean test(RSNPC npc) {
+			final int id = npc.getID();
+			final RSTile location = npc.getLocation();
+			for (int banker : BANKERS) {
+				if (banker == id) {
+					for (Point unreachableBanker : UNREACHABLE_BANKERS) {
+						if (unreachableBanker.equals(location)) {
+							return false;
+						}
+					}
+
+					for (String s: npc.getActions()) {
+						if (s != null && s.equals("Bank")) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+	}
+
+	private static class ValidBankObjectFilter implements Filter<RSNPC> {
+		private int[] validIds;
+		ValidBankObjectFilter(int[] validIds) {
+			this.validIds = validIds;
+		}
+
+		private bool checkId(int rsoId) {
+			for (int id : validIds) {
+				if (chestId == rsoId) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean test(RSObject rso) {
+			final int id = rso.getId();
+			if (!this.checkId(id)) {
+				return false;
+			}
+
+            ObjectDefinition def = rso.getDef();
+			if (def != null) {
+				for (String a: def.getActions()) {
+					if (a.equals("Bank")) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+	}
+
+	public Object getNearest() {
+		RSObject bankObject = methods.objects.getNearest(new ValidBankObjectFilter(BANKERS));
+		RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
+
+		Object result = null;
+		int lowestDist = Integer.MAX_VALUE;
+
+		if (bankObject != null) {
+			result = bankObject;
+			lowestDist = methods.calc.distanceTo(bankObject.getLocation());
+		}
+
+		if (banker != null) {
+			if (result == null || methods.calc.distanceTo(banker) < lowestDist) {
+				result = banker;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Opens one of the supported banker NPCs, booths, or chests nearby. If they
+	 * are not nearby, and they are not null, it will automatically walk to the
+	 * closest one.
+	 *
+	 * @return <code>true</code> if the bank was opened; otherwise <code>false</code>.
+	 */
+	public boolean open() {
+		if (isOpen()) {
+			return true;
+		}
+
+		try {
+			if (methods.menu.isOpen()) {
+				methods.mouse.moveSlightly();
+				sleep(random(20, 30));
+			}
+
+			RSObject bankObject = methods.objects.getNearest(new ValidBankObjectFilter());
+			RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
+			Tile bankObjectTile = bankObject.getLocation();
+			Tile bankerTile = banker.getLocation();
+
+				} else if (banker != null) {
+					didAction = banker.doAction("Bank", "Banker");
+				} else if (bankChest != null) {
+					didAction = bankChest.doAction("Bank") || methods.menu.doAction("Use");
+				}
+				if (didAction) {
+					int count = 0;
+					while (!isOpen() && ++count < 10) {
+						sleep(random(200, 400));
+						if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+							count = 0;
+						}
+					}
+				} else {
+					methods.camera.turnTo(tile);
+				}
+			} else if (tile != null) {
+				methods.walking.walkTileMM(tile);
+			}
+			return isOpen();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * Opens one of the supported deposit boxes nearby. If they are not nearby, and they are not null,
+	 * it will automatically walk to the closest one.
+	 *
+	 * @return <code>true</code> if the deposit box was opened; otherwise
+	 *         <code>false</code>.
+	 */
+	public boolean openDepositBox() {
+		try {
+			if (!isDepositOpen()) {
+				if (methods.menu.isOpen()) {
+					methods.mouse.moveSlightly();
+					sleep(random(20, 30));
+				}
+				RSObject depositBox = methods.objects.getNearest(BANK_DEPOSIT_BOX);
+				if (depositBox != null && methods.calc.distanceTo(depositBox) < 8 && methods.calc.tileOnMap(
+						depositBox.getLocation()) && methods.calc.canReach(
+						depositBox.getLocation(), true)) {
+					if (depositBox.doAction("Deposit")) {
+						int count = 0;
+						while (!isDepositOpen() && ++count < 10) {
+							sleep(random(200, 400));
+							if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+								count = 0;
+							}
+						}
+					} else {
+						methods.camera.turnTo(depositBox, 20);
+					}
+				} else {
+					if (depositBox != null) {
+						methods.walking.walkTo(depositBox.getLocation());
+					}
+				}
+			}
+			return isDepositOpen();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * Deposits all items in inventory, if bank is open. Supports deposit boxes.
+	 *
+	 * @return <code>true</code> on success.
+	 */
+	public boolean depositAll() {
+		if (isOpen()) {
+			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_CARRIED_ITEMS).doClick();
+
+		} else if (isDepositOpen()) {
+			return methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_INVENTORY_ITEMS).doClick();
+		}
+		return false;
+	}
+
+	/**
+	 * Deposit everything your player has equipped. Supports deposit boxes.
+	 *
+	 * @return <code>true</code> on success.
+	 * @since 6 March 2009.
+	 */
+	public boolean depositAllEquipped() {
+		if (isOpen()) {
+			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
+		}
+		return isDepositOpen() && methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
 	}
 
 	/**
