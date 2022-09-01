@@ -58,6 +58,7 @@ public class Objects extends MethodProvider {
                 }
             }
         }
+
         return objects.toArray(new RSObject[objects.size()]);
     }
 
@@ -244,6 +245,8 @@ public class Objects extends MethodProvider {
         Set<RSObject> objects = getAtLocal(
                 t.getWorldLocation().getX() - methods.client.getBaseX(),
                 t.getWorldLocation().getY() - methods.client.getBaseY(), mask);
+
+		// zero length array? XXX
         return objects.toArray(new RSObject[0]);
     }
 
@@ -284,12 +287,12 @@ public class Objects extends MethodProvider {
             if (mask == -1 || (mask & 1) == 1) {
                 for (GameObject gameObject : tile.getGameObjects()) {
                     if (gameObject != null) {
-                        addObject(objects,  new RSObject(methods, gameObject, RSObject.Type.GAME, plane));
+                        addObject(objects, new RSObject(methods, gameObject, RSObject.Type.GAME, plane));
                     }
                 }
             }
             if (mask == -1 || (mask >> 1 & 1) == 1) {
-                TileObject tileObject =  tile.getDecorativeObject();
+                TileObject tileObject = tile.getDecorativeObject();
                 if (tileObject != null) {
                     addObject(objects, new RSObject(methods, tile.getDecorativeObject(), RSObject.Type.DECORATIVE, plane));
                 }

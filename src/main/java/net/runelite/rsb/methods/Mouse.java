@@ -65,8 +65,10 @@ public class Mouse extends MethodProvider {
 		}
 		/* Start the maximum distance at maxDistance */
 		double distance = maxDistance;
+
 		/* Get the current location of the cursor */
 		Point p = getLocation();
+
 		/* Calculate the x coordinate if the mouse moved the maximum distance */
 		int maxX = (int) Math.round(xvec * distance + p.getX());
 		/*
@@ -106,19 +108,19 @@ public class Mouse extends MethodProvider {
 			switch (random(0, 4)) {
 				case 0: // up
 					move(random(-10, methods.game.getWidth() + 10),
-							random(-100, -10));
+						 random(-100, -10));
 					break;
 				case 1: // down
 					move(random(-10, methods.game.getWidth() + 10),
-							methods.game.getHeight() + random(10, 100));
+						 methods.game.getHeight() + random(10, 100));
 					break;
 				case 2: // left
 					move(random(-100, -10),
-							random(-10, methods.game.getHeight() + 10));
+						 random(-10, methods.game.getHeight() + 10));
 					break;
 				case 3: // right
 					move(random(10, 100) + methods.game.getWidth(),
-							random(-10, methods.game.getHeight() + 10));
+						 random(-10, methods.game.getHeight() + 10));
 					break;
 			}
 		}
@@ -144,52 +146,17 @@ public class Mouse extends MethodProvider {
 		drag(p.getX(), p.getY());
 	}
 
-	/**
-	 * Clicks the mouse at its current location.
-	 *
-	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
-	 */
 	public void click(final boolean leftClick) {
 		click(leftClick, defaultMaxMoveAfter);
 	}
 
-	public synchronized void click(final boolean leftClick,
-	                               final int moveAfterDist) {
-		methods.inputManager.clickMouse(leftClick);
-		if (moveAfterDist > 0) {
-			sleep(random(100, 350));
-			Point pos = getLocation();
-			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
-				 moveAfterDist * 2, moveAfterDist * 2);
-		}
-	}
-
-	/**
-	 * Moves the mouse to a given location then clicks.
-	 *
-	 * @param x         x coordinate
-	 * @param y         y coordinate
-	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
-	 */
 	public void click(final int x, final int y, final boolean leftClick) {
 		click(x, y, 0, 0, leftClick);
 	}
 
-	/**
-	 * Moves the mouse to a given location with given randomness then clicks.
-	 *
-	 * @param x         x coordinate
-	 * @param y         y coordinate
-	 * @param randX     x randomness (added to x)
-	 * @param randY     y randomness (added to y)
-	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
-	 * @see #move(int, int, int, int)
-	 */
-	public synchronized void click(final int x, final int y, final int randX,
-	                               final int randY, final boolean leftClick) {
-		move(x, y, randX, randY);
-		sleep(random(50, 350));
-		click(leftClick, defaultMaxMoveAfter);
+	public void click(final int x, final int y, final int randX,
+					  final int randY, final boolean leftClick) {
+		click(x, y, randX, randY, leftClick, this.defaultMaxMoveAfter);
 	}
 
 	/**
@@ -207,42 +174,21 @@ public class Mouse extends MethodProvider {
 	public synchronized void click(final int x, final int y, final int randX,
 	                               final int randY, final boolean leftClick, final int moveAfterDist) {
 		move(x, y, randX, randY);
-		sleep(random(50, 350));
+		sleep(random(50, 250));
 		click(leftClick, moveAfterDist);
 	}
 
-	/**
-	 * Moves the mouse to a given location then clicks.
-	 *
-	 * @param p         The point to click.
-	 * @param leftClick <code>true</code> to left-click, <code>false</code>to right-click.
-	 */
-	public void click(final Point p, final boolean leftClick) {
-		click(p.getX(), p.getY(), leftClick);
+	public synchronized void click(final boolean leftClick, final int moveAfterDist) {
+		methods.inputManager.clickMouse(leftClick);
+		if (moveAfterDist > 0) {
+			sleep(random(50, 250));
+			Point pos = getLocation();
+			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
+				 moveAfterDist * 2, moveAfterDist * 2);
+		}
 	}
 
-	public void click(final Point p, final int x, final int y,
-	                  final boolean leftClick) {
-		click(p.getX(), p.getY(), x, y, leftClick);
-	}
-
-	/**
-	 * Moves the mouse to a given location with given randomness then clicks,
-	 * then moves a random distance up to <code>afterOffset</code>.
-	 *
-	 * @param p             The destination Point.
-	 * @param x             x coordinate
-	 * @param y             y coordinate
-	 * @param leftClick     <code>true</code> to left-click, <code>false</code>to right-click.
-	 * @param moveAfterDist The maximum distance in pixels to move on both axes shortly
-	 *                      after moving to the destination.
-	 */
-	public void click(final Point p, final int x, final int y,
-	                  final boolean leftClick, final int moveAfterDist) {
-		click(p.getX(), p.getY(), x, y, leftClick, moveAfterDist);
-	}
-
-       public void move(final int x, final int y) {
+	public void move(final int x, final int y) {
 		move(x, y, 0, 0);
 	}
 
@@ -348,39 +294,22 @@ public class Mouse extends MethodProvider {
 		}
 	}
 
-	/**
-	 * The location of the bot's mouse; or Point(-1, -1) if off screen.
-	 *
-	 * @return A <code>Point</code> containing the bot's mouse's x and y coordinates.
-	 */
 	public Point getLocation() {
 		return new Point(methods.virtualMouse.getClientX(), methods.virtualMouse.getClientY());
 	}
 
-	/**
-	 * @return The <code>Point</code> at which the bot's mouse was last clicked.
-	 */
 	public Point getPressLocation() {
 		return new Point(methods.virtualMouse.getClientPressX(), methods.virtualMouse.getClientPressY());
 	}
 
-	/**
-	 * @return The system time when the bot's mouse was last pressed.
-	 */
 	public long getPressTime() {
 		return methods.virtualMouse.getClientPressTime();
 	}
 
-	/**
-	 * @return <code>true</code> if the bot's mouse is present.
-	 */
 	public boolean isPresent() {
 		return methods.virtualMouse.isClientPresent();
 	}
 
-	/**
-	 * @return <code>true</code> if the bot's mouse is pressed.
-	 */
 	public boolean isPressed() {
 		return methods.virtualMouse.isClientPressed();
 	}
