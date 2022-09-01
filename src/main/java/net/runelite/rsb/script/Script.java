@@ -19,7 +19,7 @@ import java.util.Set;
 @Slf4j
 public abstract class Script extends Methods implements EventListener, Runnable {
 
-	Set<Script> delegates = new HashSet<>();
+	//Set<Script> delegates = new HashSet<>();
 	public MethodContext ctx;
 
 	private volatile boolean running = false;
@@ -105,11 +105,11 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 *
 	 * @param script The script to delegate to.
 	 */
-	public final void delegateTo(Script script) {
-		script.init(ctx);
-		ctx.runeLite.getEventManager().addListener(script);
-		delegates.add(script);
-	}
+	// public final void delegateTo(Script script) {
+	// 	script.init(ctx);
+	// 	ctx.runeLite.getEventManager().addListener(script);
+	// 	delegates.add(script);
+	// }
 
 	/**
 	 * For internal use only. Deactivates this script if
@@ -143,11 +143,11 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 */
 	public final void setPaused(boolean paused) {
 		if (running && !random) {
-			if (paused) {
-				blockEvents(true);
-			} else {
-				unblockEvents();
-			}
+			// if (paused) {
+			// 	blockEvents(true);
+			// } else {
+			// 	unblockEvents();
+			// }
 		}
 		this.paused = paused;
 	}
@@ -218,7 +218,7 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 		}
 		if (start) {
 			running = true;
-			ctx.runeLite.getEventManager().addListener(this);
+			//ctx.runeLite.getEventManager().addListener(this);
 			log.info("Script started.");
 			try {
 				while (running) {
@@ -263,36 +263,36 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 			log.error("Failed to start up.");
 		}
 		mouse.moveOffScreen();
-		for (Script s : delegates) {
-			ctx.runeLite.getEventManager().removeListener(s);
-		}
-		delegates.clear();
-		ctx.runeLite.getEventManager().removeListener(this);
+		// for (Script s : delegates) {
+		// 	ctx.runeLite.getEventManager().removeListener(s);
+		// }
+		// delegates.clear();
+		//ctx.runeLite.getEventManager().removeListener(this);
 		ctx.runeLite.getScriptHandler().stopScript(id);
 		id = -1;
 	}
 
-	private void blockEvents(boolean paint) {
-		for (Script s : delegates) {
-			ctx.runeLite.getEventManager().removeListener(s);
-			if (paint && s instanceof PaintListener) {
-				ctx.runeLite.getEventManager().addListener(s, EventMulticaster.PAINT_EVENT);
-			}
-		}
-		ctx.runeLite.getEventManager().removeListener(this);
-		if (paint && this instanceof PaintListener) {
-			ctx.runeLite.getEventManager().addListener(this, EventMulticaster.PAINT_EVENT);
-		}
-	}
+	// private void blockEvents(boolean paint) {
+	// 	// for (Script s : delegates) {
+	// 	// 	ctx.runeLite.getEventManager().removeListener(s);
+	// 	// 	if (paint && s instanceof PaintListener) {
+	// 	// 		ctx.runeLite.getEventManager().addListener(s, EventMulticaster.PAINT_EVENT);
+	// 	// 	}
+	// 	// }
+	// 	ctx.runeLite.getEventManager().removeListener(this);
+	// 	// if (paint && this instanceof PaintListener) {
+	// 	// 	ctx.runeLite.getEventManager().addListener(this, EventMulticaster.PAINT_EVENT);
+	// 	// }
+	// }
 
-	private void unblockEvents() {
-		for (Script s : delegates) {
-			ctx.runeLite.getEventManager().removeListener(s);
-			ctx.runeLite.getEventManager().addListener(s);
-		}
-		ctx.runeLite.getEventManager().removeListener(this);
-		ctx.runeLite.getEventManager().addListener(this);
-	}
+	// private void unblockEvents() {
+	// 	// for (Script s : delegates) {
+	// 	// 	ctx.runeLite.getEventManager().removeListener(s);
+	// 	// 	ctx.runeLite.getEventManager().addListener(s);
+	// 	// }
+	// 	ctx.runeLite.getEventManager().removeListener(this);
+	// 	ctx.runeLite.getEventManager().addListener(this);
+	// }
 
 	public BotLite getBot() {
 		return ctx.runeLite;

@@ -6,9 +6,6 @@ import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.modified.RuneLite;
-import net.runelite.rsb.event.EventManager;
-import net.runelite.rsb.event.events.PaintEvent;
-import net.runelite.rsb.event.events.TextPaintEvent;
 import net.runelite.rsb.internal.InputManager;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
@@ -20,10 +17,7 @@ import net.runelite.rsb.service.ScriptDefinition;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
-import java.util.EventListener;
-import java.util.Map;
-import java.util.TreeMap;
+
 import java.util.concurrent.Executors;
 
 @Singleton
@@ -32,15 +26,10 @@ import java.util.concurrent.Executors;
 public class BotLite extends RuneLite implements BotLiteInterface {
     private MethodContext methods;
     private Component panel;
-    private PaintEvent paintEvent;
-    private TextPaintEvent textPaintEvent;
-    private EventManager eventManager;
     private BufferedImage backBuffer;
     private Image image;
     private InputManager im;
     private ScriptHandler sh;
-    private Map<String, EventListener> listeners;
-    private boolean kill_passive = false;
     private Canvas canvas;
 
     /**
@@ -87,48 +76,12 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         return methods;
     }
 
-    public EventManager getEventManager() {
-        return eventManager;
-    }
-
     public InputManager getInputManager() {
         return im;
     }
 
     public ScriptHandler getScriptHandler() {
         return sh;
-    }
-
-    public void addListener(Class<?> clazz) {
-        EventListener el = instantiateListener(clazz);
-        listeners.put(clazz.getName(), el);
-        eventManager.addListener(el);
-    }
-
-    public void removeListener(Class<?> clazz) {
-        EventListener el = listeners.get(clazz.getName());
-        listeners.remove(clazz.getName());
-        eventManager.removeListener(el);
-    }
-
-    private EventListener instantiateListener(Class<?> clazz) {
-        try {
-            EventListener listener;
-            try {
-                Constructor<?> constructor = clazz.getConstructor(RuneLite.class);
-                listener = (EventListener) constructor.newInstance(this);
-            } catch (Exception e) {
-                listener = clazz.asSubclass(EventListener.class).newInstance();
-            }
-            return listener;
-        } catch (Exception ignored) {
-            log.debug("Failed to instantiate listener", ignored);
-        }
-        return null;
-    }
-
-    public boolean hasListener(Class<?> clazz) {
-        return clazz != null && listeners.get(clazz.getName()) != null;
     }
 
     public Image getImage() {
@@ -147,11 +100,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     public Graphics getBufferGraphics(MainBufferProvider mainBufferProvider) {
         image = mainBufferProvider.getImage();
         Graphics back = mainBufferProvider.getImage().getGraphics();
-        paintEvent.graphics = back;
-        textPaintEvent.graphics = back;
-        textPaintEvent.idx = 0;
-        eventManager.processEvent(paintEvent);
-        eventManager.processEvent(textPaintEvent);
         back.dispose();
         back.drawImage(backBuffer, 0, 0, null);
         return back;
@@ -220,9 +168,8 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     public void shutdown() {
         getLoader().stop();
         getLoader().setVisible(false);
-        eventManager.killThread(false);
+        //eventManager.killThread(false);
         sh.stopScript();
-        kill_passive = true;
     }
 
     public BotLite getInstance() {
@@ -253,12 +200,8 @@ public class BotLite extends RuneLite implements BotLiteInterface {
 
     public BotLite() throws Exception {
         im = new InputManager(this);
-        eventManager = new EventManager();
         sh = new ScriptHandler(this);
-        paintEvent = new PaintEvent();
-        textPaintEvent = new TextPaintEvent();
-        listeners = new TreeMap<>();
-        eventManager.start();
+
         Executors.newSingleThreadScheduledExecutor().submit(() -> {
             while(this.getClient() == null){}
             setMethodContext();
