@@ -40,10 +40,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	private static final long serialVersionUID = 5475451138208522511L;
 
 	private static final String[] COLUMN_NAMES = new String[]{"", "Name", "Author"};
-	private static final String JAVA_EXT = ".java";
-	private static final String CLASS_EXT = ".class";
-	private static final String NO_EXT = "";
-	private static final String TMP_REGEX = "^tmp[0-9]+";
 
 	private ScriptTableModel model;
 	@Getter
@@ -58,8 +54,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	public MaterialTab buttonStop;
 	public MaterialTab buttonReload;
 
-	static String TEST_PATH = convertIntelliJPath(net.runelite.rsb.testsScript.Test.class, "Test.class");
-	static ScriptSource SRC_TEST = new FileScriptSource(new File(TEST_PATH));
 	static ScriptSource SRC_SOURCES = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsSourcesDirectory()));
 	static ScriptSource SRC_PRECOMPILED = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsPrecompiledDirectory()));
 	static ScriptSource SRC_BUNDLED = (GlobalConfiguration.RUNNING_FROM_JAR) ?
@@ -91,67 +85,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		this.model = new ScriptTableModel(this.scripts);
 	}
 
-	/**
-	 * @author GigiaJ
-	 * @description It takes the testsScripts path in the IDE *unsure if it does it works compiled. Unlikely*
-	 * This is necessary simply due to the fact that ScriptClassLoader loads class files WITHOUT package declarations
-	 * (This even occurs if you tried to take the compiled file and placed it in the folder)
-	 * In order to allow our testsScript package to be used it must be worked around so we reconstruct our file in a temporary
-	 * file which will be cleaned up on the next start up.
-	 *
-	 * So by copying the data of our files to temporary files they can be passed through a buffered reader and scanned for
-	 * removing the package declaration and replacing the class name in the file so it can be compiled
-	 * Then using jaxax.Compiler it is compiled and is created as a temporary file in memory (could cause memory issues)
-	 *
-	 */
-	private void generateTestScripts() {
-		File testScriptDir = new File(TEST_PATH);
-		try {
-			if (testScriptDir.isDirectory()) {
-				for (File file : testScriptDir.listFiles()) {
-					if (!file.getName().replace(JAVA_EXT, NO_EXT).matches(TMP_REGEX)) {
-						File tmp = File.createTempFile("tmp", JAVA_EXT, testScriptDir);
-						tmpFileNames.add(tmp.getName().replace(JAVA_EXT, NO_EXT));
-						String s = "";
-
-						BufferedReader br = new BufferedReader(new FileReader(file));
-						String st;
-						while ((st = br.readLine()) != null) {
-							if (!st.contains("package")) {
-								if (!st.contains("public class " + file.getName().replace(JAVA_EXT, NO_EXT))) {
-									s += st + "\n";
-								} else {
-									s += st.replace("public class " + file.getName().replace(JAVA_EXT, NO_EXT), "public class " + tmp.getName().replace(JAVA_EXT, NO_EXT)) + "\n";
-								}
-							}
-						}
-						Files.write(tmp.toPath(), s.getBytes(StandardCharsets.UTF_8));
-						JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-						compiler.run(null, null, null, tmp.getPath());
-						new File(tmp.getPath().replace(JAVA_EXT, CLASS_EXT)).deleteOnExit();
-						tmp.deleteOnExit();
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Deletes the temporary files made in the testScriptDirectory
-	 */
-	private synchronized void deleteTemporaryFiles() {
-		File testScriptDir = new File(TEST_PATH.toString());
-		if (testScriptDir.isDirectory()) {
-			for (int x = 0; x < testScriptDir.listFiles().length; x++) {
-				File file = testScriptDir.listFiles()[x];
-				if (file.getName().replace(JAVA_EXT, NO_EXT).matches(TMP_REGEX) || file.getName().replace(CLASS_EXT, NO_EXT).matches(TMP_REGEX)) {
-					file.delete();
-				}
-			}
-		}
-	}
 
 	/**
 	 * Updates the script panel
@@ -173,7 +106,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		scripts.clear();
 		File testFile = new File(GlobalConfiguration.Paths.getScriptsSourcesDirectory());
 		FileScriptSource test = new FileScriptSource(testFile);
-		deleteTemporaryFiles();
 		scripts.addAll(SRC_BUNDLED.list());
 		scripts.addAll(SRC_PRECOMPILED.list());
 		scripts.addAll(SRC_SOURCES.list());
@@ -181,11 +113,8 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 			System.out.println(String.format("loading '%s'", def.name));
 		}
 
-		//generateTestScripts();
-		//scripts.addAll(SRC_TEST.list());
 		if (search != null)
 			model.search(search.getText());
-		deleteTemporaryFiles();
 		table = (table == null) ? getTable(0, 150) : table;
 	}
 

@@ -7,10 +7,6 @@ import net.runelite.rsb.methods.Methods;
 import net.runelite.rsb.util.Timer;
 
 
-import net.runelite.rsb.event.EventMulticaster;
-import net.runelite.rsb.event.listener.PaintListener;
-
-
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +15,6 @@ import java.util.Set;
 @Slf4j
 public abstract class Script extends Methods implements EventListener, Runnable {
 
-	//Set<Script> delegates = new HashSet<>();
 	public MethodContext ctx;
 
 	private volatile boolean running = false;
@@ -72,13 +67,6 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 
 	}
 
-	/**
-	 * Initializes this script with another script's
-	 * context.
-	 *
-	 * @param script The context providing Script.
-	 * @see #delegateTo(Script)
-	 */
 	public final void init(Script script) {
 		init(script.ctx);
 	}
