@@ -62,7 +62,9 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	static ScriptSource SRC_TEST = new FileScriptSource(new File(TEST_PATH));
 	static ScriptSource SRC_SOURCES = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsSourcesDirectory()));
 	static ScriptSource SRC_PRECOMPILED = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsPrecompiledDirectory()));
-	static ScriptSource SRC_BUNDLED = (GlobalConfiguration.RUNNING_FROM_JAR) ? new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsExtractedCache())) : new FileScriptSource(new File("." + File.separator + GlobalConfiguration.Paths.SCRIPTS_NAME_SRC));
+	static ScriptSource SRC_BUNDLED = (GlobalConfiguration.RUNNING_FROM_JAR) ?
+		new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsExtractedCache())) :
+		new FileScriptSource(new File("." + File.separator + GlobalConfiguration.Paths.SCRIPTS_NAME_SRC));
 
 	/**
 	 * Creates a script selector for the given bot instance
@@ -175,9 +177,9 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		scripts.addAll(SRC_BUNDLED.list());
 		scripts.addAll(SRC_PRECOMPILED.list());
 		scripts.addAll(SRC_SOURCES.list());
-                for (ScriptDefinition def: scripts) {
-                    System.out.println(String.format("loading '%s'", def.name));
-                }
+		for (ScriptDefinition def: scripts) {
+			System.out.println(String.format("loading '%s'", def.name));
+		}
 
 		//generateTestScripts();
 		//scripts.addAll(SRC_TEST.list());

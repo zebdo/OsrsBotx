@@ -17,6 +17,9 @@ public class InputManager {
 
 	private byte dragLength = 0;
 
+	// ZZZ shouldnt be here?
+	private boolean LOG_MOUSE = false;
+
 	public InputManager(BotLite bot) {
 		this.bot = bot;
 	}
@@ -27,7 +30,7 @@ public class InputManager {
 
 	public void clickMouse(final boolean left) {
 		if (!bot.getMethodContext().mouse.isPresent()) {
-			log.info("clickMouse not present x:{} y:{} - onCanvas: {}", getX(), getY(), isOnCanvas(getX(), getY()));
+			log.warn("clickMouse not present x:{} y:{} - onCanvas: {}", getX(), getY(), isOnCanvas(getX(), getY()));
 			return; // Can't click off the canvas
 		}
 		pressMouse(getX(), getY(), left);
@@ -36,7 +39,9 @@ public class InputManager {
 	}
 
 	private void pressMouse(final int x, final int y, final boolean isLeft) {
-		log.info("pressMouse x:{} y:{} isLeft: {} ", x, y, isLeft);
+		if (LOG_MOUSE) {
+			log.info("pressMouse x:{} y:{} isLeft: {} ", x, y, isLeft);
+		}
 
 		if (bot.getMethodContext().mouse.isPressed() || !bot.getMethodContext().mouse.isPresent()) {
 			log.info("isPressed(): {}, isPresent(): {}",
@@ -48,7 +53,6 @@ public class InputManager {
 		final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y,
 											 1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
 		bot.getMethodContext().virtualMouse.sendEvent(me);
-		log.info("send event MouseEvent.MOUSE_PRESSED");
 	}
 
 
@@ -110,8 +114,6 @@ public class InputManager {
 		moveMouse(x, y);
 	}
 
-	// ZZZ shouldnt be here?
-	private boolean LOG_MOUSE = true;
 	public void windMouse(final int x, final int y) {
 		int beforeX = getX();
 		int beforeY = getY();
@@ -144,25 +146,35 @@ public class InputManager {
 		} else {
 			long curTime = System.currentTimeMillis();
 
-			// moving on
+			// moving on to screen
 			if (!bot.getMethodContext().mouse.isPresent() && isOnCanvas(x, y)) {
-				log.info("sending MOUSE_ENTERED event {} {} {} {}",
-						 x, y, bot.getCanvas().getWidth(), bot.getCanvas().getHeight());
-				final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_ENTERED, curTime, 0, x, y, 0, false);
+				if (LOG_MOUSE) {
+					log.info("sending MOUSE_ENTERED event {} {} {} {}",
+							 x, y, bot.getCanvas().getWidth(), bot.getCanvas().getHeight());
+				}
+
+				final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_ENTERED,
+													 curTime, 0, x, y, 0, false);
+				bot.getMethodContext().virtualMouse.sendEvent(me);
+
+				return;
+			}
+
+			// moving off of screen
+			if (bot.getMethodContext().mouse.isPresent() && !isOnCanvas(x, y)) {
+				if (LOG_MOUSE) {
+					log.info("sending MOUSE_EXITED event {} {} {} {}",
+							 x, y, bot.getCanvas().getWidth(), bot.getCanvas().getHeight());
+				}
+
+				final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_EXITED,
+													 curTime, 0, x, y, 0, false);
 				bot.getMethodContext().virtualMouse.sendEvent(me);
 				return;
 			}
 
-			// moving off
-			if (bot.getMethodContext().mouse.isPresent() && !isOnCanvas(x, y)) {
-					log.info("sending MOUSE_EXITED event {} {} {} {}",
-							 x, y, bot.getCanvas().getWidth(), bot.getCanvas().getHeight());
-					final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_EXITED, curTime, 0, x, y, 0, false);
-					bot.getMethodContext().virtualMouse.sendEvent(me);
-					return;
-			}
-			// need to do this to keep mouseHandler / naturalmouse happy.
-			final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED, curTime, 0, x, y, 0, false);
+			final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED,
+												 curTime, 0, x, y, 0, false);
 			bot.getMethodContext().virtualMouse.sendEvent(me);
 		}
 	}

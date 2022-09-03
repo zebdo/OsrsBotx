@@ -24,9 +24,12 @@ public interface CacheProvider<T> {
      * Fills the runtime file cache with all the files in the cache directory.
      */
     static void fillFileCache() {
-        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getObjectsCacheDirectory()), RSObject.class.getName());
-        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getItemsCacheDirectory()), RSItem.class.getName());
-        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getNPCsCacheDirectory()), RSNPC.class.getName());
+        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getObjectsCacheDirectory()),
+							   RSObject.class.getName());
+        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getItemsCacheDirectory()),
+							   RSItem.class.getName());
+        fillCacheFromDirectory(new File(GlobalConfiguration.Paths.getNPCsCacheDirectory()),
+							   RSNPC.class.getName());
     }
 
     private static void fillCacheFromDirectory(File dir, String className) {
@@ -105,9 +108,11 @@ public interface CacheProvider<T> {
      * @return The object definition generated from the id
      */
     default Object createDefinition(int id) {
-        if (!definitionCache.containsKey(id + this.getClass().getName())) {
+		String key = id + this.getClass().getName();
+        if (!definitionCache.containsKey(key)) {
             addDefinitionToLoadedCache(id);
         }
-        return definitionCache.get(id + this.getClass().getName());
+
+        return definitionCache.get(key);
     }
 }
