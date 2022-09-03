@@ -42,10 +42,7 @@ public class Bank extends MethodProvider {
 		try {
 			for (Field i : ObjectIDs.getClass().getDeclaredFields()) {
 				i.setAccessible(true);
-				// note not all runelite fields are reporting closed correctly
-				// XXX do we sumbit a PR to runelite...?
-				if (i.getName().contains("BANK_BOOTH") &&
-					!i.getName().contains("CLOSED")) {
+				if (i.getName().contains("BANK_BOOTH")) {
 					bankBooths.add(Integer.valueOf(i.get(ObjectIDs).toString()));
 				} else if (i.getName().contains("BANK_DEPOSIT_BOX")) {
 					bankDepositBox.add(Integer.valueOf(i.get(ObjectIDs).toString()));
