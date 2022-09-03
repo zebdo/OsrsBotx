@@ -2,6 +2,7 @@ package net.runelite.rsb.methods;
 
 import net.runelite.api.CollisionData;
 import net.runelite.api.Point;
+import net.runelite.rsb.internal.globval.WidgetIndices;
 import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.internal.globval.VarpIndices;
 import net.runelite.rsb.internal.globval.VarpValues;
@@ -186,7 +187,9 @@ public class Walking extends MethodProvider {
      */
 	public boolean setRun(final boolean enable) {
 		if (isRunEnabled() != enable) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_RUN_ORB).doClick();
+			// hack...
+			return methods.interfaces.getComponent(WidgetIndices.Minimap.GROUP_INDEX, 27).doClick();
+			//return methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_RUN_ORB).doClick();
 		}
         return false;
     }
