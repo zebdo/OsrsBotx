@@ -28,6 +28,8 @@ public class Menu extends MethodProvider {
         super(ctx);
     }
 
+	// ZZZ shouldnt be here?
+	private boolean LOG_MENU = false;
 
     /**
      * Clicks the menu target. Will left-click if the menu item is the first,
@@ -52,13 +54,11 @@ public class Menu extends MethodProvider {
      */
     public boolean doAction(final String action, String target) {
         int idx = getIndex(action, target);
-        log.info(String.format("action: %s, target: %s, indx: %d", action, target, idx));
+		if (LOG_MENU) {
+			log.info(String.format("action: %s, target: %s, indx: %d", action, target, idx));
+		}
 
         if (idx == -1 || idx > MAX_DISPLAYABLE_ENTRIES) {
-			for (String s : getEntriesString()) {
-				log.info("..... {}", s);
-			}
-
             while (isOpen()) {
                 methods.mouse.moveRandomly(750);
                 sleep(random(150, 250));
@@ -69,12 +69,17 @@ public class Menu extends MethodProvider {
 
         if (!isOpen()) {
             if (idx == 0) {
-				log.info(String.format("left clicking action"));
+				if (LOG_MENU) {
+					log.info(String.format("left clicking action"));
+				}
+
                 methods.mouse.click(true);
                 return true;
             }
 
-            log.info(String.format("right click - open menu"));
+			if (LOG_MENU) {
+				log.info(String.format("right click - open menu"));
+			}
 
             // ensure we don't move after
             methods.mouse.click(false, 0);
@@ -88,7 +93,7 @@ public class Menu extends MethodProvider {
         }
 
         if (!isOpen()) {
-            log.info(String.format("menu NOT open in doAction: %d", idx));
+            log.warn(String.format("menu NOT open in doAction: %d", idx));
             return false;
         }
 
@@ -112,7 +117,10 @@ public class Menu extends MethodProvider {
         int rwidth = Math.max(2, (int) (width * 0.8));
         int xOff = width + random(-rwidth, rwidth);
 
-        log.info(String.format("width %d, rwidth %d, xOff %d", width, rwidth, xOff));
+		if (LOG_MENU) {
+			log.info(String.format("width %d, rwidth %d, xOff %d", width, rwidth, xOff));
+		}
+
         int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
 
         methods.mouse.move(menu.x + xOff, menu.y + yOff);
