@@ -3,6 +3,8 @@ package net.runelite.rsb.methods;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ObjectID;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.cache.definitions.ObjectDefinition;
+
 import net.runelite.rsb.internal.globval.*;
 import net.runelite.rsb.internal.wrappers.Filter;
 import net.runelite.rsb.wrappers.*;
@@ -180,15 +182,16 @@ public class Bank extends MethodProvider {
 		}
 	}
 
-	private static class ValidBankObjectFilter implements Filter<RSNPC> {
+	private static class ValidBankFilter implements Filter<RSObject> {
 		private int[] validIds;
-		ValidBankObjectFilter(int[] validIds) {
+
+		public ValidBankFilter(int[] validIds) {
 			this.validIds = validIds;
 		}
 
-		private bool checkId(int rsoId) {
+		private boolean checkId(int rsoId) {
 			for (int id : validIds) {
-				if (chestId == rsoId) {
+				if (id == rsoId) {
 					return true;
 				}
 			}
@@ -198,15 +201,15 @@ public class Bank extends MethodProvider {
 
 		@Override
 		public boolean test(RSObject rso) {
-			final int id = rso.getId();
+			final int id = rso.getID();
 			if (!this.checkId(id)) {
 				return false;
 			}
 
             ObjectDefinition def = rso.getDef();
 			if (def != null) {
-				for (String a: def.getActions()) {
-					if (a.equals("Bank")) {
+				for (String s: def.getActions()) {
+					if (s != null && s.equals("Bank")) {
 						return true;
 					}
 				}
@@ -216,25 +219,29 @@ public class Bank extends MethodProvider {
 		}
 	}
 
+
 	public Object getNearest() {
-		RSObject bankObject = methods.objects.getNearest(new ValidBankObjectFilter(BANKERS));
+		RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
 		RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
+		RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
 
-		Object result = null;
+		/* Find the closest one, others are set to null. Remember distance and tile. */
 		int lowestDist = Integer.MAX_VALUE;
-
-		if (bankObject != null) {
-			result = bankObject;
-			lowestDist = methods.calc.distanceTo(bankObject.getLocation());
+		RSTile tile;
+		if (bankBooth != null) {
+			tile = bankBooth.getLocation();
+			lowestDist = methods.calc.distanceTo(tile);
 		}
-
-		if (banker != null) {
-			if (result == null || methods.calc.distanceTo(banker) < lowestDist) {
-				result = banker;
-			}
+		if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
+			tile = banker.getLocation();
+			lowestDist = methods.calc.distanceTo(tile);
+			bankBooth = null;
 		}
-
-		return result;
+		if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+			bankBooth = null;
+			banker = null;
+		}
+		return (bankChest == null) ? (banker == null) ? bankBooth : banker : bankChest;
 	}
 
 	/**
@@ -245,21 +252,38 @@ public class Bank extends MethodProvider {
 	 * @return <code>true</code> if the bank was opened; otherwise <code>false</code>.
 	 */
 	public boolean open() {
-		if (isOpen()) {
-			return true;
-		}
-
+		if (isOpen()) { return true; }
 		try {
 			if (methods.menu.isOpen()) {
 				methods.mouse.moveSlightly();
 				sleep(random(20, 30));
 			}
-
-			RSObject bankObject = methods.objects.getNearest(new ValidBankObjectFilter());
+			RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
 			RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
-			Tile bankObjectTile = bankObject.getLocation();
-			Tile bankerTile = banker.getLocation();
-
+			RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
+			/* Find the closest one, others are set to null. Remember distance and tile. */
+			int lowestDist = Integer.MAX_VALUE;
+			RSTile tile = null;
+			if (bankBooth != null) {
+				tile = bankBooth.getLocation();
+				lowestDist = methods.calc.distanceTo(tile);
+			}
+			if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
+				tile = banker.getLocation();
+				lowestDist = methods.calc.distanceTo(tile);
+				bankBooth = null;
+			}
+			if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+				tile = bankChest.getLocation();
+				lowestDist = methods.calc.distanceTo(tile);
+				bankBooth = null;
+				banker = null;
+			}
+			/* Open closest one, if any found */
+			if (lowestDist < 5 && methods.calc.tileOnMap(tile) && methods.calc.canReach(tile, true)) {
+				boolean didAction = false;
+				if (bankBooth != null) {
+					didAction = bankBooth.doAction("Bank") || bankBooth.doAction("Use-Quickly");
 				} else if (banker != null) {
 					didAction = banker.doAction("Bank", "Banker");
 				} else if (bankChest != null) {
