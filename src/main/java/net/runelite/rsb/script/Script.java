@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.methods.Methods;
-import net.runelite.rsb.util.Timer;
 
 
 import java.util.EventListener;

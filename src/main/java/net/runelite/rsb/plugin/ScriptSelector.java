@@ -29,8 +29,6 @@ import java.util.Map;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
-import static net.runelite.rsb.util.StringUtil.convertIntelliJPath;
-
 public class ScriptSelector extends JDialog implements ScriptListener {
 
 	public static void main(String[] args) {
