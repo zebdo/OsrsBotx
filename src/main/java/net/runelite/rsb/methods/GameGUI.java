@@ -3,6 +3,7 @@ package net.runelite.rsb.methods;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.widgets.Widget;
 import net.runelite.rsb.internal.globval.WidgetIndices;
+import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.internal.globval.enums.InterfaceTab;
 import net.runelite.rsb.internal.globval.enums.ViewportLayout;
 
@@ -64,15 +65,14 @@ public class GameGUI extends MethodProvider {
 	 * @param interfaceTab The enumerated tab containing WidgetInfo of the tab.
 	 * @return The specified tab <code>Widget</code>; otherwise null.
 	 */
+
 	public synchronized Widget getTab(final InterfaceTab interfaceTab) {
 		ViewportLayout layout = getViewportLayout();
 		if (layout != null) {
-			return switch (layout) {
-				case FIXED_CLASSIC -> interfaceTab.getFixedClassicWidget();
-				case RESIZABLE_CLASSIC -> interfaceTab.getResizableClassicWidget();
-				case RESIZABLE_MODERN -> interfaceTab.getResizableModernWidget();
-			};
+			GlobalWidgetInfo info = interfaceTab.getWidgetInfo(layout);
+			return methods.client.getWidget(info.getGroupId(), info.getChildId());
 		}
+
 		return null;
 	}
 
