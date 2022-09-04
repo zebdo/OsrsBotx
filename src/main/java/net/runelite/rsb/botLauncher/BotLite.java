@@ -33,12 +33,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     private Canvas canvas;
 
     /**
-     * Defines what types of input are enabled when overrideInput is false.
-     * Defaults to 'keyboard only' whenever a script is started.
-     */
-    public volatile int inputFlags = Environment.INPUT_KEYBOARD | Environment.INPUT_MOUSE;
-
-    /**
      * Whether or not user input is allowed despite a script's preference.
      */
     public volatile boolean overrideInput = false;
