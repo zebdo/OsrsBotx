@@ -1,6 +1,5 @@
 package net.runelite.rsb.wrappers;
 
-import com.google.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
@@ -13,8 +12,6 @@ import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
 import net.runelite.rsb.wrappers.subwrap.WalkerTile;
-
-import java.lang.reflect.Field;
 
 /**
  * A wrapper for a tile object which interprets the underlying tile objects type and furthermore
@@ -128,10 +125,9 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	 */
 	public RSModel getModel() {
 		try {
-			Model model;
-                        // XXX TODO check these, does getRenderable() return model? XXX
+			// XXX TODO check these, does getRenderable() return model? XXX
 			if (obj instanceof WallObject) {
-				model = (Model) ((WallObject) obj).getRenderable1();
+				Model model = (Model) ((WallObject) obj).getRenderable1();
 				if (model != null && model.getVerticesX() != null)
 					if (((WallObject) obj).getRenderable2() != null)
 						return new RSWallObjectModel(methods, model, (Model) ((WallObject) obj).getRenderable2(), obj);
@@ -140,19 +136,26 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 					}
 				return new RSWallObjectModel(methods, null, obj);
 			} else if (obj instanceof GroundObject) {
-				model = (Model) ((GroundObject) obj).getRenderable();
+				Model model = (Model) ((GroundObject) obj).getRenderable();
 				if (model != null && model.getVerticesX() != null)
 					return new RSGroundObjectModel(methods, model, new RSTile(obj.getWorldLocation()).getTile(methods));
 			} else if (obj instanceof DecorativeObject) {
-				model = (Model) ((DecorativeObject) obj).getRenderable();
+				Model model = (Model) ((DecorativeObject) obj).getRenderable();
 				if (model != null && model.getVerticesX() != null)
 					return new RSGroundObjectModel(methods, model, new RSTile(obj.getWorldLocation()).getTile(methods));
 			} else if (obj instanceof ItemLayer) {
 				return null;
 			} else if (obj instanceof GameObject) {
-				model =  ((GameObject) obj).getRenderable().getModel();
-				if (model != null && model.getVerticesX() != null)
+				log.info("here for {}", this.id);
+				Renderable renderable = ((GameObject) obj).getRenderable();
+				Model model = renderable instanceof Model ? (Model) renderable : renderable.getModel();
+				if (model != null) {
+					log.info("model.getVerticesX() {}", model.getVerticesX());
+				}
+
+				if (model != null && model.getVerticesX() != null) {
 					return new RSObjectModel(methods, model, (GameObject) obj);
+				}
 			}
 		} catch (AbstractMethodError e) {
 			log.debug("Error", e);

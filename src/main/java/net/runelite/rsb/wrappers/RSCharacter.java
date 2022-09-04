@@ -75,9 +75,9 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
             }
         }
         pathFields.sort(Comparator.comparing(Field::getName));
-            try {
+		try {
             if (methods.client.getLocalPlayer() != null)
-                //Attempt to accurately decide which set is which (Hopefully this is never relied on)
+                // Attempt to accurately decide which set is which (Hopefully this is never relied on)
                 pathXIndex = (((int[]) pathFields.get(0).get(methods.client.getLocalPlayer()))[0] == methods.client.getLocalPlayer().getLocalLocation().getSceneX()) ? 0 : 1;
             pathYIndex = (pathXIndex == 0) ? 1 : 0;
         } catch (IllegalAccessException e) {
