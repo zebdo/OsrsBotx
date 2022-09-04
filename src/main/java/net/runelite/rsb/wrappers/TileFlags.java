@@ -1,4 +1,6 @@
-package net.runelite.rsb.internal.wrappers;
+package net.runelite.rsb.wrappers;
+
+// XXX NOT USED... but it seems good
 
 import net.runelite.rsb.wrappers.RSTile;
 
