@@ -15,8 +15,6 @@ import java.awt.*;
  */
 @Slf4j
 public class Calculations extends MethodProvider {
-	private final Render render = new Render();
-	private final RenderData renderData = new RenderData();
 
 	/**
 	 * Creates the singleton for calculations
@@ -492,29 +490,5 @@ public class Calculations extends MethodProvider {
 
 	public static java.awt.Point convertRLPointToAWTPoint(Point point) {
 		return new java.awt.Point(point.getX(), point.getY());
-	}
-
-	static class Render {
-		float absoluteX1 = 0, absoluteX2 = 0;
-		float absoluteY1 = 0, absoluteY2 = 0;
-		int xMultiplier = 512, yMultiplier = 512;
-		int zNear = 50, zFar = 3500;
-	}
-
-	static class RenderData {
-		float xOff = 0, xX = 32768, xY = 0, xZ = 0;
-		float yOff = 0, yX = 0, yY = 32768, yZ = 0;
-		float zOff = 0, zX = 0, zY = 0, zZ = 32768;
-	}
-
-	public static final int[] SIN_TABLE = new int[16384];
-	public static final int[] COS_TABLE = new int[16384];
-
-	static {
-		final double d = 0.00038349519697141029D;
-		for (int i = 0; i < 16384; i++) {
-			Calculations.SIN_TABLE[i] = (int) (32768D * Math.sin(i * d));
-			Calculations.COS_TABLE[i] = (int) (32768D * Math.cos(i * d));
-		}
 	}
 }

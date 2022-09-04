@@ -4,8 +4,10 @@ import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.Web;
+import net.runelite.rsb.methods.MethodProvider;
+
 import net.runelite.rsb.wrappers.RSTile;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
@@ -18,38 +20,39 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
 
     public WalkerTile(RSTile tile) {
         super(tile.getWorldLocation());
-        this.ctx = Web.methods;
+        this.ctx = MethodProvider.methods;
         type = TYPES.WORLD;
     }
 
     public WalkerTile(WalkerTile tile) {
-        super(tile.getX(), tile.getY(), Web.methods.client.getPlane());
-        this.ctx = Web.methods;
+		super(tile.getX(), tile.getY(),
+			  MethodProvider.methods.client.getPlane());
+        this.ctx = MethodProvider.methods;
         type = tile.type;
     };
 
     public WalkerTile(WorldPoint point) {
         super(point);
-        this.ctx = Web.methods;
+        this.ctx = MethodProvider.methods;
         type = TYPES.WORLD;
     }
 
 
     public WalkerTile(int x, int y, int plane) {
         super(x, y, plane);
-        this.ctx = Web.methods;
+        this.ctx = MethodProvider.methods;
         this.type = TYPES.WORLD;
     }
 
     public WalkerTile(int x, int y, int plane, TYPES type) {
         super(x, y, plane);
-        this.ctx = Web.methods;
+        this.ctx = MethodProvider.methods;
         this.type = type;
     }
 
     public WalkerTile(int x, int y, TYPES type) {
         super(x, y);
-        this.ctx = Web.methods;
+        this.ctx = MethodProvider.methods;
         this.type = type;
     }
 
