@@ -3,6 +3,7 @@ package net.runelite.rsb.script;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.methods.MethodContext;
+import net.runelite.rsb.wrappers.RSPlayer;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -61,36 +62,9 @@ public abstract class Script implements Runnable {
 
 	}
 
-	public final void init(Script script) {
-		init(script.ctx);
-	}
-
-	/**
-	 * Initializes this script with a given context.
-	 *
-	 * @param ctx The MethodContext.
-	 */
 	public final void init(MethodContext ctx) {
 		this.ctx = ctx;
 	}
-
-	/**
-	 * Initializes the provided script with this script's
-	 * method context and adds the delegate as a listener
-	 * to the event manager, allowing it to receive client
-	 * events. The script will be stored as a delegate of
-	 * this script and removed from the event manager when
-	 * this script is stopped. The onStart(), loop() and
-	 * onFinish() methods are not automatically called on
-	 * the delegate.
-	 *
-	 * @param script The script to delegate to.
-	 */
-	// public final void delegateTo(Script script) {
-	// 	script.init(ctx);
-	// 	ctx.runeLite.getEventManager().addListener(script);
-	// 	delegates.add(script);
-	// }
 
 	/**
 	 * For internal use only. Deactivates this script if
@@ -194,7 +168,6 @@ public abstract class Script implements Runnable {
 		}
 		if (start) {
 			running = true;
-			//ctx.runeLite.getEventManager().addListener(this);
 			log.info("Script started.");
 			try {
 				while (running) {
@@ -211,13 +184,13 @@ public abstract class Script implements Runnable {
 							break;
 						}
 						try {
-							ctx.sleep(timeOut);
+							sleep(timeOut);
 						} catch (ThreadDeath td) {
 							break;
 						}
 					} else {
 						try {
-							ctx.sleep(1000);
+							sleep(1000);
 						} catch (ThreadDeath td) {
 							break;
 						}
@@ -242,5 +215,17 @@ public abstract class Script implements Runnable {
 		ctx.mouse.moveOffScreen();
 		ctx.runeLite.getScriptHandler().stopScript(id);
 		id = -1;
+	}
+
+	protected int random(int minValue, int maxValue) {
+		return ctx.random(minValue, maxValue);
+	}
+
+	protected void sleep(int msecs) {
+		ctx.sleep(msecs);
+	}
+
+	protected RSPlayer getMyPlayer() {
+		return ctx.players.getMyPlayer();
 	}
 }

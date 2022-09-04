@@ -78,27 +78,16 @@ public class MethodContext {
 		this.inputManager = runeLite.getInputManager();
 	}
 
-	/**
-	 * Pauses execution for a random amount of time between two values.
-	 *
-	 * @param minSleep The minimum time to sleep.
-	 * @param maxSleep The maximum time to sleep.
-	 * @see #sleep(int)
-	 * @see #random(int, int)
-	 */
-	public void sleep(int minSleep, int maxSleep) {
-		if (minSleep >= maxSleep) {
-			return;
+	///////////////////////////////////////////////////////////////////////////////
+
+	public int random(int minValue, int maxValue) {
+		if (minValue >= maxValue) {
+			return 0;
 		}
 
-		sleep(minSleep + random.nextInt(maxSleep - minSleep));
+		return minValue + random.nextInt(maxValue - minValue);
 	}
 
-	/**
-	 * Pauses execution for a given number of milliseconds.
-	 *
-	 * @param toSleep The time to sleep in milliseconds.
-	 */
 	public void sleep(int toSleep) {
 		try {
 			long start = System.currentTimeMillis();
