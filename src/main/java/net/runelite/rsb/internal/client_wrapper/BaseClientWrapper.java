@@ -1,4 +1,4 @@
-package net.runelite.rsb.wrappers.client_wrapper;
+package net.runelite.rsb.internal.client_wrapper;
 
 import net.runelite.api.*;
 import net.runelite.api.Point;

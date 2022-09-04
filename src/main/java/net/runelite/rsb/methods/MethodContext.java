@@ -6,8 +6,9 @@ import net.runelite.api.Client;
 import net.runelite.rsb.internal.input.VirtualKeyboard;
 import net.runelite.rsb.internal.input.VirtualMouse;
 import net.runelite.rsb.internal.InputManager;
+import net.runelite.rsb.internal.client_wrapper.RSClient;
+
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.wrappers.client_wrapper.RSClient;
 import net.runelite.rsb.wrappers.subwrap.ChooseOption;
 import net.runelite.rsb.wrappers.subwrap.NPCChat;
 
@@ -52,7 +53,6 @@ public class MethodContext {
 	public final RandomEvents randomEvents = new RandomEvents(this);
 	public final Magic magic = new Magic(this);
 	public final GroundItems groundItems = new GroundItems(this);
-	public final Web web = new Web(this);
 	public final Trade trade = new Trade(this);
 	public final Equipment equipment = new Equipment(this);
 	public final GrandExchange grandExchange = new GrandExchange(this);
