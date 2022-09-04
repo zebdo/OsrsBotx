@@ -1,7 +1,7 @@
-package net.runelite.rsb.internal.naturalmouse;
+package net.runelite.rsb.internal.input;
 
 import com.github.joonasvali.naturalmouse.api.SystemCalls;
-import net.runelite.rsb.internal.InputManager;
+import net.runelite.rsb.internal.input.InputManager;
 
 import java.awt.*;
 

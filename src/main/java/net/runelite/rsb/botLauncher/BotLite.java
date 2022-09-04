@@ -6,9 +6,11 @@ import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.modified.RuneLite;
-import net.runelite.rsb.internal.InputManager;
+
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
+import net.runelite.rsb.internal.input.InputManager;
+
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.plugin.ScriptSelector;
 import net.runelite.rsb.service.ScriptDefinition;
@@ -160,7 +162,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     public void shutdown() {
         getLoader().stop();
         getLoader().setVisible(false);
-        //eventManager.killThread(false);
         sh.stopScript();
     }
 

@@ -1,11 +1,14 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.client.callback.ClientThread;
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.api.Client;
+import net.runelite.client.callback.ClientThread;
+
+import net.runelite.rsb.botLauncher.BotLite;
+
 import net.runelite.rsb.internal.input.VirtualKeyboard;
 import net.runelite.rsb.internal.input.VirtualMouse;
-import net.runelite.rsb.internal.InputManager;
+import net.runelite.rsb.internal.input.InputManager;
+
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
 import lombok.extern.slf4j.Slf4j;

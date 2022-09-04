@@ -1,4 +1,4 @@
-package net.runelite.rsb.internal;
+package net.runelite.rsb.internal.input;
 
 import com.github.joonasvali.naturalmouse.api.MouseMotionFactory;
 import com.github.joonasvali.naturalmouse.api.MouseMotionObserver;
@@ -6,7 +6,7 @@ import com.github.joonasvali.naturalmouse.support.*;
 import com.github.joonasvali.naturalmouse.util.FactoryTemplates;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.internal.naturalmouse.RSBSystemCalls;
+import net.runelite.rsb.internal.input.RSBSystemCalls;
 import java.awt.Point;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class MouseHandler {
                 this.motionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
 
                 DefaultOvershootManager overshootManager = (DefaultOvershootManager) motionFactory.getOvershootManager();
-                overshootManager.setOvershoots(1);
+                overshootManager.setOvershoots(2);
 
 		motionFactory.setMouseInfo(() -> new Point(inputManager.getX(), inputManager.getY()));
 	}

@@ -42,8 +42,12 @@ public class VirtualKeyboard implements KeyListener {
         if (e.getID() == KeyEvent.KEY_RELEASED) {
             keyReleased(e);
         }
+
+		//Applet a = (Applet) bot.getMethodContext().client;
+		Applet a = (Applet) methods.client;
+
         EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-        eventQueue.postEvent(new FocusEvent( ((Applet) methods.client).getComponent(0), FocusEvent.FOCUS_GAINED));
+        eventQueue.postEvent(new FocusEvent(a.getComponent(0), FocusEvent.FOCUS_GAINED));
         eventQueue.postEvent(e);
     }
 

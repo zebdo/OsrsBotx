@@ -1,8 +1,8 @@
-package net.runelite.rsb.internal;
+package net.runelite.rsb.internal.input;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.api.Client;
+import net.runelite.rsb.botLauncher.BotLite;
 
 import java.applet.Applet;
 import java.awt.event.*;
@@ -25,7 +25,8 @@ public class InputManager {
 	}
 
 	private boolean isOnCanvas(final int x, final int y) {
-		return x > 0 && x < bot.getMethodContext().client.getCanvasWidth() && y > 0 && y < bot.getMethodContext().client.getCanvasHeight();
+		return (x > 0 && x < bot.getMethodContext().client.getCanvasWidth() &&
+				y > 0 && y < bot.getMethodContext().client.getCanvasHeight());
 	}
 
 	public void clickMouse(final boolean left) {

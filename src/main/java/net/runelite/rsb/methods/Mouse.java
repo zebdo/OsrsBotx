@@ -1,6 +1,6 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.rsb.internal.MouseHandler;
+import net.runelite.rsb.internal.input.MouseHandler;
 import net.runelite.api.Point;
 
 /**
