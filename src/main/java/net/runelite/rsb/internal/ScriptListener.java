@@ -1,4 +1,4 @@
-package net.runelite.rsb.internal.listener;
+package net.runelite.rsb.internal;
 
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.script.Script;

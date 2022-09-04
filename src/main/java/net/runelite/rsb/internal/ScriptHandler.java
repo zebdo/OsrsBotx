@@ -3,7 +3,7 @@ package net.runelite.rsb.internal;
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.script.ScriptManifest;
-import net.runelite.rsb.internal.listener.ScriptListener;
+import net.runelite.rsb.internal.ScriptListener;
 
 import java.util.*;
 
