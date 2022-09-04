@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 @Slf4j
 @SuppressWarnings("removal")
 public class BotLite extends RuneLite implements BotLiteInterface {
-    private MethodContext methods;
+    private MethodContext ctx;
     private Component panel;
     private BufferedImage backBuffer;
     private Image image;
@@ -67,7 +67,7 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     public ItemManager getItemManager() { return injector.getInstance(ItemManager.class);}
 
     public MethodContext getMethodContext() {
-        return methods;
+        return ctx;
     }
 
     public InputManager getInputManager() {
@@ -152,8 +152,8 @@ public class BotLite extends RuneLite implements BotLiteInterface {
      * as well as assigns bank constants here.
      */
     public void setMethodContext() {
-        methods = new MethodContext(this);
-        methods.bank.assignConstants();
+        ctx = new MethodContext(this);
+        ctx.bank.assignConstants();
     }
 
     /**
