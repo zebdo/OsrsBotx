@@ -3,25 +3,20 @@ package net.runelite.rsb.script;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.Methods;
 
-
-import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public abstract class Script extends Methods implements EventListener, Runnable {
+public abstract class Script implements Runnable {
 
-	public MethodContext ctx;
+	protected MethodContext ctx;
 
 	private volatile boolean running = false;
 	private volatile boolean paused = false;
-	private volatile boolean random = false;
 
 	private int id = -1;
-	private long lastNotice;
 
 	/**
 	 * Finalized to cause errors intentionally to avoid confusion
@@ -76,7 +71,6 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 * @param ctx The MethodContext.
 	 */
 	public final void init(MethodContext ctx) {
-		super.init(ctx);
 		this.ctx = ctx;
 	}
 
@@ -129,14 +123,9 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 * @param paused <code>true</code> to pause; <code>false</code> to resume.
 	 */
 	public final void setPaused(boolean paused) {
-		if (running && !random) {
-			// if (paused) {
-			// 	blockEvents(true);
-			// } else {
-			// 	unblockEvents();
-			// }
+		if (running) {
+			this.paused = paused;
 		}
-		this.paused = paused;
 	}
 
 	/**
@@ -164,7 +153,7 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	 * @return <code>true</code> if active; otherwise <code>false</code>.
 	 */
 	public final boolean isActive() {
-		return running && !paused && !random;
+		return running && !paused;
 	}
 
 	/**
@@ -184,11 +173,11 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 	public void stopScript(boolean logout) {
 		log.info("Script stopping...");
 		if (logout) {
-			if (bank.isOpen()) {
-				bank.close();
+			if (ctx.bank.isOpen()) {
+				ctx.bank.close();
 			}
-			if (game.isLoggedIn()) {
-				game.logout();
+			if (ctx.game.isLoggedIn()) {
+				ctx.game.logout();
 			}
 		}
 		this.running = false;
@@ -222,13 +211,13 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 							break;
 						}
 						try {
-							sleep(timeOut);
+							ctx.sleep(timeOut);
 						} catch (ThreadDeath td) {
 							break;
 						}
 					} else {
 						try {
-							sleep(1000);
+							ctx.sleep(1000);
 						} catch (ThreadDeath td) {
 							break;
 						}
@@ -249,39 +238,9 @@ public abstract class Script extends Methods implements EventListener, Runnable 
 		} else {
 			log.error("Failed to start up.");
 		}
-		mouse.moveOffScreen();
-		// for (Script s : delegates) {
-		// 	ctx.runeLite.getEventManager().removeListener(s);
-		// }
-		// delegates.clear();
-		//ctx.runeLite.getEventManager().removeListener(this);
+
+		ctx.mouse.moveOffScreen();
 		ctx.runeLite.getScriptHandler().stopScript(id);
 		id = -1;
-	}
-
-	// private void blockEvents(boolean paint) {
-	// 	// for (Script s : delegates) {
-	// 	// 	ctx.runeLite.getEventManager().removeListener(s);
-	// 	// 	if (paint && s instanceof PaintListener) {
-	// 	// 		ctx.runeLite.getEventManager().addListener(s, EventMulticaster.PAINT_EVENT);
-	// 	// 	}
-	// 	// }
-	// 	ctx.runeLite.getEventManager().removeListener(this);
-	// 	// if (paint && this instanceof PaintListener) {
-	// 	// 	ctx.runeLite.getEventManager().addListener(this, EventMulticaster.PAINT_EVENT);
-	// 	// }
-	// }
-
-	// private void unblockEvents() {
-	// 	// for (Script s : delegates) {
-	// 	// 	ctx.runeLite.getEventManager().removeListener(s);
-	// 	// 	ctx.runeLite.getEventManager().addListener(s);
-	// 	// }
-	// 	ctx.runeLite.getEventManager().removeListener(this);
-	// 	ctx.runeLite.getEventManager().addListener(this);
-	// }
-
-	public BotLite getBot() {
-		return ctx.runeLite;
 	}
 }
