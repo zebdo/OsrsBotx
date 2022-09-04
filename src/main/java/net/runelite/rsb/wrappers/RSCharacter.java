@@ -115,6 +115,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
                 return new RSCharacterModel(methods, model, actor);
             }
         }
+
         return null;
     }
 

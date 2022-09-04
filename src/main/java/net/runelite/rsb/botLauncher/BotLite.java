@@ -9,11 +9,9 @@ import net.runelite.client.modified.RuneLite;
 import net.runelite.rsb.internal.InputManager;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
-import net.runelite.rsb.methods.Environment;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.plugin.ScriptSelector;
 import net.runelite.rsb.service.ScriptDefinition;
-
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.image.BufferedImage;

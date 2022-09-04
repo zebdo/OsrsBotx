@@ -8,14 +8,12 @@ import net.runelite.cache.definitions.ObjectDefinition;
 import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.methods.MethodProvider;
-import net.runelite.rsb.methods.Web;
 import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.subwrap.RSMenuNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -32,8 +30,6 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 	private final ItemDefinition def;
 	private RSWidget component;
 	private RSWidgetItem item;
-	private static Field groundActionMethod;
-
 
 	public RSItem(final MethodContext ctx, final RSWidgetItem item) {
 		super(ctx);
@@ -225,7 +221,7 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 
 	public boolean doAction(Predicate<RSMenuNode> predicate) {
 		component.doClick(false);
-		for (RSMenuNode menuNode : Web.methods.chooseOption.getMenuNodes()) {
+		for (RSMenuNode menuNode : methods.chooseOption.getMenuNodes()) {
 			if (predicate.test(menuNode)) {
 				return (component != null)
 						? component.doAction(menuNode.getAction(), menuNode.getTarget())
