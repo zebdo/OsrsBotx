@@ -1,7 +1,6 @@
 package net.runelite.rsb.util;
 
 import net.runelite.api.Skill;
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.methods.MethodContext;
 
 import java.util.Arrays;
@@ -21,7 +20,6 @@ public class SkillTracker {
 	public int[] skills;
 	public int[] startExp, currentExp;
 
-	private final BotLite bot;
 	private final MethodContext context;
 
 	public transient int firstIndex;
@@ -29,9 +27,8 @@ public class SkillTracker {
 	public long start;
 	public boolean started;
 
-	public SkillTracker(BotLite bot, int... skills) {
-		this.bot = bot;
-		context = bot.getMethodContext();
+	public SkillTracker(MethodContext ctx, int... skills) {
+		context = ctx;
 		firstIndex = 0;
 		int size = skills.length;
 		if (size < 0) {

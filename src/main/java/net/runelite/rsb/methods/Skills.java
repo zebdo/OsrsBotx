@@ -172,7 +172,7 @@ public class Skills extends MethodProvider {
 	 */
 	@Deprecated
 	public SkillTracker createTracker(final int... skills) {
-		return new SkillTracker(methods.runeLite, skills);
+		return new SkillTracker(methods, skills);
 	}
 
 	/**
