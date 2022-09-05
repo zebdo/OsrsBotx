@@ -43,19 +43,16 @@ public class BotPlugin extends Plugin {
     }
 
     @Override
-    protected void startUp() throws Exception
-    {
-        BotPanel panel = injector.getInstance(BotPanel.class);
-        BotLite bot = injector.getInstance(BotLite.class);
-
-        scriptPanel = new ScriptPanel(bot);
-
-        panel.associateBot(scriptPanel);
-
+    protected void startUp() throws Exception {
         BufferedImage icon = imageToBufferedImage(BotPlugin.class.getResourceAsStream("rsb.png"));
 
+        BotLite bot = injector.getInstance(BotLite.class);
+        scriptPanel = new ScriptPanel(bot);
+
+        BotPanel panel = new BotPanel(scriptPanel);
+
         navButton = NavigationButton.builder()
-                .tooltip("Bot Interface")
+                .tooltip("Botlite Interface")
                 .icon(icon)
                 .priority(10)
                 .panel(panel)
@@ -65,8 +62,7 @@ public class BotPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown()
-    {
+    protected void shutDown() {
         clientToolbar.removeNavigation(navButton);
     }
 
@@ -83,10 +79,5 @@ public class BotPlugin extends Plugin {
     public static ScriptPanel getScriptPanel() {
         return scriptPanel;
     }
-
-    public static void setScriptPanel(ScriptPanel scriptPanel) {
-        BotPlugin.scriptPanel = scriptPanel;
-    }
-
 
 }

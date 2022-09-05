@@ -173,11 +173,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         return this;
     }
 
-    public BotLite getInjectorInstance() {
-        return injector.getInstance(BotLite.class);
-    }
-
-
     /**
      * The actual method associated with initializing the client-related data. Such as creating the client sizing and
      * binding the plethora of handlers, listeners, and managers to this particular RuneLite instance
@@ -212,21 +207,21 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         });
     }
 
-    public void runScript(String scriptName) {
-        ScriptSelector ss = new ScriptSelector(getInjectorInstance());
-        ss.load();
-        ScriptDefinition def = ss.getScripts().stream().
-			filter(x -> x.name.replace(" ", "").equals(scriptName))
-			.findFirst().get();
-        try {
-            getInjectorInstance().getScriptHandler().runScript(def.source.load(def));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    // public void runScript(String scriptName) {
+    //     ScriptSelector ss = new ScriptSelector(this);
+    //     ss.load();
+    //     ScriptDefinition def = ss.getScripts().stream().
+	// 		filter(x -> x.name.replace(" ", "").equals(scriptName))
+	// 		.findFirst().get();
+    //     try {
+    //         getInjectorInstance().getScriptHandler().runScript(def.source.load(def));
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    public void stopScript() {
-        sh.stopScript();
-    }
+    // public void stopScript() {
+    //     sh.stopScript();
+    // }
 
 }

@@ -54,11 +54,8 @@ public class ScriptPanel extends PluginPanel {
 		scriptsSelectionScrollPane.setViewportView(scriptSelector.table);
 
 		//---- buttonStart ----
-		//scriptSelector.buttonStart.setText("Start");
-		//scriptSelector.buttonStart.addActionListener(scriptSelector::buttonStartActionPerformed);
 		final BufferedImage startIcon = ImageUtil.loadImageResource(getClass(), "start.png");
 		scriptSelector.buttonStart = new MaterialTab(new ImageIcon(startIcon.getScaledInstance(24, 24, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonStart.setToolTipText("Start selected script");
 		scriptSelector.buttonStart.setSize(new Dimension(28, 28));
 		scriptSelector.buttonStart.setMinimumSize(new Dimension(0, 28));
 		scriptSelector.buttonStart.setEnabled(false);
@@ -73,11 +70,8 @@ public class ScriptPanel extends PluginPanel {
 		scriptPanelToolbar.addTab(scriptSelector.buttonStart);
 
 		//---- buttonPause ----
-		//scriptSelector.buttonPause.setText("Pause");
-		//scriptSelector.buttonPause.addActionListener(scriptSelector::buttonPauseActionPerformed);
 		final BufferedImage pauseIcon = ImageUtil.loadImageResource(getClass(), "pause.png");
 		scriptSelector.buttonPause = new MaterialTab(new ImageIcon(pauseIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonPause.setToolTipText("Pause the active script");
 		scriptSelector.buttonPause.setSize(new Dimension(28, 28));
 		scriptSelector.buttonPause.setMinimumSize(new Dimension(0, 0));
 		scriptSelector.buttonPause.addMouseListener(new MouseAdapter() {
@@ -90,11 +84,8 @@ public class ScriptPanel extends PluginPanel {
 		scriptPanelToolbar.addTab(scriptSelector.buttonPause);
 
 		//---- buttonStop ----
-		//scriptSelector.buttonStop.setText("Stop");
-		//scriptSelector.buttonStop.addActionListener(scriptSelector::buttonStopActionPerformed);
 		final BufferedImage stopIcon = ImageUtil.loadImageResource(getClass(), "stop.png");
 		scriptSelector.buttonStop = new MaterialTab(new ImageIcon(stopIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonStop.setToolTipText("Stop running the active script");
 		scriptSelector.buttonStop.setSize(new Dimension(28, 28));
 		scriptSelector.buttonStop.setMinimumSize(new Dimension(0, 28));
 		scriptSelector.buttonStop.addMouseListener(new MouseAdapter() {
@@ -109,7 +100,6 @@ public class ScriptPanel extends PluginPanel {
 		//---- buttonReload ----
 		final BufferedImage iconImage = ImageUtil.loadImageResource(getClass(), "reload.png");
 		scriptSelector.buttonReload = new MaterialTab(new ImageIcon(iconImage.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonReload.setToolTipText("Reload Plugins");
 		scriptSelector.buttonReload.setSize(new Dimension(28, 28));
 		scriptSelector.buttonReload.setMinimumSize(new Dimension(0, 28));
 		scriptSelector.buttonReload.addMouseListener(new MouseAdapter() {

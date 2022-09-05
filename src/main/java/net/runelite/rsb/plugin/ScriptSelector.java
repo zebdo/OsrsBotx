@@ -34,12 +34,6 @@ import javax.tools.ToolProvider;
 @Slf4j
 public class ScriptSelector extends JDialog {
 
-	public static void main(String[] args) {
-		new ScriptSelector(null, null).setVisible(true);
-	}
-
-	private static final long serialVersionUID = 5475451138208522511L;
-
 	private static final String[] COLUMN_NAMES = new String[]{"", "Name", "Author"};
 
 	private ScriptTableModel model;
@@ -203,7 +197,6 @@ public class ScriptSelector extends JDialog {
 		ScriptDefinition def = model.getDefinition(table.getSelectedRow());
 		try {
 			bot.getScriptHandler().runScript(def.source.load(def));
-			//bot.getScriptHandler().removeScriptListener(this);
 		} catch (ServiceException exception) {
 			exception.printStackTrace();
 		}
@@ -215,14 +208,7 @@ public class ScriptSelector extends JDialog {
 	 * @param e		the action event
 	 */
 	public void buttonPauseActionPerformed(ActionEvent e) {
-		if (bot.getScriptHandler().pauseScript()) {
-			// Swaps the displayed text
-			if (buttonPause.getText().equals("Pause")) {
-				buttonPause.setText("Play");
-			} else {
-				buttonPause.setText("Pause");
-			}
-		}
+		bot.getScriptHandler().pauseScript();
 	}
 
 	/**
@@ -231,10 +217,6 @@ public class ScriptSelector extends JDialog {
 	 * @param e		the action event
 	 */
 	public void buttonStopActionPerformed(ActionEvent e) {
-		//Sets the value back to Pause
-		if (buttonPause.getText().equals("Play")) {
-			buttonPause.setText("Pause");
-		}
 		stopAction();
 
 	}
