@@ -1,10 +1,11 @@
 package net.runelite.rsb.plugin;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.internal.ScriptHandler;
-import net.runelite.rsb.internal.ScriptListener;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.service.FileScriptSource;
 import net.runelite.rsb.service.ScriptDefinition;
@@ -29,7 +30,9 @@ import java.util.Map;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
-public class ScriptSelector extends JDialog implements ScriptListener {
+
+@Slf4j
+public class ScriptSelector extends JDialog {
 
 	public static void main(String[] args) {
 		new ScriptSelector(null, null).setVisible(true);
@@ -83,20 +86,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		this.model = new ScriptTableModel(this.scripts);
 	}
 
-
-	/**
-	 * Updates the script panel
-	 */
-	public void update() {
-		boolean available = bot.getScriptHandler().getRunningScripts().size() == 0;
-		if (buttonStart != null) {
-			buttonStart.setEnabled(available && table.getSelectedRow() != -1);
-			table.setEnabled(available);
-			search.setEnabled(available);
-			table.clearSelection();
-		}
-	}
-
 	/**
 	 * Loads the scripts from the script directories
 	 */
@@ -108,7 +97,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		scripts.addAll(SRC_PRECOMPILED.list());
 		scripts.addAll(SRC_SOURCES.list());
 		for (ScriptDefinition def: scripts) {
-			System.out.println(String.format("loading '%s'", def.name));
+			log.info(String.format("loading '%s'", def.name));
 		}
 
 		if (search != null)
@@ -125,11 +114,11 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	 * @return script table
 	 */
 	public JTable getTable(int icon, int name) {
-		bot.getScriptHandler().addScriptListener(ScriptSelector.this);
+		//bot.getScriptHandler().addScriptListener(ScriptSelector.this);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				bot.getScriptHandler().removeScriptListener(ScriptSelector.this);
+				//bot.getScriptHandler().removeScriptListener(ScriptSelector.this);
 				dispose();
 			}
 		});
@@ -214,7 +203,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 		ScriptDefinition def = model.getDefinition(table.getSelectedRow());
 		try {
 			bot.getScriptHandler().runScript(def.source.load(def));
-			bot.getScriptHandler().removeScriptListener(this);
+			//bot.getScriptHandler().removeScriptListener(this);
 		} catch (ServiceException exception) {
 			exception.printStackTrace();
 		}
@@ -226,16 +215,11 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	 * @param e		the action event
 	 */
 	public void buttonPauseActionPerformed(ActionEvent e) {
-		ScriptHandler sh = bot.getScriptHandler();
-		Map<Integer, Script> running = sh.getRunningScripts();
-		if (running.size() > 0) {
-			int id = running.keySet().iterator().next();
-			sh.pauseScript(id);
-			//Swaps the displayed text
+		if (bot.getScriptHandler().pauseScript()) {
+			// Swaps the displayed text
 			if (buttonPause.getText().equals("Pause")) {
 				buttonPause.setText("Play");
-			}
-			else {
+			} else {
 				buttonPause.setText("Pause");
 			}
 		}
@@ -260,16 +244,7 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 	 */
 	private void stopAction() {
 		ScriptHandler sh = bot.getScriptHandler();
-		Map<Integer, Script> running = sh.getRunningScripts();
-		if (running.size() > 0) {
-			int id = running.keySet().iterator().next();
-			//Script s = running.get(id);
-			//ScriptManifest prop = s.getClass().getAnnotation(ScriptManifest.class);
-			//int result = JOptionPane.showConfirmDialog(this, "Would you like to stop the script " + prop.name() + "?", "Script", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			//if (result == JOptionPane.OK_OPTION) {
-			sh.stopScript(id);
-			//}
-		}
+		sh.stopScript();
 	}
 
 	/**
@@ -302,23 +277,6 @@ public class ScriptSelector extends JDialog implements ScriptListener {
 			table.getColumnModel().getColumn(i).setMinWidth(widths[i]);
 			table.getColumnModel().getColumn(i).setMaxWidth(widths[i]);
 		}
-	}
-
-	public void scriptStarted(ScriptHandler handler, Script script) {
-		update();
-	}
-
-	public void scriptStopped(ScriptHandler handler, Script script) {
-		update();
-	}
-
-	public void scriptResumed(ScriptHandler handler, Script script) {
-	}
-
-	public void scriptPaused(ScriptHandler handler, Script script) {
-	}
-
-	public void inputChanged(BotLite bot, int mask) {
 	}
 
 	private class TableSelectionListener implements ListSelectionListener {

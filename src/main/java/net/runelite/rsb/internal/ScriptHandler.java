@@ -1,18 +1,17 @@
 package net.runelite.rsb.internal;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.script.ScriptManifest;
-import net.runelite.rsb.internal.ScriptListener;
 
 import java.util.*;
 
+@Slf4j
 public class ScriptHandler {
-
-	private final HashMap<Integer, Script> scripts = new HashMap<>();
-	private final HashMap<Integer, Thread> scriptThreads = new HashMap<>();
-
-	private final Set<ScriptListener> listeners = Collections.synchronizedSet(new HashSet<>());
+	Script theScript;
+	Thread scriptThread;
 
 	private final BotLite bot;
 
@@ -20,107 +19,59 @@ public class ScriptHandler {
 		this.bot = bot;
 	}
 
-	public void init() {
-	}
-
-	public void addScriptListener(ScriptListener l) {
-		listeners.add(l);
-	}
-
-	public void removeScriptListener(ScriptListener l) {
-		listeners.remove(l);
-	}
-
-	private void addScriptToPool(Script ss, Thread t) {
-		for (int off = 0; off < scripts.size(); ++off) {
-			if (!scripts.containsKey(off)) {
-				scripts.put(off, ss);
-				ss.setID(off);
-				scriptThreads.put(off, t);
-				return;
-			}
+	public boolean pauseScript() {
+		if (theScript != null) {
+			theScript.setPaused(!theScript.isPaused());
+			log.info("pauseScript(): script was paused {}", theScript.isPaused());
+			return true;
 		}
-		ss.setID(scripts.size());
-		scripts.put(scripts.size(), ss);
-		scriptThreads.put(scriptThreads.size(), t);
+
+		log.info("pauseScript(): no script running");
+		return false;
 	}
 
-	public BotLite getBot() {
-		return bot;
-	}
-
-	public Map<Integer, Script> getRunningScripts() {
-		return Collections.unmodifiableMap(scripts);
-	}
-
-	public void pauseScript(int id) {
-		Script s = scripts.get(id);
-		s.setPaused(!s.isPaused());
-		if (s.isPaused()) {
-			for (ScriptListener l : listeners) {
-				l.scriptPaused(this, s);
-			}
-		} else {
-			for (ScriptListener l : listeners) {
-				l.scriptResumed(this, s);
-			}
-		}
-	}
-
-	public void stopScript(int id) {
-		Script script = scripts.get(id);
-		if (script != null) {
-			script.deactivate(id);
-			scripts.remove(id);
-			scriptThreads.remove(id);
-			for (ScriptListener l : listeners) {
-				l.scriptStopped(this, script);
-			}
-		}
-	}
-    
 	public void runScript(Script script) {
-		script.init(bot.getMethodContext());
-		for (ScriptListener l : listeners) {
-			l.scriptStarted(this, script);
-		}
-		ScriptManifest prop = script.getClass().getAnnotation(ScriptManifest.class);
-		Thread t = new Thread(script, "Script-" + prop.name());
-		addScriptToPool(script, t);
-		t.start();
-	}
+		if (theScript == null) {
+			script.init(bot.getMethodContext());
 
-	public void stopAllScripts() {
-		Set<Integer> theSet = scripts.keySet();
-		int[] arr = new int[theSet.size()];
-		int c = 0;
-		for (int i : theSet) {
-			arr[c] = i;
-			c++;
-		}
-		for (int id : arr) {
-			stopScript(id);
+			Thread t = new Thread(script, "SCRIPT");
+			theScript = script;
+			scriptThread = t;
+			t.start();
+
+			ScriptManifest prop = script.getClass().getAnnotation(ScriptManifest.class);
+			log.info("starting new script/thread: {}", prop.name());
+
+		} else {
+			ScriptManifest prop = theScript.getClass().getAnnotation(ScriptManifest.class);
+			log.info("runScript(): already running: {}", prop.name());
 		}
 	}
 
 	public void stopScript() {
-		Thread curThread = Thread.currentThread();
-		for (int i = 0; i < scripts.size(); i++) {
-			Script script = scripts.get(i);
-			if (script != null && script.isRunning()) {
-				if (scriptThreads.get(i) == curThread) {
-					stopScript(i);
-				}
-			}
-		}
-		if (curThread == null) {
-			throw new ThreadDeath();
-		}
-	}
+		if (theScript != null) {
+			ScriptManifest prop = theScript.getClass().getAnnotation(ScriptManifest.class);
+			log.info("script is running: {}", prop.name());
 
-	public void updateInput(BotLite bot, int mask) {
-		for (ScriptListener l : listeners) {
-			l.inputChanged(bot, mask);
+			Thread curThread = Thread.currentThread();
+			if (curThread == scriptThread) {
+				if (theScript != null) {
+					log.info("stopping thread:", prop.name());
+					theScript.deactivate();
+					theScript = null;
+					return;
+				}
+			} else {
+				// will stop eventually... but...
+				theScript.stopScript();
+			}
+
+			if (curThread == null) {
+				log.info("Doing ThreadDeath");
+				throw new ThreadDeath();
+			}
+		} else {
+			log.info("No script running");
 		}
 	}
 

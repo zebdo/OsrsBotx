@@ -62,9 +62,13 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         return client = injector.getInstance(Client.class);
     }
 
-    public Applet getApplet() {return applet = injector.getInstance(Applet.class);}
+    public Applet getApplet() {
+		return applet = injector.getInstance(Applet.class);
+	}
 
-    public ItemManager getItemManager() { return injector.getInstance(ItemManager.class);}
+    public ItemManager getItemManager() {
+		return injector.getInstance(ItemManager.class);
+	}
 
     public MethodContext getMethodContext() {
         return ctx;
@@ -196,9 +200,10 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         sh = new ScriptHandler(this);
 
         Executors.newSingleThreadScheduledExecutor().submit(() -> {
-            while(this.getClient() == null){}
+            while (this.getClient() == null) {
+			}
+
             setMethodContext();
-            sh.init();
             if (getPanelSize() != null) {
                 final Dimension size = getPanelSize();
                 backBuffer = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
@@ -210,7 +215,9 @@ public class BotLite extends RuneLite implements BotLiteInterface {
     public void runScript(String scriptName) {
         ScriptSelector ss = new ScriptSelector(getInjectorInstance());
         ss.load();
-        ScriptDefinition def = ss.getScripts().stream().filter(x -> x.name.replace(" ", "").equals(scriptName)).findFirst().get();
+        ScriptDefinition def = ss.getScripts().stream().
+			filter(x -> x.name.replace(" ", "").equals(scriptName))
+			.findFirst().get();
         try {
             getInjectorInstance().getScriptHandler().runScript(def.source.load(def));
         } catch (Exception e) {

@@ -17,20 +17,6 @@ public abstract class Script implements Runnable {
 	private volatile boolean running = false;
 	private volatile boolean paused = false;
 
-	private int id = -1;
-
-	/**
-	 * Finalized to cause errors intentionally to avoid confusion
-	 * (yea I know how to deal with these script writers ;)).
-	 *
-	 * @param map The arguments passed in from the description.
-	 * @return <code>true</code> if the script can start.
-	 * @deprecated Use {@link #onStart()} instead.
-	 */
-	@Deprecated
-	public final boolean onStart(Map<String, String> map) {
-		return true;
-	}
 
 	/**
 	 * Called before loop() is first called, after this script has
@@ -70,25 +56,9 @@ public abstract class Script implements Runnable {
 	 * For internal use only. Deactivates this script if
 	 * the appropriate id is provided.
 	 *
-	 * @param id The id from ScriptHandler.
 	 */
-	public final void deactivate(int id) {
-		if (id != this.id) {
-			throw new IllegalStateException("Invalid id!");
-		}
+	public final void deactivate() {
 		this.running = false;
-	}
-
-	/**
-	 * For internal use only. Sets the pool id of this script.
-	 *
-	 * @param id The id from ScriptHandler.
-	 */
-	public final void setID(int id) {
-		if (this.id != -1) {
-			throw new IllegalStateException("Already added to pool!");
-		}
-		this.id = id;
 	}
 
 	/**
@@ -145,7 +115,8 @@ public abstract class Script implements Runnable {
 	 *               out before the script is stopped.
 	 */
 	public void stopScript(boolean logout) {
-		log.info("Script stopping...");
+		this.running = false;
+		log.info("Script stopping from within Script...");
 		if (logout) {
 			if (ctx.bank.isOpen()) {
 				ctx.bank.close();
@@ -154,7 +125,6 @@ public abstract class Script implements Runnable {
 				ctx.game.logout();
 			}
 		}
-		this.running = false;
 	}
 
 	public final void run() {
@@ -166,6 +136,7 @@ public abstract class Script implements Runnable {
 		} catch (Throwable ex) {
 			log.error("Error starting script: ", ex);
 		}
+
 		if (start) {
 			running = true;
 			log.info("Script started.");
@@ -175,19 +146,24 @@ public abstract class Script implements Runnable {
 						int timeOut = -1;
 						try {
 							timeOut = loop();
+
 						} catch (ThreadDeath td) {
 							break;
+
 						} catch (Exception ex) {
 							log.warn("Uncaught exception from script: ", ex);
 						}
+
 						if (timeOut == -1) {
 							break;
 						}
+
 						try {
 							sleep(timeOut);
 						} catch (ThreadDeath td) {
 							break;
 						}
+
 					} else {
 						try {
 							sleep(1000);
@@ -199,6 +175,8 @@ public abstract class Script implements Runnable {
 				try {
 					onFinish();
 				} catch (ThreadDeath ignored) {
+					log.warn("ThreadDeath {}", ignored);
+
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 				}
@@ -213,8 +191,7 @@ public abstract class Script implements Runnable {
 		}
 
 		ctx.mouse.moveOffScreen();
-		ctx.runeLite.getScriptHandler().stopScript(id);
-		id = -1;
+		ctx.runeLite.getScriptHandler().stopScript();
 	}
 
 	protected int random(int minValue, int maxValue) {
