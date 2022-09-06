@@ -9,6 +9,8 @@ import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.plugin.ScriptSelector;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -18,14 +20,16 @@ import java.io.IOException;
 
 public class ScriptPanel extends PluginPanel {
 	private BotLite bot;
-	private JScrollPane scrollPane1;
 	private JScrollPane scriptsSelectionScrollPane;
 	private JTable scriptsTable;
-	private JButton buttonStart;
-	private JButton buttonPause;
-	private JButton buttonStop;
+
 	private ScriptSelector scriptSelector;
 	private MaterialTabGroup scriptPanelToolbar;
+
+	private MaterialTab buttonStopTab;
+	private MaterialTab buttonPauseTab;
+	private MaterialTab buttonStartTab;
+	private MaterialTab buttonReloadTab;
 
 	public ScriptPanel(BotLite bot) {
 		this.bot = bot;
@@ -36,81 +40,68 @@ public class ScriptPanel extends PluginPanel {
 	private void initComponents() {
 		scriptsSelectionScrollPane = new JScrollPane();
 
-		//Make a search area
-		scriptSelector.getSearch();
+		// Make a search area
 		scriptSelector.load();
 
 		scriptPanelToolbar = new MaterialTabGroup();
 		scriptPanelToolbar.setLayout(new GridLayout(1, 5, 5, 5));
-
-		//======== this ========
-		setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder( 0
-				, 0, 0, 0) , "", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
-				, new Font ("D\u0069alog" , Font .BOLD ,12 ), Color. red) ,
-				getBorder( )) );  addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
-		) {if ("\u0062order" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
 
 		//======== scripts scroll pane ========
 		scriptsSelectionScrollPane.setViewportView(scriptSelector.table);
 
 		//---- buttonStart ----
 		final BufferedImage startIcon = ImageUtil.loadImageResource(getClass(), "start.png");
-		scriptSelector.buttonStart = new MaterialTab(new ImageIcon(startIcon.getScaledInstance(24, 24, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonStart.setSize(new Dimension(28, 28));
-		scriptSelector.buttonStart.setMinimumSize(new Dimension(0, 28));
-		scriptSelector.buttonStart.setEnabled(false);
-		scriptSelector.buttonStart.setOpaque(true);
-		scriptSelector.buttonStart.addMouseListener(new MouseAdapter() {
+		buttonStartTab = new MaterialTab(new ImageIcon(startIcon.getScaledInstance(24, 24, 5)), scriptPanelToolbar, null);
+		buttonStartTab.setSize(new Dimension(28, 28));
+		buttonStartTab.setMinimumSize(new Dimension(0, 28));
+		buttonStartTab.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				scriptSelector.buttonStartActionPerformed(null);
+				scriptSelector.startAction();;
 			}
 		});
-		scriptPanelToolbar.addTab(scriptSelector.buttonStart);
+		scriptPanelToolbar.addTab(buttonStartTab);
 
 		//---- buttonPause ----
 		final BufferedImage pauseIcon = ImageUtil.loadImageResource(getClass(), "pause.png");
-		scriptSelector.buttonPause = new MaterialTab(new ImageIcon(pauseIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonPause.setSize(new Dimension(28, 28));
-		scriptSelector.buttonPause.setMinimumSize(new Dimension(0, 0));
-		scriptSelector.buttonPause.addMouseListener(new MouseAdapter() {
+		buttonPauseTab = new MaterialTab(new ImageIcon(pauseIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
+		buttonPauseTab.setSize(new Dimension(28, 28));
+		buttonPauseTab.setMinimumSize(new Dimension(0, 0));
+		buttonPauseTab.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mousePressed(MouseEvent mouseEvent)
-			{
-				scriptSelector.buttonPauseActionPerformed(null);
+			public void mousePressed(MouseEvent mouseEvent) {
+				scriptSelector.pauseAction();
 			}
 		});
-		scriptPanelToolbar.addTab(scriptSelector.buttonPause);
+		scriptPanelToolbar.addTab(buttonPauseTab);
 
 		//---- buttonStop ----
 		final BufferedImage stopIcon = ImageUtil.loadImageResource(getClass(), "stop.png");
-		scriptSelector.buttonStop = new MaterialTab(new ImageIcon(stopIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonStop.setSize(new Dimension(28, 28));
-		scriptSelector.buttonStop.setMinimumSize(new Dimension(0, 28));
-		scriptSelector.buttonStop.addMouseListener(new MouseAdapter() {
+		buttonStopTab = new MaterialTab(new ImageIcon(stopIcon.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
+		buttonStopTab.setSize(new Dimension(28, 28));
+		buttonStopTab.setMinimumSize(new Dimension(0, 28));
+		buttonStopTab.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mousePressed(MouseEvent mouseEvent)
-			{
-				scriptSelector.buttonStopActionPerformed(null);
+			public void mousePressed(MouseEvent mouseEvent)	{
+				scriptSelector.stopAction();
 			}
 		});
-		scriptPanelToolbar.addTab(scriptSelector.buttonStop);
+		scriptPanelToolbar.addTab(buttonStopTab);
 
 		//---- buttonReload ----
 		final BufferedImage iconImage = ImageUtil.loadImageResource(getClass(), "reload.png");
-		scriptSelector.buttonReload = new MaterialTab(new ImageIcon(iconImage.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
-		scriptSelector.buttonReload.setSize(new Dimension(28, 28));
-		scriptSelector.buttonReload.setMinimumSize(new Dimension(0, 28));
-		scriptSelector.buttonReload.addMouseListener(new MouseAdapter() {
+		buttonReloadTab = new MaterialTab(new ImageIcon(iconImage.getScaledInstance(20, 20, 5)), scriptPanelToolbar, null);
+		buttonReloadTab.setSize(new Dimension(28, 28));
+		buttonReloadTab.setMinimumSize(new Dimension(0, 28));
+		buttonReloadTab.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mousePressed(MouseEvent mouseEvent)
-			{
-				scriptSelector.buttonReloadActionPerformed();
+			public void mousePressed(MouseEvent mouseEvent) {
+				scriptSelector.stopAction();
+				scriptSelector.load();
 			}
 		});
-		scriptPanelToolbar.addTab(scriptSelector.buttonReload);
-
+		scriptPanelToolbar.addTab(buttonReloadTab);
 		assignLayouts();
 	}
 
@@ -136,7 +127,7 @@ public class ScriptPanel extends PluginPanel {
 		layout.setVerticalGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
 										  .addComponent(scriptPanelToolbar, 28, 40, 40)
-										  .addComponent(scriptsSelectionScrollPane, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE)
+										  .addComponent(scriptsSelectionScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 										  .addGap(0, 10, Short.MAX_VALUE)
 										  .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addContainerGap(10, Short.MAX_VALUE)));
 	}

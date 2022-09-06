@@ -76,8 +76,4 @@ public class BotPlugin extends Plugin {
         return bi;
     }
 
-    public static ScriptPanel getScriptPanel() {
-        return scriptPanel;
-    }
-
 }

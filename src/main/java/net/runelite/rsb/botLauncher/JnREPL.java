@@ -12,14 +12,6 @@ public class JnREPL {
     private static Object serverInstance = null;
 
     /**
-     * Start a clojure nREPL server
-     */
-    public static synchronized void startRepl() {
-        Long port = Long.parseLong(System.getProperty("jnrepl.port", "9090"));
-        startRepl(port);
-    }
-
-    /**
      * Start a clojure nREPL server on the given port;
      */
     public static synchronized void startRepl(long port) {

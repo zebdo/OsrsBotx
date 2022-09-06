@@ -35,6 +35,7 @@ public class FileScriptSource implements ScriptSource {
 					ClassLoader scriptLoader = new ScriptClassLoader(file.toURI().toURL());
 					for (File file : Objects.requireNonNull(file.listFiles())) {
 						if (isJar(file)) {
+							log.warn("guess we get here!");
 							load(new ScriptClassLoader(getJarUrl(file)), scriptDefinitions, new JarFile(file));
 						} else {
 							load(scriptLoader, scriptDefinitions, file, "");
@@ -57,6 +58,7 @@ public class FileScriptSource implements ScriptSource {
 
 
 	public Script load(ScriptDefinition def) throws ServiceException {
+		log.warn("not here X!");
 		if (!(def instanceof FileScriptDefinition fsd)) {
 			throw new IllegalArgumentException("Invalid definition!");
 		}
@@ -68,6 +70,7 @@ public class FileScriptSource implements ScriptSource {
 	}
 
 	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, JarFile jar) {
+		log.warn("guess we get here 2!");
 		Enumeration<JarEntry> entries = jar.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry e = entries.nextElement();
@@ -80,6 +83,7 @@ public class FileScriptSource implements ScriptSource {
 	}
 
 	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, File file, String prefix) {
+		log.warn("not here 1!");
 		if (file.isDirectory()) {
 			if (!file.getName().startsWith(".")) {
 				for (File f : file.listFiles()) {
@@ -97,6 +101,8 @@ public class FileScriptSource implements ScriptSource {
 	}
 
 	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, String name) {
+		log.warn("and now here {}", name);
+
 		Class<?> clazz;
 		try {
 			clazz = loader.loadClass(name);
@@ -107,7 +113,9 @@ public class FileScriptSource implements ScriptSource {
 			log.warn("VerifyError exception occurred " + name + " is not a valid script and was ignored!", verEx);
 			return;
 		}
+
 		if (clazz.isAnnotationPresent(ScriptManifest.class)) {
+			log.warn("and we add to our scripts here (well the defintion) {}", name);
 			FileScriptDefinition def = new FileScriptDefinition();
 			ScriptManifest manifest = clazz.getAnnotation(ScriptManifest.class);
 			def.id = 0;
@@ -134,9 +142,7 @@ public class FileScriptSource implements ScriptSource {
 	}
 
 	private static class FileScriptDefinition extends ScriptDefinition {
-
 		Class<?> clazz;
-
 	}
 
 	public String toString() {
