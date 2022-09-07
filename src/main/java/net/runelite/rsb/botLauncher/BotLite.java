@@ -66,6 +66,10 @@ public class BotLite extends RuneLite implements BotLiteInterface {
 		return applet = injector.getInstance(Applet.class);
 	}
 
+    public Applet getLoader() {
+        return (Applet) this.getClient();
+    }
+
     public ItemManager getItemManager() {
 		return injector.getInstance(ItemManager.class);
 	}
@@ -145,10 +149,6 @@ public class BotLite extends RuneLite implements BotLiteInterface {
             return canvas;
         }
         return canvas;
-    }
-
-    public Applet getLoader() {
-        return (Applet) this.getClient();
     }
 
     /**

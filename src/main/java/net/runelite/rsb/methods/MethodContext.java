@@ -65,7 +65,6 @@ public class MethodContext {
 	public final WorldHopper worldHopper = new WorldHopper(this);
 	public final RSClient client;
 	public final BotLite runeLite;
-	public final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	public final ChooseOption chooseOption = new ChooseOption(this);
 	public final NPCChat npcChat = new NPCChat(this);
