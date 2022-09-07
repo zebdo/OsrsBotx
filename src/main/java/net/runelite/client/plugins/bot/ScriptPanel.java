@@ -97,7 +97,6 @@ public class ScriptPanel extends PluginPanel {
 		buttonReloadTab.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent mouseEvent) {
-				scriptSelector.stopAction();
 				scriptSelector.load();
 			}
 		});

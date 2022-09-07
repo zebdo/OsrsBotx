@@ -68,6 +68,17 @@ public class ScriptSelector extends JDialog {
 	 * Loads the scripts from the script directories
 	 */
 	public void load() {
+
+		ScriptHandler sh = bot.getScriptHandler();
+		sh.stopScript();
+
+		while (sh.scriptRunning()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+
 		scripts.clear();
 		scripts.addAll(SRC_PRECOMPILED.list());
 

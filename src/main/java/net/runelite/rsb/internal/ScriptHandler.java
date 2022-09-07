@@ -19,6 +19,10 @@ public class ScriptHandler {
 		this.bot = bot;
 	}
 
+	public boolean scriptRunning() {
+		return theScript != null;
+	}
+
 	public boolean pauseScript() {
 		if (theScript != null) {
 			theScript.setPaused(!theScript.isPaused());
