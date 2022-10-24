@@ -265,12 +265,14 @@ public class Camera extends MethodProvider {
 	public void setAngle(int degrees) {
 		if (getAngleTo(degrees) > 5) {
 			methods.inputManager.pressKey((char) KeyEvent.VK_LEFT);
+			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) > 5) {
 				sleep(10);
 			}
 			methods.inputManager.releaseKey((char) KeyEvent.VK_LEFT);
 		} else if (getAngleTo(degrees) < -5) {
 			methods.inputManager.pressKey((char) KeyEvent.VK_RIGHT);
+			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) < -5) {
 				sleep(10);
 			}

@@ -28,8 +28,7 @@ public class Menu extends MethodProvider {
         super(ctx);
     }
 
-	// ZZZ shouldnt be here?
-	private boolean LOG_MENU = false;
+	private boolean LOG_MENU = true;
 
     /**
      * Clicks the menu target. Will left-click if the menu item is the first,

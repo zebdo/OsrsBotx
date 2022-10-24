@@ -527,10 +527,17 @@ public abstract class BaseClientWrapper extends Applet implements Client {
         return wrappedClient.getVar(varPlayer);
     }
 
-    @Override
     public int getServerVar(VarPlayer varPlayer) {
-        return wrappedClient.getServerVar(varPlayer);
+		// XXX cheap fix
+        return wrappedClient.getVarpValue(varPlayer);
     }
+
+    @Override
+    public int getVarpValue(VarPlayer varPlayer) {
+		// XXX cheap fix
+        return wrappedClient.getVarpValue(varPlayer);
+    }
+
 
     @Override
     @Deprecated
@@ -1027,7 +1034,7 @@ public abstract class BaseClientWrapper extends Applet implements Client {
     }
 
     @Override
-    public HintArrowType getHintArrowType() {
+    public int getHintArrowType() {
         return wrappedClient.getHintArrowType();
     }
 
@@ -1052,6 +1059,11 @@ public abstract class BaseClientWrapper extends Applet implements Client {
     }
 
     @Override
+    public void setHintArrow(LocalPoint npc) {
+        wrappedClient.setHintArrow(npc);
+    }
+
+   @Override
     public WorldPoint getHintArrowPoint() {
         return wrappedClient.getHintArrowPoint();
     }
@@ -1485,5 +1497,35 @@ public abstract class BaseClientWrapper extends Applet implements Client {
     @Override
     public void resizeCanvas() {
         wrappedClient.resizeCanvas();
+    }
+
+    @Override
+	public void setIdleTimeout(int ticks) {
+        wrappedClient.setIdleTimeout(ticks);
+	}
+
+    @Override
+	public int getIdleTimeout() {
+        return wrappedClient.getIdleTimeout();
+	}
+
+    @Override
+    public boolean isMinimapZoom() {
+        return wrappedClient.isMinimapZoom();
+    }
+
+    @Override
+    public void setMinimapZoom(boolean minimapZoom) {
+        wrappedClient.setMinimapZoom(minimapZoom);
+    }
+
+    @Override
+    public double getMinimapZoom() {
+        return wrappedClient.getMinimapZoom();
+    }
+
+    @Override
+    public void setMinimapZoom(double zoom) {
+        wrappedClient.setMinimapZoom(zoom);
     }
 }

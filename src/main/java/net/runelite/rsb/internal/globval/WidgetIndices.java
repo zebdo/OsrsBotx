@@ -603,14 +603,14 @@ public class WidgetIndices {
         public static final int XP_ORB_SPRITE = 1; // Interactions: "Hide", "Setup"
         public static final int HEALTH_ORB_PARENT_CONTAINER = 2;
         public static final int HEALTH_ORB_PARENT_SPRITE = 3;
-        public static final int HEALTH_ORB_CONTAINER = 4; // Interactions: "Cure"
-        public static final int HEALTH_ORB_LABEL = 5;
-        public static final int HEALTH_ORB_SPRITE = 6;
+        public static final int HEALTH_ORB_CONTAINER = 6;
+        public static final int HEALTH_ORB_LABEL = 9;
+        //public static final int HEALTH_ORB_SPRITE = 6;
         // 7 - 8 gap
-        public static final int HEALTH_ORB_ENERGY_CONSUMED_CONTAINER = 9;
-        public static final int HEALTH_ORB_ENERGY_CONSUMED_SPRITE = 10;
-        public static final int HEALTH_ORB_ICON_CONTAINER = 11;
-        public static final int HEALTH_ORB_ICON_SPRITE = 12;
+        //public static final int HEALTH_ORB_ENERGY_CONSUMED_CONTAINER = 9;
+        //public static final int HEALTH_ORB_ENERGY_CONSUMED_SPRITE = 10;
+        //public static final int HEALTH_ORB_ICON_CONTAINER = 11;
+        //public static final int HEALTH_ORB_ICON_SPRITE = 12;
         public static final int QUICK_PRAYER_ORB_PARENT_CONTAINER = 13;
         public static final int QUICK_PRAYER_ORB_PARENT_SPRITE = 14;
         public static final int QUICK_PRAYER_ORB_CONTAINER = 15; // Interactions: "Activate", "Setup"

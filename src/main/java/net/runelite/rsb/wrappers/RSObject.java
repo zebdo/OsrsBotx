@@ -146,13 +146,8 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 			} else if (obj instanceof ItemLayer) {
 				return null;
 			} else if (obj instanceof GameObject) {
-				log.info("here for {}", this.id);
 				Renderable renderable = ((GameObject) obj).getRenderable();
 				Model model = renderable instanceof Model ? (Model) renderable : renderable.getModel();
-				if (model != null) {
-					log.info("model.getVerticesX() {}", model.getVerticesX());
-				}
-
 				if (model != null && model.getVerticesX() != null) {
 					return new RSObjectModel(methods, model, (GameObject) obj);
 				}
@@ -283,7 +278,7 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Turns the camera towards the RSObject.
 	 * @return <code>true</code> If RSObject is on screen after attempted to move camera angle.

@@ -39,8 +39,8 @@ import joptsimple.util.EnumConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.client.ClientSessionManager;
-import net.runelite.client.RuntimeConfig;
+import net.runelite.client.*;
+
 import net.runelite.client.account.SessionManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
@@ -68,18 +68,7 @@ import okhttp3.OkHttpClient;
 @Singleton
 @SuppressWarnings("removal")
 public class RuneLite extends net.runelite.client.RuneLite {
-    public static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
-    public static final File CACHE_DIR = new File(RUNELITE_DIR, "cache");
-    public static final File PLUGINS_DIR = new File(RUNELITE_DIR, "plugins");
-    public static final File PROFILES_DIR = new File(RUNELITE_DIR, "profiles");
-    public static final File SCREENSHOT_DIR = new File(RUNELITE_DIR, "screenshots");
-    public static final File LOGS_DIR = new File(RUNELITE_DIR, "logs");
-    public static final File DEFAULT_SESSION_FILE = new File(RUNELITE_DIR, "session");
-    public static final File DEFAULT_CONFIG_FILE = new File(RUNELITE_DIR, "settings.properties");
-
     private static final int MAX_OKHTTP_CACHE_SIZE = 20 * 1024 * 1024; // 20mb
-    public static String USER_AGENT = "RuneLite/" + BotProperties.getVersion() + "-" + BotProperties.getCommit() + (BotProperties.isDirty() ? "+" : "");
-
     @Getter
     public static Injector injector;
 
@@ -116,7 +105,6 @@ public class RuneLite extends net.runelite.client.RuneLite {
     @Inject
     public Provider<WorldMapOverlay> worldMapOverlay;
 
-
     @Inject
     @Nullable
     public Client client;
@@ -141,7 +129,16 @@ public class RuneLite extends net.runelite.client.RuneLite {
         ArgumentAcceptingOptionSpec<?>[] optionSpecs = handleParsing(parser);
         OptionSet options = parser.parse(args);
         handleOptions(parser, optionSpecs, options);
-        setDefaultUncaughtExceptionHandler();
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+        {
+            log.error("Uncaught exception:", throwable);
+            if (throwable instanceof AbstractMethodError)
+            {
+                log.error("Classes are out of date; Build with maven again.");
+            }
+        });
+
         initializeClient(optionSpecs, options);
     }
 
@@ -153,14 +150,14 @@ public class RuneLite extends net.runelite.client.RuneLite {
      */
     public static ArgumentAcceptingOptionSpec<?>[] handleParsing(OptionParser parser) {
         parser.accepts("bot-runelite", "Starts the client in Bot RuneLite mode");
-        parser.accepts("headless", "Starts a client without the additional features of RuneLite");
+        //parser.accepts("headless", "Starts a client without the additional features of RuneLite");
         parser.accepts("developer-mode", "Enable developer tools");
         parser.accepts("ea", "Enable assertions");
         parser.accepts("debug", "Show extra debugging output");
         parser.accepts("insecure-skip-tls-verification", "Disables TLS verification");
         parser.accepts("jav_config", "jav_config url")
                 .withRequiredArg()
-                .defaultsTo(BotProperties.getJavConfig());
+                .defaultsTo(RuneLiteProperties.getJavConfig());
         parser.accepts("help", "Show this text").forHelp();
         final ArgumentAcceptingOptionSpec<File> sessionfile = parser.accepts("sessionfile", "Use a specified session file")
                 .withRequiredArg()
@@ -197,7 +194,9 @@ public class RuneLite extends net.runelite.client.RuneLite {
      * @param options       The actual set of options required for initialization
      * @throws IOException  Any input/output exception
      */
-    public static void handleOptions(OptionParser parser, ArgumentAcceptingOptionSpec<?>[] optionSpecs, OptionSet options) throws IOException {
+    public static void handleOptions(OptionParser parser,
+									 ArgumentAcceptingOptionSpec<?>[] optionSpecs,
+									 OptionSet options) throws IOException {
 
         if (options.has("help")) {
             parser.printHelpOn(System.out);
@@ -231,20 +230,6 @@ public class RuneLite extends net.runelite.client.RuneLite {
     }
 
     /**
-     * Creates a thread to handle uncaught exceptions created by RuneLite
-     */
-    public static void setDefaultUncaughtExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
-        {
-            log.error("Uncaught exception:", throwable);
-            if (throwable instanceof AbstractMethodError)
-            {
-                log.error("Classes are out of date; Build with maven again.");
-            }
-        });
-    }
-
-    /**
      * Initializes the RuneLite processes after having parsed and handled the command line arguments
      * @param optionSpecs   The associated fields to the corresponding options
      * @param options       The actual set of options required for initialization
@@ -272,18 +257,19 @@ public class RuneLite extends net.runelite.client.RuneLite {
 
             final long start = System.currentTimeMillis();
 
-            injector = Guice.createInjector(new BotModule(
+            injector = Guice.createInjector(new RuneLiteModule(
                     okHttpClient,
                     clientLoader,
                     runtimeConfigLoader,
                     options.has("developer-mode"),
+                    false,
                     false,
                     options.valueOf(optionSpecs[Options.SESSION_FILE.getIndex()].ofType(File.class)),
                     options.valueOf(optionSpecs[Options.CONFIG_FILE.getIndex()].ofType(File.class)
                     )));
 
             setInjector(injector);
-            injector.getInstance(BotLite.class).init(options.has("headless"));
+            injector.getInstance(BotLite.class).init();
 
             final long end = System.currentTimeMillis();
             final RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
@@ -300,69 +286,69 @@ public class RuneLite extends net.runelite.client.RuneLite {
     }
 
     /**
-     * Launches a client with the bare minimum of settings needed. This is used for the sub-bots and do not use
-     * the additional initializations that the standard RuneLite start method does.
-     * @throws Exception    Any exception the client, bot, or RuneLite might throw.
-     */
-    public void bareStart() throws Exception {
-        // Load RuneLite or Vanilla client
-        final boolean isOutdated = client == null;
+    //  * Launches a client with the bare minimum of settings needed. This is used for the sub-bots and do not use
+    //  * the additional initializations that the standard RuneLite start method does.
+    //  * @throws Exception    Any exception the client, bot, or RuneLite might throw.
+    //  */
+    // public void bareStart() throws Exception {
+    //     // Load RuneLite or Vanilla client
+    //     final boolean isOutdated = client == null;
 
-        setupSystemProps();
+    //     setupSystemProps();
 
-        if (!isOutdated)
-        {
-            // Inject members into client
-            injector.injectMembers(client);
-        }
+    //     if (!isOutdated)
+    //     {
+    //         // Inject members into client
+    //         injector.injectMembers(client);
+    //     }
 
-        // Start the applet
-        if (applet != null)
-        {
-            // Client size must be set prior to init
-            applet.setSize(Constants.GAME_FIXED_SIZE);
+    //     // Start the applet
+    //     if (applet != null)
+    //     {
+    //         // Client size must be set prior to init
+    //         applet.setSize(Constants.GAME_FIXED_SIZE);
 
-            System.setProperty("jagex.disableBouncyCastle", "true");
-            // Change user.home so the client places jagexcache in the .runelite directory
-            String oldHome = System.setProperty("user.home", RUNELITE_DIR.getAbsolutePath());
-            try
-            {
-                applet.init();
-            }
-            finally
-            {
-                System.setProperty("user.home", oldHome);
-            }
+    //         System.setProperty("jagex.disableBouncyCastle", "true");
+    //         // Change user.home so the client places jagexcache in the .runelite directory
+    //         String oldHome = System.setProperty("user.home", RUNELITE_DIR.getAbsolutePath());
+    //         try
+    //         {
+    //             applet.init();
+    //         }
+    //         finally
+    //         {
+    //             System.setProperty("user.home", oldHome);
+    //         }
 
-            applet.start();
-        }
+    //         applet.start();
+    //     }
 
-        // Load user configuration
-        configManager.load();
+    //     // Load user configuration
+    //     configManager.load();
 
-        // Load the session, including saved configuration
-        sessionManager.loadSession();
+    //     // Load the session, including saved configuration
+    //     sessionManager.loadSession();
 
-        // Start client session
-        clientSessionManager.start();
-        eventBus.register(clientSessionManager);
-        clientUI.init();
+    //     // Start client session
+    //     clientSessionManager.start();
+    //     eventBus.register(clientSessionManager);
+    //     clientUI.init();
 
-        // Register event listeners
-        eventBus.register(clientUI);
-        eventBus.register(pluginManager);
-        eventBus.register(externalPluginManager);
-        eventBus.register(overlayManager);
-        eventBus.register(configManager);
+    //     // Register event listeners
+    //     eventBus.register(clientUI);
+    //     eventBus.register(pluginManager);
+    //     eventBus.register(externalPluginManager);
+    //     eventBus.register(overlayManager);
+    //     eventBus.register(configManager);
 
-        if (!isOutdated)
-        {
-            // Add core overlays
-            WidgetOverlay.createOverlays(overlayManager, client).forEach(overlayManager::add);
-            overlayManager.add(worldMapOverlay.get());
-            overlayManager.add(tooltipOverlay.get());
-        }
-    }
+    //     if (!isOutdated)
+    //     {
+    //         // Add core overlays
+    //         WidgetOverlay.createOverlays(overlayManager, client).forEach(overlayManager::add);
+    //         overlayManager.add(worldMapOverlay.get());
+    //         overlayManager.add(tooltipOverlay.get());
+    //     }
+    // }
 
     /**
      * RuneLite method
@@ -441,7 +427,7 @@ public class RuneLite extends net.runelite.client.RuneLite {
                     return res;
                 });
 
-        if (insecureSkipTlsVerification || BotProperties.isInsecureSkipTlsVerification())
+        if (insecureSkipTlsVerification || RuneLiteProperties.isInsecureSkipTlsVerification())
         {
             setupInsecureTrustManager(builder);
         }
@@ -524,7 +510,7 @@ public class RuneLite extends net.runelite.client.RuneLite {
      * The values assigned are their positions within the relating ArgumentAcceptingOptionSpec array
      */
     enum Options {
-        SESSION_FILE(0),CONFIG_FILE(1), UPDATE_MODE(2), PROXY_INFO(3);
+        SESSION_FILE(0), CONFIG_FILE(1), UPDATE_MODE(2), PROXY_INFO(3);
 
         private int index;
 

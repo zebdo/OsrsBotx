@@ -35,7 +35,8 @@ public class InputManager {
 			return; // Can't click off the canvas
 		}
 		pressMouse(getX(), getY(), left);
-		sleepNoException(random(50, 100));
+		// ZZZ was 50 - 100?
+		sleepNoException(random(60, 140));
 		releaseMouse(getX(), getY(), left);
 	}
 
@@ -61,13 +62,14 @@ public class InputManager {
 		if (!bot.getMethodContext().mouse.isPressed()) {
 			return;
 		}
+
 		MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1,
-				false, leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+									   false, leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
 		bot.getMethodContext().virtualMouse.sendEvent(me);
 
 		if ((dragLength & 0xFF) <= 3) {
 			me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, x, y, 1, false,
-					leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+								leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
 			bot.getMethodContext().virtualMouse.sendEvent(me);
 		}
 		// reset

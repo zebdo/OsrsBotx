@@ -15,7 +15,7 @@ import java.util.*;
 @Slf4j
 public class Application {
 
-	static BotLiteInterface[] bots = new BotLiteInterface[]{};
+	static BotLiteInterface theBot;
 	static ArgumentPreParser preParser;
 
 	/**
@@ -24,12 +24,24 @@ public class Application {
 	 * @param args			The command line arguments for the program
 	 * @throws Throwable	Any error that might be thrown
 	 */
+	// public static void main(final String[] args) throws Throwable {
+	// 	preParser = new ArgumentPreParser(args);
+	// 	if (preParser.contains("--bot-runelite")) {
+	// 		addBot(preParser.contains("--headless"));
+	// 		checkForCacheAndLoad();
+	// 	} else {
+	// 		net.runelite.client.RuneLite.main(args);
+	// 	}
+	// }
+
 	public static void main(final String[] args) throws Throwable {
 		preParser = new ArgumentPreParser(args);
 		if (preParser.contains("--bot-runelite")) {
-			addBot(preParser.contains("--headless"));
+			theBot = new BotLite();
+			theBot.launch(preParser.asArgs());
 			checkForCacheAndLoad();
 		} else {
+			assert(false);
 			net.runelite.client.RuneLite.main(args);
 		}
 	}
@@ -71,10 +83,6 @@ public class Application {
 		}
 	}
 
-	public static void setBot(int index) {
-		BotLiteInterface bot = getBots()[index];
-	}
-
 	/**
 	 * Returns the Bot for any object loaded in its client. For internal use
 	 * only (not useful for script writers).
@@ -84,50 +92,11 @@ public class Application {
 	 */
 	public static BotLiteInterface getBot(Object o) {
 		ClassLoader cl = o.getClass().getClassLoader();
-		for (BotLiteInterface bot : bots) {
-			if (cl == bot.getClass().getClassLoader()) {
-				return bot;
-			}
+		if (cl == theBot.getClass().getClassLoader()) {
+			return theBot;
 		}
+
 		return null;
-	}
-
-	/**
-	 * Adds a bot to the bot array
-	 *
-	 * @param headless To run the bot headless or not
-	 */
-	public static void addBot(boolean headless) {
-		BotLiteInterface bot = null;
-
-		try {
-			if (headless) {
-				preParser.add("--headless");
-				BotClassLoader loader = new BotClassLoader("BotLoader" + bots.length + 1);
-				Class<?> c;
-				c = loader.loadClass("net.runelite.rsb.botLauncher.BotLite");
-				bot = (BotLiteInterface) c.getConstructor().newInstance();
-			} else {
-				preParser.remove("--headless");
-				bot = new BotLite();
-			}
-			bot.launch(preParser.asArgs());
-		} catch (Exception e) {
-			log.error("Error while starting bot", e);
-		}
-
-		BotLiteInterface[] update = new BotLiteInterface[bots.length + 1];
-		System.arraycopy(bots, 0, update, 0, bots.length);
-		update[bots.length] = bot;
-		bots = update;
-	}
-
-	/**
-	 * Retrieves all running bot instances
-	 * @return	the bot instances
-	 */
-	public static BotLiteInterface[] getBots() {
-		return bots;
 	}
 
 	/**

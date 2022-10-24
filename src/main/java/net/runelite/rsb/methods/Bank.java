@@ -259,7 +259,7 @@ public class Bank extends MethodProvider {
 				sleep(random(20, 30));
 			}
 			RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
-			RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
+			RSNPC banker = null; //methods.npcs.getNearest(new ReachableBankerFilter());
 			RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
 			/* Find the closest one, others are set to null. Remember distance and tile. */
 			int lowestDist = Integer.MAX_VALUE;
@@ -310,6 +310,56 @@ public class Bank extends MethodProvider {
 		}
 	}
 
+	public boolean openNoBanker() {
+		if (isOpen()) { return true; }
+		try {
+			if (methods.menu.isOpen()) {
+				methods.mouse.moveSlightly();
+				sleep(random(20, 30));
+			}
+			RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
+			RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
+			/* Find the closest one, others are set to null. Remember distance and tile. */
+			int lowestDist = Integer.MAX_VALUE;
+			RSTile tile = null;
+			if (bankBooth != null) {
+				tile = bankBooth.getLocation();
+				lowestDist = methods.calc.distanceTo(tile);
+			}
+			if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+				tile = bankChest.getLocation();
+				lowestDist = methods.calc.distanceTo(tile);
+				bankBooth = null;
+			}
+			/* Open closest one, if any found */
+			if (lowestDist < 5 && methods.calc.tileOnMap(tile) && methods.calc.canReach(tile, true)) {
+				boolean didAction = false;
+				if (bankBooth != null) {
+					didAction = bankBooth.doAction("Bank") || bankBooth.doAction("Use-Quickly");
+				} else if (bankChest != null) {
+					didAction = bankChest.doAction("Bank") || methods.menu.doAction("Use");
+				}
+				if (didAction) {
+					int count = 0;
+					while (!isOpen() && ++count < 10) {
+						sleep(random(200, 400));
+						if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+							count = 0;
+						}
+					}
+				} else {
+					methods.camera.turnTo(tile);
+				}
+			} else if (tile != null) {
+				methods.walking.walkTileMM(tile);
+			}
+			return isOpen();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	/**
 	 * Opens one of the supported deposit boxes nearby. If they are not nearby, and they are not null,
 	 * it will automatically walk to the closest one.

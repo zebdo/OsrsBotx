@@ -122,14 +122,11 @@ public class BotLite extends RuneLite implements BotLiteInterface {
      * @return The client panel size.
      */
     public Dimension getPanelSize() {
-        for (BotLiteInterface bot : Application.getBots()) {
-            if (bot != null) {
-                if (((BotLite) bot).getClient().getClass().getClassLoader() == this.getClient().getClass().getClassLoader()) {
-                    return this.getPanel().getSize();
-                }
-            }
-        }
-        return null;
+		if (this.getPanel() == null) {
+			return null;
+		}
+
+		return this.getPanel().getSize();
     }
 
     /**
@@ -181,14 +178,9 @@ public class BotLite extends RuneLite implements BotLiteInterface {
      * @param  startClientBare  Whether to launch the client without any additional initialization settings or not
      * @throws Exception        Any exception the client, bot, or RuneLite might throw.
      */
-    public void init(boolean startClientBare) throws Exception {
-        if (startClientBare) {
-            this.bareStart();
-        }
-        else {
-            this.start();
-        }
-    }
+    public void init() throws Exception {
+		this.start();
+	}
 
     public BotLite() throws Exception {
         im = new InputManager(this);

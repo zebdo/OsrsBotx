@@ -56,7 +56,6 @@ public class Calculations extends MethodProvider {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 
-	@SuppressWarnings("unused")
 	public Point tileToMinimap(RSTile t) {
 		return worldToMinimap(t.getWorldLocation().getX(), t.getWorldLocation().getY());
 	}
@@ -161,7 +160,10 @@ public class Calculations extends MethodProvider {
 	 */
 	public Point tileToScreen(final RSTile tile, final double dX, final double dY, final int height) {
 		WalkerTile walkerTile = new WalkerTile(tile).toLocalTile();
-		return Perspective.localToCanvas(methods.client, new LocalPoint(walkerTile.getX(), walkerTile.getY()), methods.client.getPlane(), height);
+		return Perspective.localToCanvas(methods.client,
+										 new LocalPoint(walkerTile.getX(), walkerTile.getY()),
+										 methods.client.getPlane(),
+										 height);
 	}
 
 	/**
@@ -293,8 +295,9 @@ public class Calculations extends MethodProvider {
 	 */
 	public Point worldToMinimap(double x, double y) {
 		LocalPoint test = LocalPoint.fromWorld(methods.client, (int) x, (int) y);
-		if (test!=null)
-			return Perspective.localToMinimap(methods.client,  test, 2500);
+		if (test != null)
+			return Perspective.localToMinimap(methods.client, test, 2304);
+
 		return null;
 	}
 

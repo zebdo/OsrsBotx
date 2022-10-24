@@ -174,14 +174,17 @@ public class Mouse extends MethodProvider {
 	public synchronized void click(final int x, final int y, final int randX,
 	                               final int randY, final boolean leftClick, final int moveAfterDist) {
 		move(x, y, randX, randY);
-		sleep(random(50, 250));
+		// ZZZ slower?
+		sleep(random(100, 250));
 		click(leftClick, moveAfterDist);
 	}
 
 	public synchronized void click(final boolean leftClick, final int moveAfterDist) {
 		methods.inputManager.clickMouse(leftClick);
 		if (moveAfterDist > 0) {
-			sleep(random(50, 250));
+			// ZZZ slower?
+			sleep(random(150, 350
+						 ));
 			Point pos = getLocation();
 			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
 				 moveAfterDist * 2, moveAfterDist * 2);
