@@ -183,8 +183,7 @@ public class Mouse extends MethodProvider {
 		methods.inputManager.clickMouse(leftClick);
 		if (moveAfterDist > 0) {
 			// ZZZ slower?
-			sleep(random(150, 350
-						 ));
+			sleep(random(150, 350));
 			Point pos = getLocation();
 			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
 				 moveAfterDist * 2, moveAfterDist * 2);

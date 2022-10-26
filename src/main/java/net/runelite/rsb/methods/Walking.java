@@ -111,6 +111,7 @@ public class Walking extends MethodProvider {
 				xx -= random(0, x);
 			}
 		}
+
 		if (y > 0) {
 			if (random(1, 2) == random(1, 2)) {
 				yy += random(0, y);
@@ -118,10 +119,12 @@ public class Walking extends MethodProvider {
 				yy -= random(0, y);
 			}
 		}
+
 		RSTile dest = new RSTile(xx, yy, t.getWorldLocation().getPlane());
 		if (!methods.calc.tileOnMap(dest)) {
 			dest = getClosestTileOnMap(dest);
 		}
+
 		Point p = methods.calc.tileToMinimap(dest);
 		if (p.getX() != -1 && p.getY() != -1) {
 			methods.mouse.move(p);
@@ -130,12 +133,11 @@ public class Walking extends MethodProvider {
 				return false;
 			}
 			if (p2.getX() != -1 && p2.getY() != -1) {
-				if (!methods.mouse.getLocation().equals(p2)) {//We must've moved while walking, move again!
-					methods.mouse.move(p2);
-				}
 				if (!methods.mouse.getLocation().equals(p2)) {//Get exact since we're moving... should be removed?
 					methods.mouse.hop(p2);
 				}
+
+                sleep(random(75, 150));
 				methods.mouse.click(true);
 				return true;
 			}
@@ -235,11 +237,25 @@ public class Walking extends MethodProvider {
 	public RSTile getClosestTileOnMap(final RSTile tile) {
 		if (!methods.calc.tileOnMap(tile) && methods.game.isLoggedIn()) {
 			RSTile loc = methods.players.getMyPlayer().getLocation();
-			RSTile walk = new RSTile((loc.getWorldLocation().getX() + tile.getWorldLocation().getX()) / 2,
-					(loc.getWorldLocation().getY() + tile.getWorldLocation().getY()) / 2, tile.getWorldLocation().getPlane());
-			return methods.calc.tileOnMap(walk) ? walk
-					: getClosestTileOnMap(walk);
+			int xx = (loc.getWorldLocation().getX() + tile.getWorldLocation().getX()) / 2;
+			int yy = (loc.getWorldLocation().getY() + tile.getWorldLocation().getY()) / 2;
+
+			if (random(1, 2) == random(1, 2)) {
+				xx += random(0, 1);
+			} else {
+				xx -= random(0, 1);
+			}
+
+			if (random(1, 2) == random(1, 2)) {
+				yy += random(0, 1);
+			} else {
+				yy -= random(0, 1);
+			}
+
+			RSTile walk = new RSTile(xx, yy, tile.getWorldLocation().getPlane());
+			return methods.calc.tileOnMap(walk) ? walk : getClosestTileOnMap(walk);
 		}
+
 		return tile;
 	}
 
