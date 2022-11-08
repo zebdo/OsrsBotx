@@ -33,6 +33,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
      *
      * @return The client accessor.
      */
+	
     protected abstract Actor getAccessor();
     protected abstract Actor getInteracting();
 
@@ -137,7 +138,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
     public int getHPPercent() {
         int healthRatio = getAccessor().getHealthRatio();
         if (healthRatio == -1) return -1;
-        return isInCombat() ? healthRatio * 100 / 255 : 100;
+        return isInCombat() ? healthRatio : 100;
     }
 
     public WalkerTile getLocation() {
