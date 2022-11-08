@@ -296,7 +296,7 @@ public class Calculations extends MethodProvider {
 	public Point worldToMinimap(double x, double y) {
 		LocalPoint test = LocalPoint.fromWorld(methods.client, (int) x, (int) y);
 		if (test != null)
-			return Perspective.localToMinimap(methods.client, test, 2304);
+			return Perspective.localToMinimap(methods.client, test, 2000);
 
 		return null;
 	}
