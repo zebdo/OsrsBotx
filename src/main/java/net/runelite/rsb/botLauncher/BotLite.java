@@ -199,21 +199,4 @@ public class BotLite extends RuneLite implements BotLiteInterface {
         });
     }
 
-    // public void runScript(String scriptName) {
-    //     ScriptSelector ss = new ScriptSelector(this);
-    //     ss.load();
-    //     ScriptDefinition def = ss.getScripts().stream().
-	// 		filter(x -> x.name.replace(" ", "").equals(scriptName))
-	// 		.findFirst().get();
-    //     try {
-    //         getInjectorInstance().getScriptHandler().runScript(def.source.load(def));
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public void stopScript() {
-    //     sh.stopScript();
-    // }
-
 }

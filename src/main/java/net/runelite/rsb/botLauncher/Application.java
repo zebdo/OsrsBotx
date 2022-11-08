@@ -61,24 +61,20 @@ public class Application {
 		//TODO Some sort of better validation here
 		//Add a version check
 		if (!new File(itemCacheLocation).exists() && new File(itemCacheLocation).getTotalSpace() < 100) {
-			String[] itemArgs = {"--cache", gameCacheLocation,
-					"--items", itemCacheLocation};
-			String[] objectArgs = {"--cache", gameCacheLocation,
-					"--objects", objectCacheLocation};
-			String[] npcArgs = {"--cache", gameCacheLocation,
-					"--npcs", npcCacheLocation};
-			String[] spriteArgs = {"--cache", gameCacheLocation,
-					"--sprites", spriteCacheLocation};
+			String[] itemArgs = {"--cache", gameCacheLocation, "--items", itemCacheLocation};
+			String[] objectArgs = {"--cache", gameCacheLocation, "--objects", objectCacheLocation};
+			String[] npcArgs = {"--cache", gameCacheLocation, "--npcs", npcCacheLocation};
+			String[] spriteArgs = {"--cache", gameCacheLocation, "--sprites", spriteCacheLocation};
 
 			net.runelite.cache.Cache.main(itemArgs);
 			net.runelite.cache.Cache.main(objectArgs);
 			net.runelite.cache.Cache.main(npcArgs);
+
 			if (!new File(spriteCacheLocation).exists()) {
 				new File(spriteCacheLocation).mkdir();
 				net.runelite.cache.Cache.main(spriteArgs);
 			}
-		}
-		else {
+		} else {
 			CacheProvider.fillFileCache();
 		}
 	}
