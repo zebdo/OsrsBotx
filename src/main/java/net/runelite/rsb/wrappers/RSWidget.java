@@ -2,7 +2,6 @@ package net.runelite.rsb.wrappers;
 
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.methods.MethodProvider;
@@ -38,12 +37,10 @@ public class RSWidget extends MethodProvider implements Clickable07 {
         return widget != null;
     }
 
-    @Subscribe
     public boolean isVisible() {
         return isValid() && (isSelfVisible() && !widget.isHidden());
     }
 
-    @Subscribe
     public boolean isSelfVisible() {return isValid() && !widget.isSelfHidden();}
 
     /**
@@ -182,7 +179,6 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      *
      * @return The components or RSWidget[0] if null
      */
-    @Subscribe
     public RSWidget[] getComponents() {
         if (!isValid()) {
             return null;
@@ -252,7 +248,6 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @param idx The child index
      * @return The child component, or null
      */
-    @Subscribe
     public RSWidget getComponent(int idx) {
         return new RSWidget(methods, methods.client.getWidget(GlobalWidgetInfo.TO_GROUP(this.getId()), idx));
     }
@@ -342,7 +337,6 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      *
      * @return the sprite ID or -1 if null
      */
-    @Subscribe
     public int getSpriteId() {
         final Widget inter = this.widget;
         if (inter != null) {

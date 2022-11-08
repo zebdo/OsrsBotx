@@ -2,7 +2,7 @@ package net.runelite.rsb.methods;
 
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
+
 import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.internal.globval.WidgetIndices;
 import net.runelite.rsb.wrappers.RSWidget;
@@ -20,20 +20,12 @@ public class Interfaces extends MethodProvider {
 		super(ctx);
 	}
 
-	// A cache of all the interfaces. Only as big as the maximum size of the
-	// client's cache.
-	private RSWidget[] mainCache = new RSWidget[0];
-	// If it doesn't fit in the above cache.
-	private final Map<Integer, RSWidget> sparseMap = new HashMap<>();
-
-
 	/**
 	 * Gets a widget corresponding to the index
 	 *
 	 * @param index The index of the interface.
 	 * @return The <code>RSWidget</code> for the given index.
 	 */
-	@Subscribe
 	public RSWidget get(final int index) {
 		return new RSWidget(methods, methods.client.getWidget(index, 0));
 	}
@@ -45,7 +37,6 @@ public class Interfaces extends MethodProvider {
 	 * @param childIndex The component index
 	 * @return <code>RSWidget</code> for the given index and child index.
 	 */
-	@Subscribe
 	public RSWidget getComponent(final int index, final int childIndex) {
 		return new RSWidget(methods, methods.client.getWidget(index, childIndex));
 	}
@@ -55,7 +46,6 @@ public class Interfaces extends MethodProvider {
 	 * @param info		The WidgetInfo for the corresponding RSWidget to retrieve
 	 * @return			The RSWidget for the WidgetInfo
 	 */
-	@Subscribe
 	public RSWidget getComponent(WidgetInfo info) {
 		return new RSWidget(methods, methods.client.getWidget(info.getGroupId(), info.getChildId()));
 	}
@@ -65,7 +55,6 @@ public class Interfaces extends MethodProvider {
 	 * @param info		The WidgetInfo for the corresponding RSWidget to retrieve
 	 * @return			The RSWidget for the WidgetInfo
 	 */
-	@Subscribe
 	public RSWidget getComponent(GlobalWidgetInfo info) {
 		return new RSWidget(methods, methods.client.getWidget(info.getGroupId(), info.getChildId()));
 	}
@@ -94,7 +83,6 @@ public class Interfaces extends MethodProvider {
 	 * @return <code>RSWidget</code> containing "Click here to continue";
 	 *         otherwise null.
 	 */
-	@Subscribe
 	public RSWidget getContinueComponent() {
 		Widget widget = methods.client.getWidget(GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getPackedId());
 		if (widget != null && !widget.isHidden())
@@ -158,7 +146,7 @@ public class Interfaces extends MethodProvider {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Clicks the dialogue option that contains the desired string.
 	 *
@@ -308,7 +296,6 @@ public class Interfaces extends MethodProvider {
 	 * @return <code>true</code> f the interface was interacted with; else <code>false</code>
 	 */
 	// TODO: why the heck should i be forced to make only first option if multiple choices exist!
-	@Subscribe
 	public boolean makeX(int amount) {
 		RSWidget widget = null;
 		if (amount == -1) {
