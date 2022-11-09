@@ -3,7 +3,6 @@ package net.runelite.rsb.methods;
 import net.runelite.api.Skill;
 import net.runelite.rsb.internal.globval.WidgetIndices;
 import net.runelite.rsb.internal.globval.enums.InterfaceTab;
-import net.runelite.rsb.util.SkillTracker;
 
 /**
  * This class is for all the skill calculations.
@@ -161,18 +160,6 @@ public class Skills extends MethodProvider {
 		sleep(random(10, 100));
 		return methods.interfaces.getComponent(WidgetIndices.SkillsTab.GROUP_INDEX, component)
 				.doHover();
-	}
-
-	/**
-	 * Creates a new SkillTracker.
-	 *
-	 * @param skills Skills to track.
-	 * @return New instance of SkillTracker.
-	 * @see SkillTracker
-	 */
-	@Deprecated
-	public SkillTracker createTracker(final int... skills) {
-		return new SkillTracker(methods, skills);
 	}
 
 	/**
