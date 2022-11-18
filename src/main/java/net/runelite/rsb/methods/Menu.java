@@ -163,15 +163,6 @@ public class Menu extends MethodProvider {
     }
 
     /**
-     * Checks whether or not the menu is collapsed.
-     *
-     * @return <code>true</code> if the menu is collapsed; otherwise <code>false</code>.
-     */
-    public boolean isCollapsed() {
-        return !methods.client.isMenuOpen();
-    }
-
-    /**
      * Checks whether or not the menu is open.
      *
      * @return <code>true</code> if the menu is open; otherwise <code>false</code>.
