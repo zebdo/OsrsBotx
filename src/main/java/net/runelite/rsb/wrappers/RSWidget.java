@@ -152,7 +152,12 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @return the absolute x or -1 if null
      */
     public int getAbsoluteX() {
-        return this.widget.getCanvasLocation().getX();
+		var canvasLoc = this.widget.getCanvasLocation();
+		if (canvasLoc == null) {
+			return -1;
+		}
+
+        return canvasLoc.getX();
     }
 
     /**
@@ -162,7 +167,12 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @return the absolute y position or -1 if null
      */
     public int getAbsoluteY() {
-        return this.widget.getCanvasLocation().getY();
+		var canvasLoc = this.widget.getCanvasLocation();
+		if (canvasLoc == null) {
+			return -1;
+		}
+
+        return canvasLoc.getY();
     }
 
     /**

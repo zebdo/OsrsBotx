@@ -348,6 +348,17 @@ public class GrandExchange extends MethodProvider {
 	}
 
 	/**
+	 * Gets the digit at the index of the number
+	 * @param number the number to get the digit from
+	 * @param index the position to check
+	 *
+	 * @return the digit in the number
+	 */
+	private int nth(int number, int index) {
+		return (int) (number / Math.pow(10, index)) % 10;
+	}
+
+	/**
 	 * Sets the quantity of items in the offer interface randomizing how it goes about doing so too
 	 *
 	 * @param quantity the quantity to list

@@ -23,10 +23,17 @@ public class RandomEvents extends MethodProvider {
         RSItem genieLamp = methods.inventory.getFirstWithAction("Rub");
         if (genieLamp != null) {
             genieLamp.doAction("Rub");
-            BooleanSupplier genieLampNotNull = () -> methods.client.getWidget(
-                    WidgetIndices.GenieLampWindow.GROUP_INDEX,
-                    WidgetIndices.GenieLampWindow.PARENT_CONTAINER) != null;
-            sleepUntil(genieLampNotNull, random(300, 600));
+
+			// XXX seems very dangerous - could loop forever
+			while (true) {
+				if (methods.client.getWidget(WidgetIndices.GenieLampWindow.GROUP_INDEX,
+											 WidgetIndices.GenieLampWindow.PARENT_CONTAINER) != null) {
+					break;
+				}
+
+				sleep(random(300, 600));
+			}
+
             switch (skillToLevel) {
                 case ATTACK:
                     RSWidget skillAttack = methods.interfaces.getComponent(

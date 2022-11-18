@@ -1,55 +1,33 @@
 package net.runelite.rsb.script;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.wrappers.RSPlayer;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+// XXX detach script from runnable
 
 @Slf4j
 public abstract class Script implements Runnable {
-
 	protected MethodContext ctx;
 
 	private volatile boolean running = false;
 	private volatile boolean paused = false;
 
-
-	/**
-	 * Called before loop() is first called, after this script has
-	 * been initialized with all method providers. Override to
-	 * perform any initialization or prevent script start.
-	 *
-	 * @return <code>true</code> if the script can start.
-	 */
-	public boolean onStart() {
-		return true;
-	}
-
-	/**
-	 * The main loop. Called if you return true from onStart, then continuously until
-	 * a negative integer is returned or the script stopped externally. When this script
-	 * is paused this method will not be called until the script is resumed. Avoid causing
-	 * execution to pause using sleep() within this method in favor of returning the number
-	 * of milliseconds to sleep. This ensures that pausing and anti-randoms perform normally.
-	 *
-	 * @return The number of milliseconds that the manager should sleep before
-	 *         calling it again. Returning a negative number will deactivate the script.
-	 */
+	public abstract boolean onStart();
 	public abstract int loop();
+	public abstract void onFinish();
 
-	/**
-	 * Override to perform any clean up on script stopScript.
-	 */
-	public void onFinish() {
-
-	}
+	public abstract void onInit();
 
 	public final void init(MethodContext ctx) {
 		this.ctx = ctx;
+		this.onInit();
+	}
+
+	public final void cleanup() {
+		ctx.mouse.moveOffScreen();
+		// ZZZ pass the script handler in
+		ctx.runeLite.getScriptHandler().stopScript();
 	}
 
 	/**
@@ -78,26 +56,7 @@ public abstract class Script implements Runnable {
 	 * @return <code>true</code> if paused; otherwise <code>false</code>.
 	 */
 	public final boolean isPaused() {
-		return paused;
-	}
-
-	/**
-	 * Returns whether or not this script has started and not stopped.
-	 *
-	 * @return <code>true</code> if running; otherwise <code>false</code>.
-	 */
-	public final boolean isRunning() {
-		return running;
-	}
-
-	/**
-	 * Returns whether or not the loop of this script is able to
-	 * receive control (i.e. not paused, stopped or in random).
-	 *
-	 * @return <code>true</code> if active; otherwise <code>false</code>.
-	 */
-	public final boolean isActive() {
-		return running && !paused;
+		return this.paused;
 	}
 
 	/**
@@ -118,9 +77,6 @@ public abstract class Script implements Runnable {
 		this.running = false;
 		log.info("Script stopping from within Script...");
 		if (logout) {
-			if (ctx.bank.isOpen()) {
-				ctx.bank.close();
-			}
 			if (ctx.game.isLoggedIn()) {
 				ctx.game.logout();
 			}
@@ -131,78 +87,84 @@ public abstract class Script implements Runnable {
 		boolean start = false;
 		try {
 			start = onStart();
-		} catch (ThreadDeath ignored) {
-			log.error("Thread died", ignored);
+
+		} catch (RuntimeException ex) {
+			log.error("RuntimeException in Script.onStart() ", ex);
+			ex.printStackTrace();
 		} catch (Throwable ex) {
-			log.error("Error starting script: ", ex);
+			log.warn("Uncaught exception from Script.onStart(): ", ex);
 		}
 
-		if (start) {
-			running = true;
-			log.info("Script started.");
-			try {
-				while (running) {
-					if (!paused) {
-						int timeOut = -1;
-						try {
-							timeOut = loop();
+		if (!start) {
+			log.error("Failed Script.onStart().");
+			cleanup();
+			return;
+		}
 
-						} catch (ThreadDeath td) {
-							break;
+		log.info("Script started.");
 
-						} catch (Exception ex) {
-							log.warn("Uncaught exception from script: ", ex);
-						}
-
-						if (timeOut == -1) {
-							break;
-						}
-
-						try {
-							sleep(timeOut);
-						} catch (ThreadDeath td) {
-							break;
-						}
-
-					} else {
-						try {
-							sleep(1000);
-						} catch (ThreadDeath td) {
-							break;
-						}
-					}
-				}
+		running = true;
+		while (running) {
+			if (!paused) {
+				int timeOut = -1;
 				try {
-					onFinish();
-				} catch (ThreadDeath ignored) {
-					log.warn("ThreadDeath {}", ignored);
+					timeOut = loop();
 
 				} catch (RuntimeException e) {
+					log.error("RuntimeException in Script.loop() ", e);
 					e.printStackTrace();
+
+				} catch (Throwable ex) {
+					log.warn("Uncaught exception from Script.loop(): ", ex);
 				}
-			} catch (Throwable t) {
-				log.error("Throwable: ", t);
-				onFinish();
+
+				if (timeOut == -1) {
+					break;
+				}
+
+				this.sleep(timeOut, true);
+
+			} else {
+				this.sleep(250, true);
 			}
-			running = false;
-			log.info("Script stopped.");
-		} else {
-			log.error("Failed to start up.");
 		}
 
-		ctx.mouse.moveOffScreen();
-		ctx.runeLite.getScriptHandler().stopScript();
-	}
+		try {
+			onFinish();
 
-	protected int random(int minValue, int maxValue) {
-		return ctx.random(minValue, maxValue);
+		} catch (RuntimeException ex) {
+			log.error("RuntimeException in Script.onFinish() ", ex);
+			ex.printStackTrace();
+		} catch (Throwable ex) {
+			log.warn("Uncaught exception from Script.onFinish(): ", ex);
+		}
+
+		running = false;
+		log.info("Script stopped.");
+		cleanup();
 	}
 
 	protected void sleep(int msecs) {
-		ctx.sleep(msecs);
+		sleep(msecs, false);
 	}
 
-	protected RSPlayer getMyPlayer() {
-		return ctx.players.getMyPlayer();
+	private void sleep(int msecs, boolean earlyBreakAllowed) {
+		try {
+			while (running && msecs > 0) {
+				// if script is stopped, then we can break early
+				if (earlyBreakAllowed) {
+					if (!running) {
+						break;
+					}
+				}
+
+				ctx.sleep(25);
+				msecs -= Math.min(25, msecs);
+			}
+
+		} catch (ThreadDeath td) {
+			log.error("ThreadDeath in Script.sleep()");
+		}
 	}
+
 }

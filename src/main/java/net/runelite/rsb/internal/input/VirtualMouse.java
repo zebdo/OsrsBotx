@@ -57,13 +57,13 @@ public class VirtualMouse {
         return clientInFocus;
     }
 
-    public void _focusGained(FocusEvent e) {
-        clientInFocus = true;
-    }
+    // public void _focusGained(FocusEvent e) {
+    //     clientInFocus = true;
+    // }
 
-    public void _focusLost(FocusEvent e) {
-        clientInFocus = false;
-    }
+    // public void _focusLost(FocusEvent e) {
+    //     clientInFocus = false;
+    // }
 
     public final void mouseClicked(MouseEvent e) {
         clientX = e.getX();
@@ -109,6 +109,7 @@ public class VirtualMouse {
 
     public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e) {
         try {
+			// huh??? infinite loop!
             mouseWheelMoved(e);
         } catch (AbstractMethodError ame) {
             // it might not be implemented!
@@ -125,33 +126,29 @@ public class VirtualMouse {
             } else if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
                 mouseDragged(e);
             } else if (e.getID() == MouseEvent.MOUSE_ENTERED) {
-                clientPresent = true;
                 mouseEntered(e);
             } else if (e.getID() == MouseEvent.MOUSE_EXITED) {
-                clientPresent = false;
                 mouseExited(e);
             } else if (e.getID() == MouseEvent.MOUSE_MOVED) {
                 mouseMoved(e);
             } else if (e.getID() == MouseEvent.MOUSE_PRESSED) {
-                clientPressed = true;
                 mousePressed(e);
             } else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
-                clientPressX = e.getX();
-                clientPressY = e.getY();
-                clientPressTime = System.currentTimeMillis();
-                clientPressed = false;
                 mouseReleased(e);
             } else if (e.getID() == MouseEvent.MOUSE_WHEEL) {
-                try {
-                    mouseWheelMoved((MouseWheelEvent) e);
-                } catch (AbstractMethodError ignored) {
-                    log.debug("Mouse event might not be implemented", ignored);
-                    // !
-                }
+				log.debug("mouseWheelMoved Mouse event might not be implemented");
+                // try {
+                //     mouseWheelMoved((MouseWheelEvent) e);
+                // } catch (AbstractMethodError ignored) {
+                //     log.debug("Mouse event might not be implemented", ignored);
+                //     // !
+                // }
             } else {
                 throw new InternalError(e.toString());
             }
-            ((Applet) methods.client).getComponent(0).dispatchEvent(e);
+
+			methods.client.getComponent(0).dispatchEvent(e);
+
         } catch (NullPointerException ignored) {
             log.debug("Listener is being re-instantiated on the client", ignored);
         }

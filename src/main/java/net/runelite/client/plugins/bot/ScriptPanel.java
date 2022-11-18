@@ -4,7 +4,7 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.rsb.botLauncher.BotLite;
+import net.runelite.rsb.internal.launcher.BotLite;
 import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.plugin.ScriptSelector;
 

@@ -3,12 +3,13 @@ package net.runelite.rsb.methods;
 import net.runelite.api.Client;
 import net.runelite.client.callback.ClientThread;
 
-import net.runelite.rsb.botLauncher.BotLite;
+import net.runelite.rsb.internal.launcher.BotLite;
 
 import net.runelite.rsb.internal.input.VirtualKeyboard;
 import net.runelite.rsb.internal.input.VirtualMouse;
 import net.runelite.rsb.internal.input.InputManager;
 
+// XXX dont import this
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import net.runelite.rsb.wrappers.subwrap.NPCChat;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
 /**
  * For internal use to link MethodProviders.
@@ -47,11 +49,9 @@ public class MethodContext {
 	public final Store store = new Store(this);
 	public final Inventory inventory = new Inventory(this);
 	public final Bank bank = new Bank(this);
-	public final Environment env = new Environment(this);
 	public final Walking walking = new Walking(this);
 	public final ClientLocalStorage clientLocalStorage = new ClientLocalStorage(this);
 	public final Combat combat = new Combat(this);
-	public final Skills skills = new Skills(this);
 	public final Prayer prayer = new Prayer(this);
 	public final RandomEvents randomEvents = new RandomEvents(this);
 	public final Magic magic = new Magic(this);
@@ -78,6 +78,8 @@ public class MethodContext {
 		this.client = new RSClient(runeLite.getInjector().getInstance(Client.class),
 								   runeLite.getInjector().getInstance(ClientThread.class));
 		this.inputManager = runeLite.getInputManager();
+
+        this.bank.assignConstants();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////

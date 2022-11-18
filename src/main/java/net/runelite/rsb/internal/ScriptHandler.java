@@ -2,17 +2,16 @@ package net.runelite.rsb.internal;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.script.ScriptManifest;
+import net.runelite.rsb.internal.launcher.BotLite;
 
 import java.util.*;
 
 @Slf4j
 public class ScriptHandler {
-	Script theScript;
-	Thread scriptThread;
-
+	private Script theScript;
+	private Thread scriptThread;
 	private final BotLite bot;
 
 	public ScriptHandler(BotLite bot) {

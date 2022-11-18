@@ -19,79 +19,80 @@ public class Combat extends MethodProvider {
 		super(ctx);
 	}
 
-	/**
-	 * Eats at the desired HP %.
-	 *
-	 * @param percent The health percentage to eat to; eg.10%-90%
-	 * @param foods   Optional: Array of foods we can eat,
-	 *                if no array supplied will eat edible stuff in inventory.
-	 * @return <code>true</code> once we ate to the health % (percent); otherwise
-	 *         <code>false</code>.
-	 */
-	public boolean eatUntilHP(final int percent, final int... foods) {
-		if (foods == null || foods.length == 0) {
-			return eatEdibleUntilHP(percent);
-		}
-		return eatFoodsUntilHP(percent, foods);
-	}
+	// ZZZ XXX part of tasks
+	// /**
+	//  * Eats at the desired HP %.
+	//  *
+	//  * @param percent The health percentage to eat to; eg.10%-90%
+	//  * @param foods   Optional: Array of foods we can eat,
+	//  *                if no array supplied will eat edible stuff in inventory.
+	//  * @return <code>true</code> once we ate to the health % (percent); otherwise
+	//  *         <code>false</code>.
+	//  */
+	// public boolean eatUntilHP(final int percent, final int... foods) {
+	// 	if (foods == null || foods.length == 0) {
+	// 		return eatEdibleUntilHP(percent);
+	// 	}
+	// 	return eatFoodsUntilHP(percent, foods);
+	// }
 
-	/**
-	 * Eats at the desired HP %.
-	 *
-	 * @param percent The health percentage to eat to; eg.10%-90%
-	 * @param foods   Array of foods we can eat.
-	 * @return <code>true</code> once we ate to the health % (percent); otherwise
-	 *         <code>false</code>.
-	 */
-	public boolean eatFoodsUntilHP(final int percent, final int... foods) {
-		int firstPercent = getHealth();
-		for (int food : foods) {
-			if (!methods.inventory.contains(food)) {
-				continue;
-			}
-			if (methods.inventory.getItem(food).doAction("Eat")) {
-				for (int i = 0; i < 100; i++) {
-					sleep(random(100, 300));
-					if (firstPercent < percent) {
-						break;
-					}
-				}
-			}
-			if (getHealth() >= percent) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// /**
+	//  * Eats at the desired HP %.
+	//  *
+	//  * @param percent The health percentage to eat to; eg.10%-90%
+	//  * @param foods   Array of foods we can eat.
+	//  * @return <code>true</code> once we ate to the health % (percent); otherwise
+	//  *         <code>false</code>.
+	//  */
+	// public boolean eatFoodsUntilHP(final int percent, final int... foods) {
+	// 	int firstPercent = getHealth();
+	// 	for (int food : foods) {
+	// 		if (!methods.inventory.contains(food)) {
+	// 			continue;
+	// 		}
+	// 		if (methods.inventory.getItem(food).doAction("Eat")) {
+	// 			for (int i = 0; i < 100; i++) {
+	// 				sleep(random(100, 300));
+	// 				if (firstPercent < percent) {
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 		if (getHealth() >= percent) {
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
-	/**
-	 * Eats at the desired HP %.
-	 *
-	 * @param percent The health percentage to eat to; eg.10%-90%
-	 * @return <code>true</code> once we ate to the health % (percent); otherwise
-	 *         <code>false</code>.
-	 */
-	public boolean eatEdibleUntilHP(final int percent) {
-		int firstPercent = getHealth();
-		RSItem[] edibleItems = methods.inventory.getAllWithAction("Eat");
-		if (edibleItems == null || edibleItems.length == 0) {
-			return false;
-		}
-		for (RSItem edibleItem : edibleItems) {
-			if (edibleItem.doAction("Eat")) {
-				for (int i = 0; i < 100; i++) {
-					sleep(random(100, 300));
-					if (firstPercent < percent) {
-						break;
-					}
-				}
-			}
-			if (getHealth() >= percent) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// /**
+	//  * Eats at the desired HP %.
+	//  *
+	//  * @param percent The health percentage to eat to; eg.10%-90%
+	//  * @return <code>true</code> once we ate to the health % (percent); otherwise
+	//  *         <code>false</code>.
+	//  */
+	// public boolean eatEdibleUntilHP(final int percent) {
+	// 	int firstPercent = getHealth();
+	// 	RSItem[] edibleItems = methods.inventory.getAllWithAction("Eat");
+	// 	if (edibleItems == null || edibleItems.length == 0) {
+	// 		return false;
+	// 	}
+	// 	for (RSItem edibleItem : edibleItems) {
+	// 		if (edibleItem.doAction("Eat")) {
+	// 			for (int i = 0; i < 100; i++) {
+	// 				sleep(random(100, 300));
+	// 				if (firstPercent < percent) {
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 		if (getHealth() >= percent) {
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 	/**
 	 * Turns auto-retaliate on or off in the combat tab.
@@ -285,9 +286,9 @@ public class Combat extends MethodProvider {
 	 *
 	 * @return The current percentage health remaining.
 	 */
-	public int getHealth() {
-		return ((getLifePoints() * 100) / methods.skills.getRealLevel(Skill.HITPOINTS.ordinal()));
-	}
+	//public int getHealth() {
+	//	return ((getLifePoints() * 100) / methods.skills.getRealLevel(Skill.HITPOINTS.ordinal()));
+	//}
 
 	/**
 	 * Checks if your character is interacting with an Npc.

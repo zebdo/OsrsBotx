@@ -11,70 +11,38 @@ repositories {
     mavenCentral()
 }
 
+
+def lastSupportedVersion = "1.9.3"
 def runeLiteVersion = getRuneLiteVersion()
+def supportedCheck = false
+if (supportedCheck) {
+    if (runeLiteVersion != lastSupportedVersion) {
+        println("Warning - client has been updated")
+        throw new Exception("Out of date (last supported: %s" + lastSupportedVersion + " current client: " + runeLiteVersion + ")")
+    }
+}
 
 static def getRuneLiteVersion() {
-    URL url = new URL("http://repo.runelite.net/net/runelite/client/")
+    URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")
     URLConnection urlConnection = url.openConnection()
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
             urlConnection.getInputStream()))
     String latestName = null
     String inputLine
     while ((inputLine = bufferedReader.readLine()) != null) {
-        inputLine = inputLine.trim().replaceAll(" +", " ")
-        if (inputLine.contains("/\">") && inputLine.contains("</a>")) {
-            String name = inputLine.substring(inputLine.indexOf("/\">") + 3, inputLine.indexOf("</a>") - 1)
-            String removeName = inputLine.substring(inputLine.indexOf("</a>") + 4)
-            if (!name.contains("SNAPSHOT") && removeName != "") {
-                if (compareSemanticVersion(latestName, name)) {
-                    latestName = name;
-                }
-            }
+        inputLine = inputLine.trim()
+        if (inputLine.contains("<release>")) {
+            latestName = inputLine.replace("<release>", "").replace("</release>", "")
         }
     }
-
     bufferedReader.close()
     return latestName
 }
 
-static def compareSemanticVersion(String s1, String s2) {
-    if (s1 != null && s2 != null) {
-        while (true) {
-            if (s1.indexOf('.') != -1 && s2.indexOf('.') != -1) {
-                if (s1.substring(0, s1.indexOf('.')) == s2.substring(0, s2.indexOf('.'))) {
-                    s1 = s1.substring(s1.indexOf('.') + 1)
-                    s2 = s2.substring(s2.indexOf('.') + 1)
-                }
-                else {
-                    if (s1.indexOf('.') != -1) {
-                        s1 = s1.substring(0, s1.indexOf('.'))
-                    }
-                    if (s2.indexOf('.') != -1) {
-                        s2 = s2.substring(0, s2.indexOf('.'))
-                    }
-                    return Integer.parseInt(s1).intValue() < Integer.parseInt(s2).intValue()
-                }
-            }
-            else {
-                if (s1.indexOf('.') != -1) {
-                    s1 = s1.substring(0, s1.indexOf('.'))
-                }
-                if (s2.indexOf('.') != -1) {
-                    s2 = s2.substring(0, s2.indexOf('.'))
-                }
-                return Integer.parseInt(s1).intValue() < Integer.parseInt(s2).intValue()
-            }
-        }
-    }
-    return s1 == null && s2 != null
-}
-
 dependencies {
-    implementation group: 'org.clojure', name: 'clojure', version: '1.9.0'
-    implementation group: 'org.clojure', name: 'tools.nrepl', version: '0.2.12'
-
     implementation group: 'net.runelite', name: 'client', version: runeLiteVersion
     implementation group: 'net.runelite', name: 'cache', version: runeLiteVersion
+
     implementation 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
@@ -86,6 +54,10 @@ dependencies {
 
     implementation group: 'javassist', name: 'javassist', version: '3.12.1.GA'
     implementation group: 'net.sf.jopt-simple', name:'jopt-simple', version: '5.0.4'
+
+    // jython stuff:
+    // https://mavenlibs.com/maven/dependency/org.python/jython-standalone
+    implementation group: 'org.python', name: 'jython-standalone', version: '2.7.3'
 
     // kotlin stuff:
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
@@ -139,7 +111,7 @@ task botRun(type: JavaExec) {
     group = "Execution"
     description = "Runs the main method within RSB"
     classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
-    getMainClass() set "net.runelite.rsb.botLauncher.Application"
+    getMainClass() set "net.runelite.rsb.internal.launcher.Application"
     jvmArgs "-debug"
     args "--bot-runelite --developer-mode".split(" ")
 

@@ -51,7 +51,6 @@ import net.runelite.client.rs.ClientLoader;
 import net.runelite.client.rs.ClientUpdateCheckMode;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.WidgetOverlay;
-import net.runelite.rsb.botLauncher.BotLite;
 import okhttp3.Request;
 import okhttp3.Response;
 import net.runelite.client.ui.ClientUI;
@@ -62,6 +61,9 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
 import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+
+// yuk XXX
+import net.runelite.rsb.internal.launcher.BotLite;
 
 
 @Slf4j
@@ -284,71 +286,6 @@ public class RuneLite extends net.runelite.client.RuneLite {
                             .open());
         }
     }
-
-    /**
-    //  * Launches a client with the bare minimum of settings needed. This is used for the sub-bots and do not use
-    //  * the additional initializations that the standard RuneLite start method does.
-    //  * @throws Exception    Any exception the client, bot, or RuneLite might throw.
-    //  */
-    // public void bareStart() throws Exception {
-    //     // Load RuneLite or Vanilla client
-    //     final boolean isOutdated = client == null;
-
-    //     setupSystemProps();
-
-    //     if (!isOutdated)
-    //     {
-    //         // Inject members into client
-    //         injector.injectMembers(client);
-    //     }
-
-    //     // Start the applet
-    //     if (applet != null)
-    //     {
-    //         // Client size must be set prior to init
-    //         applet.setSize(Constants.GAME_FIXED_SIZE);
-
-    //         System.setProperty("jagex.disableBouncyCastle", "true");
-    //         // Change user.home so the client places jagexcache in the .runelite directory
-    //         String oldHome = System.setProperty("user.home", RUNELITE_DIR.getAbsolutePath());
-    //         try
-    //         {
-    //             applet.init();
-    //         }
-    //         finally
-    //         {
-    //             System.setProperty("user.home", oldHome);
-    //         }
-
-    //         applet.start();
-    //     }
-
-    //     // Load user configuration
-    //     configManager.load();
-
-    //     // Load the session, including saved configuration
-    //     sessionManager.loadSession();
-
-    //     // Start client session
-    //     clientSessionManager.start();
-    //     eventBus.register(clientSessionManager);
-    //     clientUI.init();
-
-    //     // Register event listeners
-    //     eventBus.register(clientUI);
-    //     eventBus.register(pluginManager);
-    //     eventBus.register(externalPluginManager);
-    //     eventBus.register(overlayManager);
-    //     eventBus.register(configManager);
-
-    //     if (!isOutdated)
-    //     {
-    //         // Add core overlays
-    //         WidgetOverlay.createOverlays(overlayManager, client).forEach(overlayManager::add);
-    //         overlayManager.add(worldMapOverlay.get());
-    //         overlayManager.add(tooltipOverlay.get());
-    //     }
-    // }
 
     /**
      * RuneLite method

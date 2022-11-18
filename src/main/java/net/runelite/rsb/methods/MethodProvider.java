@@ -86,6 +86,7 @@ public abstract class MethodProvider {
 	 * TODO: busy-wait anti-pattern, not nice :{
 	 */
 	public void sleep(int toSleep) {
+		// XXX this is awful
 		try {
 			long start = System.currentTimeMillis();
 			Thread.sleep(toSleep);
@@ -96,30 +97,5 @@ public abstract class MethodProvider {
 		} catch (InterruptedException ignored) {
 			log.debug("Method sleep disrupted", ignored);
 		}
-	}
-
-	/**
-	 * Pauses execution for a given number of milliseconds.
-	 *
-	 * @param awaitedCondition Condition which breaks awaiting.
-	 * @param awaitTimeout The time to sleep in milliseconds.
-	 */
-	public void sleepUntil(BooleanSupplier awaitedCondition, int awaitTimeout) {
-		boolean done;
-		long startTime = System.currentTimeMillis();
-		do {
-			done = awaitedCondition.getAsBoolean();
-		} while (!done && System.currentTimeMillis() - startTime < awaitTimeout);
-	}
-
-	/**
-	 * Gets the digit at the index of the number
-	 * @param number the number to get the digit from
-	 * @param index the position to check
-	 *
-	 * @return the digit in the number
-	 */
-	int nth ( int number, int index ) {
-		return (int)(number / Math.pow(10, index)) % 10;
 	}
 }

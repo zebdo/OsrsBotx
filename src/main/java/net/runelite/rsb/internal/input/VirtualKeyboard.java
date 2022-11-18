@@ -24,11 +24,9 @@ public class VirtualKeyboard implements KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {
-
     }
 
     public void keyTyped(KeyEvent e) {
-
     }
 
     public void sendEvent(KeyEvent e) {
@@ -36,21 +34,21 @@ public class VirtualKeyboard implements KeyListener {
         if (e.getID() == KeyEvent.KEY_TYPED) {
             keyTyped(e);
         }
+
         if (e.getID() == KeyEvent.KEY_PRESSED) {
             keyPressed(e);
         }
+
         if (e.getID() == KeyEvent.KEY_RELEASED) {
             keyReleased(e);
         }
 
-		//Applet a = (Applet) bot.getMethodContext().client;
-		Applet a = (Applet) methods.client;
-
+		// why focus gained on each keystroke?
         EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-        eventQueue.postEvent(new FocusEvent(a.getComponent(0), FocusEvent.FOCUS_GAINED));
+        eventQueue.postEvent(new FocusEvent(methods.client.getComponent(0),
+                                            FocusEvent.FOCUS_GAINED));
         eventQueue.postEvent(e);
     }
-
 
 }
 

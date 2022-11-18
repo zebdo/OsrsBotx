@@ -43,8 +43,10 @@ import net.runelite.client.ui.overlay.OverlayRenderer;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.DeferredEventBus;
 import net.runelite.client.util.RSTimeUnit;
-import net.runelite.rsb.botLauncher.BotLite;
 import net.runelite.client.modified.RuneLite;
+
+// XXX yuk
+import net.runelite.rsb.internal.launcher.BotLite;
 import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 
 /**
@@ -388,14 +390,15 @@ public class Hooks implements Callbacks
         {
             finalImage = image;
         }
-        // finalImage is backed by the client buffer which will change soon. make a copy
-        // so that callbacks can safely use it later from threads.
-        drawManager.processDrawComplete(() -> copy(image));
-
-        final Graphics2D g2d = (Graphics2D) bot.getCanvas().getGraphics(bot, mainBufferProvider);
 
         // Draw the image onto the game canvas
-        graphics.drawImage(image, 0, 0, bot.getCanvas());
+        graphics.drawImage(finalImage, 0, 0, bot.getCanvas());
+
+		Graphics2D g2 = (Graphics2D) graphics;
+		g2.setColor(Color.red);
+		g2.drawOval(bot.getInputManager().getX(),
+					bot.getInputManager().getY(),
+					15, 15);
 
         // finalImage is backed by the client buffer which will change soon. make a copy
         // so that callbacks can safely use it later from threads.

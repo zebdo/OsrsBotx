@@ -2,7 +2,7 @@ package net.runelite.rsb.internal.input;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.rsb.botLauncher.BotLite;
+import net.runelite.rsb.internal.launcher.BotLite;
 
 import java.applet.Applet;
 import java.awt.event.*;
@@ -35,8 +35,7 @@ public class InputManager {
 			return; // Can't click off the canvas
 		}
 		pressMouse(getX(), getY(), left);
-		// ZZZ was 50 - 100?
-		sleepNoException(random(60, 140));
+		sleepNoException(random(50, 100));
 		releaseMouse(getX(), getY(), left);
 	}
 
@@ -87,9 +86,6 @@ public class InputManager {
 		releaseMouse(x, y, true);
 	}
 
-	private Client getClient() {
-		return bot.getClient();
-	}
 
 	private char getKeyChar(final char c) {
 		if ((c >= 36) && (c <= 40)) {
@@ -99,17 +95,16 @@ public class InputManager {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	private Applet getTarget() {
-		return (Applet) getClient();
+		return (Applet) bot.getClient();
 	}
 
 	public int getX() {
-		//getClient().getMouseCanvasPosition().getX();
 		return bot.getMethodContext().virtualMouse.getClientX();
 	}
 
 	public int getY() {
-		//getClient().getMouseCanvasPosition().getY();
 		return bot.getMethodContext().virtualMouse.getClientY();
 	}
 

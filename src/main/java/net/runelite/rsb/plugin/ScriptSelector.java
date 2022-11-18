@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
-import net.runelite.rsb.botLauncher.BotLite;
+import net.runelite.rsb.internal.launcher.BotLite;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.service.FileScriptSource;

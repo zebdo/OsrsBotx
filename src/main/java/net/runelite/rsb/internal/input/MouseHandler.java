@@ -18,14 +18,14 @@ public class MouseHandler {
 
 	MouseHandler(final InputManager inputManager) {
 		this.inputManager = inputManager;
-                RSBSystemCalls calls = new RSBSystemCalls(inputManager);
+		RSBSystemCalls calls = new RSBSystemCalls(inputManager);
 
-                this.nature = new DefaultMouseMotionNature(calls, new DefaultMouseInfoAccessor());
-                //this.motionFactory = FactoryTemplates.createAverageComputerUserMotionFactory(nature);
-                this.motionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
+		this.nature = new DefaultMouseMotionNature(calls, new DefaultMouseInfoAccessor());
+		//this.motionFactory = FactoryTemplates.createAverageComputerUserMotionFactory(nature);
+		this.motionFactory = FactoryTemplates.createFastGamerMotionFactory(nature);
 
-                DefaultOvershootManager overshootManager = (DefaultOvershootManager) motionFactory.getOvershootManager();
-                overshootManager.setOvershoots(2);
+		DefaultOvershootManager overshootManager = (DefaultOvershootManager) motionFactory.getOvershootManager();
+		overshootManager.setOvershoots(2);
 
 		motionFactory.setMouseInfo(() -> new Point(inputManager.getX(), inputManager.getY()));
 	}

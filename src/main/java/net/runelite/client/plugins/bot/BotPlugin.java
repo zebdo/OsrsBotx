@@ -7,7 +7,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
-import net.runelite.rsb.botLauncher.BotLite;
+import net.runelite.rsb.internal.launcher.BotLite;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;

@@ -24,14 +24,13 @@ import java.util.Map;
 Base class for wrapping runelite Client, along with some weird Applet shenanigans.
 */
 @SuppressWarnings("removal")
-public abstract class BaseClientWrapper extends Applet implements Client {
+public class BaseClientWrapper implements Client {
     public final Client wrappedClient;
 
     public BaseClientWrapper(Client client) {
         this.wrappedClient = client;
     }
 
-    @Override
     public Component getComponent(int n) {
         return ((Applet) wrappedClient).getComponent(n);
     }

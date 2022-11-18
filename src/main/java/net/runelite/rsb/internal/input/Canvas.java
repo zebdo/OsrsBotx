@@ -1,9 +1,6 @@
 package net.runelite.rsb.internal.input;
 
 import net.runelite.api.MainBufferProvider;
-import net.runelite.rsb.botLauncher.Application;
-import net.runelite.rsb.botLauncher.BotLite;
-//import net.runelite.client.Application;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,14 +9,6 @@ import java.awt.image.*;
 import java.util.Hashtable;
 
 public class Canvas extends java.awt.Canvas {
-	public static final int GRAPHICS_DELAY = 6;
-	public static final int SLOW_GRAPHICS_DELAY = 50;
-	public static final int DISABLE_GRAPHICS_DELAY = 100;
-
-	private static final long serialVersionUID = -2276037172265300477L;
-
-	private BotLite bot;
-
 	private boolean visible;
 	private boolean focused;
 
@@ -32,14 +21,7 @@ public class Canvas extends java.awt.Canvas {
 		this(c.getGraphicsConfiguration());
 		this.setBounds(c.getBounds());
 		this.setSize(c.getSize());
-		//This may need more variables set in the future
-	}
-
-	public final Graphics getGraphics(BotLite bot, MainBufferProvider mainBufferProvider) {
-		if (bot == null) {
-			bot = (BotLite) Application.getBot(this);
-		}
-		return bot.getBufferGraphics(mainBufferProvider);
+		// This may need more variables set in the future
 	}
 
 	@Override
@@ -62,17 +44,6 @@ public class Canvas extends java.awt.Canvas {
 		return true;
 	}
 
-	/*
-	@Override
-	public final Dimension getSize() {
-		if (bot != null) {
-			return bot.getLoader().getSize();
-		}
-		return Application.getPanelSize();
-	}
-
-
-	 */
 	@Override
 	public final void setVisible(boolean visible) {
 		super.setVisible(visible);
@@ -84,11 +55,13 @@ public class Canvas extends java.awt.Canvas {
 			// null opposite; permanent gain, as expected when entire Applet
 			// regains focus
 			super.processEvent(new FocusEvent(this, FocusEvent.FOCUS_GAINED, false, null));
+
 		} else if (this.focused) {
 			// null opposite; temporary loss, as expected when entire Applet
 			// loses focus
 			super.processEvent(new FocusEvent(this, FocusEvent.FOCUS_LOST, true, null));
 		}
+
 		this.focused = focused;
 	}
 
@@ -123,6 +96,6 @@ public class Canvas extends java.awt.Canvas {
 
 	@Override
 	public Point getMousePosition(){
-		return new Point(40,500);
+		return new Point(40, 500);
 	}
 }

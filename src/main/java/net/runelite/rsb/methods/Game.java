@@ -50,12 +50,16 @@ public class Game extends MethodProvider {
 	 */
 	public String getLastMessage() {
 		RSWidget messages = methods.interfaces.getComponent(GlobalWidgetInfo.CHATBOX_MESSAGES);
-			if (!messages.getDynamicComponent(WidgetIndices.ChatBox.FIRST_MESSAGE_LABEL).getText().isEmpty()) {
-				if (messages.getDynamicComponent(WidgetIndices.ChatBox.LAST_MESSAGE_LABEL).isVisible()
-						&& !messages.getDynamicComponent(WidgetIndices.ChatBox.LAST_MESSAGE_LABEL).getText().isEmpty())
-					return messages.getDynamicComponent(WidgetIndices.ChatBox.LAST_MESSAGE_LABEL).getText();
-				return messages.getDynamicComponent(WidgetIndices.ChatBox.FIRST_MESSAGE_LABEL).getText();
+		RSWidget first = messages.getDynamicComponent(WidgetIndices.ChatBox.FIRST_MESSAGE_LABEL);
+		if (!first.getText().isEmpty()) {
+			RSWidget last = messages.getDynamicComponent(WidgetIndices.ChatBox.LAST_MESSAGE_LABEL);
+			if (last.isVisible() && !last.getText().isEmpty()) {
+				return last.getText();
 			}
+
+			return first.getText();
+		}
+
 		return "";
 	}
 
@@ -80,12 +84,16 @@ public class Game extends MethodProvider {
 	 *         <code>false</code>.
 	 */
 	public boolean openTab(InterfaceTab interfaceTab, boolean useHotkey) {
-		if (interfaceTab == getCurrentTab()) { return true; }
+		if (interfaceTab == getCurrentTab()) {
+			return true;
+		}
+
 		if (useHotkey) {
 			if (interfaceTab.getHotkey() == 0) { return false; } // no hotkey for specified tab
 			methods.keyboard.pressKey((char) interfaceTab.getHotkey());
 			sleep(random(80, 200));
 			methods.keyboard.releaseKey((char) interfaceTab.getHotkey());
+
 		} else {
 			net.runelite.api.widgets.Widget tabWidget = methods.gui.getTab(interfaceTab);
 			if (tabWidget == null) { return false; }
@@ -93,6 +101,7 @@ public class Game extends MethodProvider {
 					GlobalWidgetInfo.TO_GROUP(tabWidget.getParent().getId()),
 					GlobalWidgetInfo.TO_CHILD(tabWidget.getId())).doClick();
 		}
+
 		sleep(random(400, 600));
 		return interfaceTab == getCurrentTab();
 	}
@@ -102,7 +111,8 @@ public class Game extends MethodProvider {
 	 */
 	public void closeTab() {
 		InterfaceTab interfaceTab = getCurrentTab();
-		if (methods.gui.getViewportLayout() == ViewportLayout.FIXED_CLASSIC || interfaceTab == InterfaceTab.LOGOUT) {
+		if (methods.gui.getViewportLayout() == ViewportLayout.FIXED_CLASSIC ||
+			interfaceTab == InterfaceTab.LOGOUT) {
 			return;
 		}
 		net.runelite.api.widgets.Widget tabWidget = methods.gui.getTab(interfaceTab);
@@ -151,18 +161,6 @@ public class Game extends MethodProvider {
 		};
 	}
 
-	/**
-	 * Gets the current run energy.
-	 *
-	 * Deprecated : use walking.getEnergy()
-	 *
-	 * @return An <code>int</code> representation of the players current energy.
-	 */
-	@Deprecated
-	public int getEnergy() {
-		return methods.walking.getEnergy();
-	}
-
 	// /**
 	//  * Excludes Loginbot, BankPin, TeleotherCloser, CloseAllInterface,
 	//  * ImprovedRewardsBox
@@ -202,23 +200,6 @@ public class Game extends MethodProvider {
 	}
 
 	/**
-	 * TODO: This is non-functional
-	 * @return	-1 as the method is non-functional
-	 */
-	public int getCrosshairState() {
-		return -1;
-	}
-
-	/**
-	 * Checks whether or not the logout tab is selected.
-	 *
-	 * @return <code>true</code> if on the logout tab.
-	 */
-	public boolean isOnLogoutTab() {
-		return getCurrentTab() == InterfaceTab.LOGOUT;
-	}
-
-	/**
 	 * Closes the bank if it is open and logs out.
 	 *
 	 * @return <code>true</code> if the player was logged out.
@@ -228,9 +209,11 @@ public class Game extends MethodProvider {
 			methods.bank.close();
 			sleep(random(200, 400));
 		}
+
 		if (methods.bank.isOpen()) {
 			return false;
 		}
+
 		if (methods.inventory.isItemSelected()) {
 			InterfaceTab currentTab = methods.game.getCurrentTab();
 			InterfaceTab randomTab = InterfaceTab.values()[random(1, 6)];
@@ -240,30 +223,22 @@ public class Game extends MethodProvider {
 			methods.game.openTab(randomTab);
 			sleep(random(400, 800));
 		}
+
 		if (methods.inventory.isItemSelected()) {
 			return false;
 		}
 
-		if (!isOnLogoutTab()) {
+		if (getCurrentTab() != InterfaceTab.LOGOUT) {
 			openTab(InterfaceTab.LOGOUT);
 			sleep(random(300, 600));
 		}
 
 		methods.interfaces.getComponent(GlobalWidgetInfo.LOGOUT_BUTTON).doClick();
+
 		// Final logout button in the logout tab
 		sleep(random(1500, 2000));
 		return !isLoggedIn();
 	}
-
-	/**
-	 * Runs the LoginBot random.
-	 *
-	 * @return <code>true</code> if random was run; otherwise <code>false</code>.
-	 */
-	//public boolean login() {
-	//	return new LoginBot().activateCondition();
-	//
-
 
 	/**
 	 * Determines whether or not the client is currently logged in to an
@@ -292,8 +267,8 @@ public class Game extends MethodProvider {
 	 *         otherwise <code>false</code>.
 	 */
 	public boolean isWelcomeScreen() {
-		return methods.interfaces.getComponent(GlobalWidgetInfo.LOGIN_MOTW_TEXT)
-				.getAbsoluteY() > 2;
+		var w = methods.interfaces.getComponent(GlobalWidgetInfo.LOGIN_MOTW_TEXT);
+		return w != null && w.isValid() && w.getAbsoluteY() > 2;
 	}
 
 	/**
@@ -371,16 +346,4 @@ public class Game extends MethodProvider {
 		return methods.runeLite.getCanvas().getHeight();
 	}
 
-	/**
-	 * Gets a color corresponding to x and y co ordinates from the current game screen.
-	 *
-	 * @param x: The x co ordinate at which to get the color.
-	 * @param y: The y co ordinate at which to get the color.
-	 * @return Color
-	 * @see java.awt.color
-	 */
-	public Color getColorAtPoint(int x, int y) {
-		BufferedImage image = methods.env.takeScreenshot(false);
-		return new Color(image.getRGB(x, y));
-	}
 }
