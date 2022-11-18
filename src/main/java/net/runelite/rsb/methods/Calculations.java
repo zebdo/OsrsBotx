@@ -73,8 +73,8 @@ public class Calculations extends MethodProvider {
 	 */
 	public boolean pointOnScreen(Point check) {
 		int x = check.getX(), y = check.getY();
-		return x > methods.client.getViewportXOffset() && x < methods.client.getViewportWidth()
-				&& y > methods.client.getViewportYOffset() && y < methods.client.getViewportHeight();
+		return x > methods.proxy.getViewportXOffset() && x < methods.proxy.getViewportWidth()
+				&& y > methods.proxy.getViewportYOffset() && y < methods.proxy.getViewportHeight();
 	}
 
 	/**
@@ -113,11 +113,11 @@ public class Calculations extends MethodProvider {
 			if (tileOnScreen(tile)) {
 				return tile;
 			} else {
-				RSTile loc =  new RSTile(methods.client.getLocalPlayer().getWorldLocation().getX(),
-						methods.client.getLocalPlayer().getWorldLocation().getY(), methods.client.getPlane());
+				RSTile loc =  new RSTile(methods.proxy.getLocalPlayer().getWorldLocation().getX(),
+						methods.proxy.getLocalPlayer().getWorldLocation().getY(), methods.proxy.getPlane());
 				RSTile halfWayTile = new RSTile((tile.getWorldLocation().getX() +
 						loc.getWorldLocation().getX()) / 2, (tile.getWorldLocation().getY() +
-						loc.getWorldLocation().getY()) / 2, methods.client.getPlane());
+						loc.getWorldLocation().getY()) / 2, methods.proxy.getPlane());
 
 				if (tileOnScreen(halfWayTile)) {
 					return halfWayTile;
@@ -137,8 +137,8 @@ public class Calculations extends MethodProvider {
 	 * @return The angle in degrees
 	 */
 	public int angleToTile(RSTile t) {
-		RSTile me = new RSTile(methods.client.getLocalPlayer().getWorldLocation().getX(),
-				methods.client.getLocalPlayer().getWorldLocation().getY(), methods.client.getPlane());
+		RSTile me = new RSTile(methods.proxy.getLocalPlayer().getWorldLocation().getX(),
+				methods.proxy.getLocalPlayer().getWorldLocation().getY(), methods.proxy.getPlane());
 		int angle = (int) Math.toDegrees(Math.atan2(t.getWorldLocation().getY() - me.getWorldLocation().getY(),
 				t.getWorldLocation().getX() - me.getWorldLocation().getX()));
 		return angle >= 0 ? angle : 360 + angle;
@@ -160,9 +160,9 @@ public class Calculations extends MethodProvider {
 	 */
 	public Point tileToScreen(final RSTile tile, final double dX, final double dY, final int height) {
 		WalkerTile walkerTile = new WalkerTile(tile).toLocalTile();
-		return Perspective.localToCanvas(methods.client,
+		return Perspective.localToCanvas(methods.proxy,
 										 new LocalPoint(walkerTile.getX(), walkerTile.getY()),
-										 methods.client.getPlane(),
+										 methods.proxy.getPlane(),
 										 height);
 	}
 
@@ -265,10 +265,10 @@ public class Calculations extends MethodProvider {
 	 *         should be accepted.
 	 */
 	public int pathLengthBetween(RSTile start, RSTile dest, boolean isObject) {
-		return dijkstraDist(start.getWorldLocation().getX() - methods.client.getBaseX(), // startX
-				start.getWorldLocation().getY() - methods.client.getBaseY(), // startY
-				dest.getWorldLocation().getX() - methods.client.getBaseX(), // destX
-				dest.getWorldLocation().getY() - methods.client.getBaseY(), // destY
+		return dijkstraDist(start.getWorldLocation().getX() - methods.proxy.getBaseX(), // startX
+				start.getWorldLocation().getY() - methods.proxy.getBaseY(), // startY
+				dest.getWorldLocation().getX() - methods.proxy.getBaseX(), // destX
+				dest.getWorldLocation().getY() - methods.proxy.getBaseY(), // destY
 				isObject); // if it's an object, accept any adjacent tile
 	}
 
@@ -294,9 +294,9 @@ public class Calculations extends MethodProvider {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 	public Point worldToMinimap(double x, double y) {
-		LocalPoint test = LocalPoint.fromWorld(methods.client, (int) x, (int) y);
+		LocalPoint test = LocalPoint.fromWorld(methods.proxy, (int) x, (int) y);
 		if (test != null)
-			return Perspective.localToMinimap(methods.client, test, 2150);
+			return Perspective.localToMinimap(methods.proxy, test, 2150);
 
 		return null;
 	}
@@ -312,7 +312,7 @@ public class Calculations extends MethodProvider {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 	public Point groundToScreen(final int x, final int y, final int height) {
-		return Perspective.localToCanvas(methods.client, x, y, height);
+		return Perspective.localToCanvas(methods.proxy, x, y, height);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class Calculations extends MethodProvider {
 	 *         .
 	 */
 	public int tileHeight(final int x, final int y) {
-		return Perspective.getTileHeight(methods.client, new LocalPoint(x, y), methods.client.getPlane());
+		return Perspective.getTileHeight(methods.proxy, new LocalPoint(x, y), methods.proxy.getPlane());
 
 	}
 
@@ -338,12 +338,12 @@ public class Calculations extends MethodProvider {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 	public Point worldToScreen(int x, int y, int z) {
-		LocalPoint local = LocalPoint.fromWorld(methods.client, x, y);
+		LocalPoint local = LocalPoint.fromWorld(methods.proxy, x, y);
 		if (local == null) {
 			local = new LocalPoint(x, y);
 		}
 
-		return Perspective.localToCanvas(methods.client, local, z);
+		return Perspective.localToCanvas(methods.proxy, local, z);
 	}
 
 	/**
@@ -357,16 +357,16 @@ public class Calculations extends MethodProvider {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 	public Point worldToScreen(int x, int y, int plane, int z) {
-		LocalPoint local = LocalPoint.fromWorld(methods.client, x, y);
+		LocalPoint local = LocalPoint.fromWorld(methods.proxy, x, y);
 		if (local == null) {
 			local = new LocalPoint(x, y);
 		}
-		return Perspective.localToCanvas(methods.client, local, plane, z);
+		return Perspective.localToCanvas(methods.proxy, local, plane, z);
 	}
 
 
 	public Polygon getTileBoundsPoly(Positionable positionable, int additionalHeight) {
-		return Perspective.getCanvasTilePoly(methods.client, positionable.getLocation().getLocalLocation(methods));
+		return Perspective.getCanvasTilePoly(methods.proxy, positionable.getLocation().getLocalLocation(methods));
 	}
 
 	public Point getRandomPolyPoint(Polygon polygon) {
@@ -402,7 +402,7 @@ public class Calculations extends MethodProvider {
 		int step_ptr = 0;
 		path_x[path_ptr] = startX;
 		path_y[path_ptr++] = startY;
-		final byte blocks[][] = methods.client.getTileSettings()[methods.game.getPlane()];
+		final byte blocks[][] = methods.proxy.getTileSettings()[methods.game.getPlane()];
 		final int pathLength = path_x.length;
 		boolean foundPath = false;
 		while (step_ptr != path_ptr) {

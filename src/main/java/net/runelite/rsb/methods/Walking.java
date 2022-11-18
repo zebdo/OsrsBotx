@@ -275,7 +275,7 @@ public class Walking extends MethodProvider {
 	 * @return The player's current run energy.
 	 */
 	public int getEnergy() {
-		return methods.client.getEnergy();
+		return methods.proxy.getEnergy();
 	}
 
 	/**
@@ -285,9 +285,8 @@ public class Walking extends MethodProvider {
 	 * @return The current destination tile, or null.
 	 */
 	public RSTile getDestination() {
-
-		return (methods.client.getLocalDestinationLocation() != null) ? new RSTile(methods.client.getLocalDestinationLocation().getX(),
-				methods.client.getLocalDestinationLocation().getY(), methods.client.getPlane()) : null;
+		var d = methods.proxy.getLocalDestinationLocation();
+		return (d != null) ? new RSTile(d.getX(), d.getY(), methods.proxy.getPlane()) : null;
 	}
 
 	/**
@@ -296,10 +295,10 @@ public class Walking extends MethodProvider {
 	 * @param field The field from the client class to check
 	 * @return The obfuscated type name for CollisionData[]
 	 */
-	public String getObType(Field field) {
+	public String xxxgetObType(Field field) {
 		String typeName = null;
 		try {
-			typeName = ((CollisionData[]) field.get(methods.client.wrappedClient)).getClass().getTypeName();
+			typeName = ((CollisionData[]) field.get(methods.proxy.wrappedClient)).getClass().getTypeName();
 		} catch (IllegalAccessException | ClassCastException e) {
 			//This will cause a number of class cast exceptions while searching for a match
 			//This is a byproduct of using reflection and attempting to create an algorithm
@@ -509,6 +508,6 @@ public class Walking extends MethodProvider {
 
 
     public int[][] getCollisionData() {
-		return methods.client.getCollisionMaps()[methods.game.getPlane()].getFlags();
+		return methods.proxy.getCollisionMaps()[methods.game.getPlane()].getFlags();
 	}
 }

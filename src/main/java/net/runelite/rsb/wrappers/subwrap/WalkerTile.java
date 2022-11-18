@@ -26,7 +26,7 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
 
     public WalkerTile(WalkerTile tile) {
 		super(tile.getX(), tile.getY(),
-			  MethodProvider.methods.client.getPlane());
+			  MethodProvider.methods.proxy.getPlane());
         this.ctx = MethodProvider.methods;
         type = tile.type;
     };
@@ -112,17 +112,20 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
 
     public WalkerTile toWorldTile() {
         WalkerTile walkerTile = new WalkerTile(this);
+
         if (walkerTile.type == TYPES.LOCAL) {
-            WorldPoint point = WorldPoint.fromLocal(ctx.client, new LocalPoint(x, y));
+            WorldPoint point = WorldPoint.fromLocal(ctx.proxy, new LocalPoint(x, y));
             walkerTile.x = point.getX();
             walkerTile.y = point.getY();
-            walkerTile.plane = ctx.client.getPlane();
+            walkerTile.plane = ctx.proxy.getPlane();
         }
+
         if (walkerTile.type == TYPES.SCENE) {
-            walkerTile.x = ctx.client.getBaseX() + x;
-            walkerTile.y = ctx.client.getBaseY() + y;
+            walkerTile.x = ctx.proxy.getBaseX() + x;
+            walkerTile.y = ctx.proxy.getBaseY() + y;
             //WorldPoint.fromScene(ctx.client, x, y, plane);
         }
+
         walkerTile.type = TYPES.WORLD;
         return walkerTile;
     }
@@ -130,16 +133,17 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
     public WalkerTile toLocalTile() {
         WalkerTile walkerTile = new WalkerTile(this);
         if (walkerTile.type == TYPES.WORLD) {
-            int baseX = ctx.client.getBaseX();
-            int baseY = ctx.client.getBaseY();
+            int baseX = ctx.proxy.getBaseX();
+            int baseY = ctx.proxy.getBaseY();
             LocalPoint point = LocalPoint.fromScene(x - baseX, y - baseY);
             walkerTile.x = point.getX();
             walkerTile.y = point.getY();
-        } if (walkerTile.type == TYPES.SCENE) {
+        } else if (walkerTile.type == TYPES.SCENE) {
             LocalPoint point = LocalPoint.fromScene(x, y);
             walkerTile.x = point.getX();
             walkerTile.y = point.getY();
         }
+
         walkerTile.type = TYPES.LOCAL;
         return walkerTile;
     }

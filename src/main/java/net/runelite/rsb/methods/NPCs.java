@@ -82,7 +82,7 @@ public class NPCs extends MethodProvider {
     }
 
     public NPC[] getNPCs() {
-        List<NPC> npcs = methods.client.getNpcs();
+        List<NPC> npcs = methods.proxy.getNpcs();
         NPC[] npcArray = new NPC[npcs.size()];
         return npcs.toArray(npcArray);
     }

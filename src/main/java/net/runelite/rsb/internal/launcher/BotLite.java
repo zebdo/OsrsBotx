@@ -3,6 +3,8 @@ package net.runelite.rsb.internal.launcher;
 import com.google.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.client.callback.ClientThread;
+
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.modified.RuneLite;
 
@@ -10,6 +12,7 @@ import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
 import net.runelite.rsb.internal.input.InputManager;
 import net.runelite.rsb.internal.globval.GlobalConfiguration;
+import net.runelite.rsb.internal.client_wrapper.RSClient;
 
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.plugin.ScriptSelector;
@@ -26,9 +29,14 @@ import java.util.concurrent.Executors;
 @Slf4j
 @SuppressWarnings("removal")
 public class BotLite extends RuneLite {
+
+	// XXXX idea is not to have this on here
     private MethodContext ctx;
+
     private InputManager im;
     private ScriptHandler sh;
+    private RSClient proxy;
+
     private Canvas canvas;
 
     public Client getClient() {
@@ -140,7 +148,10 @@ public class BotLite extends RuneLite {
 			this.checkForCacheAndLoad();
 
 			im = new InputManager(this);
-			ctx = new MethodContext(this);
+			proxy = new RSClient(injector.getInstance(Client.class),
+								 injector.getInstance(ClientThread.class));
+
+			ctx = new MethodContext(this, proxy);
 
 			// starting thread
 			final RemotePy py = new RemotePy(this, ctx, im, sh);

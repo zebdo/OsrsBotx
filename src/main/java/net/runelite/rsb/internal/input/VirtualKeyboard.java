@@ -45,7 +45,8 @@ public class VirtualKeyboard implements KeyListener {
 
 		// why focus gained on each keystroke?
         EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-        eventQueue.postEvent(new FocusEvent(methods.client.getComponent(0),
+		// XXX this is actually mental
+        eventQueue.postEvent(new FocusEvent(methods.proxy.getComponent(0),
                                             FocusEvent.FOCUS_GAINED));
         eventQueue.postEvent(e);
     }

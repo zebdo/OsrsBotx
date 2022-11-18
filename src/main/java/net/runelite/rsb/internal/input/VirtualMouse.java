@@ -147,7 +147,7 @@ public class VirtualMouse {
                 throw new InternalError(e.toString());
             }
 
-			methods.client.getComponent(0).dispatchEvent(e);
+			methods.proxy.getComponent(0).dispatchEvent(e);
 
         } catch (NullPointerException ignored) {
             log.debug("Listener is being re-instantiated on the client", ignored);

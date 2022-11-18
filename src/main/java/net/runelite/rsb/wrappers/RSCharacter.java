@@ -159,8 +159,8 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
      */
     public Point getMinimapLocation() {
         Actor actor = getAccessor();
-        int actorX = methods.client.getBaseX() + (actor.getLocalLocation().getX() / 32 - 2) / 4;
-        int actorY = methods.client.getBaseY() + (actor.getLocalLocation().getY() / 32 - 2) / 4;
+        int actorX = methods.proxy.getBaseX() + (actor.getLocalLocation().getX() / 32 - 2) / 4;
+        int actorY = methods.proxy.getBaseY() + (actor.getLocalLocation().getY() / 32 - 2) / 4;
         return methods.calc.worldToMinimap(actorX, actorY);
     }
 
@@ -213,7 +213,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
     }
 
     public boolean isInteractingWithLocalPlayer() {
-        Player localPlayer = methods.client.getLocalPlayer();
+        Player localPlayer = methods.proxy.getLocalPlayer();
         if (localPlayer == null) return false;
         return getAccessor() == localPlayer.getInteracting();
     }

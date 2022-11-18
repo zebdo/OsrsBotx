@@ -98,12 +98,13 @@ public class RSTile implements Positionable {
      */
     public Tile getTile(MethodContext ctx) {
         if (plane == NO_PLANE_SET) {
-            plane = ctx.client.getPlane();
+            plane = ctx.proxy.getPlane();
         }
+
         WorldPoint worldPoint = new WorldPoint(x, y, plane);
-        if (worldPoint.isInScene(ctx.client)) {
-            LocalPoint localPoint = LocalPoint.fromWorld(ctx.client, worldPoint);
-            return ctx.client.getScene().getTiles()[worldPoint.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+        if (worldPoint.isInScene(ctx.proxy)) {
+            LocalPoint localPoint = LocalPoint.fromWorld(ctx.proxy, worldPoint);
+            return ctx.proxy.getScene().getTiles()[worldPoint.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         }
         return null;
     }

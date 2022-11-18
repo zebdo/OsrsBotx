@@ -157,7 +157,7 @@ public class GroundItems extends MethodProvider {
 		}
 		List<RSGroundItem> list = new ArrayList<>();
 
-		RSTile rsTile = new RSTile(x, y, methods.client.getPlane());
+		RSTile rsTile = new RSTile(x, y, methods.proxy.getPlane());
 		Tile tile = rsTile.getTile(methods);
 		if (tile == null) {
 			return null;

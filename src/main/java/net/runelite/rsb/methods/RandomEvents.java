@@ -26,8 +26,8 @@ public class RandomEvents extends MethodProvider {
 
 			// XXX seems very dangerous - could loop forever
 			while (true) {
-				if (methods.client.getWidget(WidgetIndices.GenieLampWindow.GROUP_INDEX,
-											 WidgetIndices.GenieLampWindow.PARENT_CONTAINER) != null) {
+				if (methods.proxy.getWidget(WidgetIndices.GenieLampWindow.GROUP_INDEX,
+											WidgetIndices.GenieLampWindow.PARENT_CONTAINER) != null) {
 					break;
 				}
 

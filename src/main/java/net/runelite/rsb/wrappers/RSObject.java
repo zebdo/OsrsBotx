@@ -67,11 +67,18 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 		if (obj instanceof GameObject) {
 			Point sceneMin = ((GameObject) obj).getSceneMinLocation();
 			Point sceneMax = ((GameObject) obj).getSceneMaxLocation();
-			WorldPoint worldMin = WorldPoint.fromScene(methods.client, sceneMin.getX(), sceneMin.getY(), methods.client.getPlane());
-			WorldPoint worldMax = WorldPoint.fromScene(methods.client, sceneMax.getX(), sceneMax.getY(), methods.client.getPlane());
+			WorldPoint worldMin = WorldPoint.fromScene(methods.proxy,
+													   sceneMin.getX(),
+													   sceneMin.getY(),
+													   methods.proxy.getPlane());
+			WorldPoint worldMax = WorldPoint.fromScene(methods.proxy,
+													   sceneMax.getX(),
+													   sceneMax.getY(),
+													   methods.proxy.getPlane());
 
 			return new RSArea(new RSTile(worldMin), new RSTile(worldMax));
 		}
+
 		RSTile loc = getLocation();
 		return new RSArea(loc, loc, plane);
 	}

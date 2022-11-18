@@ -37,9 +37,10 @@ public class RSPlayer extends RSCharacter {
 	}
 
 	public boolean isLocalPlayerMoving() {
-		if (methods.client.getLocalDestinationLocation() != null) {
-			return methods.client.getLocalPlayer().getLocalLocation() == methods.client.getLocalDestinationLocation();
+		if (methods.proxy.getLocalDestinationLocation() != null) {
+			return methods.proxy.getLocalPlayer().getLocalLocation() == methods.proxy.getLocalDestinationLocation();
 		}
+
 		return false;
 	}
 

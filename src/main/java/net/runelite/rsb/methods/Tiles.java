@@ -101,8 +101,8 @@ public class Tiles extends MethodProvider {
 		RSTile close = null;
 		for (int x = 0; x < 104; x++) {
 			for (int y = 0; y < 104; y++) {
-				RSTile t = new RSTile(x + methods.client.getBaseX(), y
-						+ methods.client.getBaseY(), methods.client.getPlane());
+				RSTile t = new RSTile(x + methods.proxy.getBaseX(), y
+						+ methods.proxy.getBaseY(), methods.proxy.getPlane());
 				Point s = methods.calc.tileToScreen(t);
 				if (s.getX() != -1 && s.getY() != -1) {
 					if (close == null) {
@@ -131,8 +131,8 @@ public class Tiles extends MethodProvider {
 		RSTile close = null;
 		for (int x = 0; x < 104; x++) {
 			for (int y = 0; y < 104; y++) {
-				RSTile tile = new RSTile(x + methods.client.getBaseX(), y
-						+ methods.client.getBaseY(), methods.client.getPlane());
+				RSTile tile = new RSTile(x + methods.proxy.getBaseX(), y
+						+ methods.proxy.getBaseY(), methods.proxy.getPlane());
 				Point pointOfTile = methods.calc.tileToScreen(tile);
 				if (pointOfTile.getX() != -1 && pointOfTile.getY() != -1) {
 					if (close == null) {

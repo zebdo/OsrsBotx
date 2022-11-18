@@ -141,7 +141,7 @@ public class Game extends MethodProvider {
 	 * @return The currently open interfaceTab if tab recognized else null;
 	 */
 	public InterfaceTab getCurrentTab() {
-		int varcIntValue = methods.client.getVarcIntValue(VarcIntIndices.CURRENT_INTERFACE_TAB);
+		int varcIntValue = methods.proxy.getVarcIntValue(VarcIntIndices.CURRENT_INTERFACE_TAB);
 		return switch (VarcIntValues.valueOf2(varcIntValue)) {
 			case TAB_COMBAT_OPTIONS -> InterfaceTab.COMBAT;
 			case TAB_SKILLS -> InterfaceTab.SKILLS;
@@ -247,7 +247,7 @@ public class Game extends MethodProvider {
 	 * @return <code>true</code> if logged in; otherwise <code>false</code>.
 	 */
 	public boolean isLoggedIn() {
-		return methods.client.getLocalPlayer() != null;
+		return methods.proxy.getLocalPlayer() != null;
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class Game extends MethodProvider {
 	 *         otherwise <code>false</code>.
 	 */
 	public boolean isLoginScreen() {
-		return methods.client.getLocalPlayer() == null;
+		return methods.proxy.getLocalPlayer() == null;
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class Game extends MethodProvider {
 	 * @return The game state.
 	 */
 	public GameState getClientState() {
-		return methods.client.getGameState();
+		return methods.proxy.getGameState();
 	}
 
 	/**
@@ -288,7 +288,7 @@ public class Game extends MethodProvider {
 	 * @return The current plane.
 	 */
 	public int getPlane() {
-		return methods.client.getPlane();
+		return methods.proxy.getPlane();
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class Game extends MethodProvider {
 	 * @return The region base x.
 	 */
 	public int getBaseX() {
-		return methods.client.getBaseX();
+		return methods.proxy.getBaseX();
 	}
 
 	/**
@@ -306,7 +306,7 @@ public class Game extends MethodProvider {
 	 * @return The region base y.
 	 */
 	public int getBaseY() {
-		return methods.client.getBaseY();
+		return methods.proxy.getBaseY();
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class Game extends MethodProvider {
 	 * @return The region base tile.
 	 */
 	public RSTile getMapBase() {
-		return new RSTile(methods.client.getBaseX(), methods.client.getBaseY(), methods.client.getPlane());
+		return new RSTile(methods.proxy.getBaseX(), methods.proxy.getBaseY(), methods.proxy.getPlane());
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class Game extends MethodProvider {
 	 * @return the flags for all the tiles in the current scene
 	 */
 	public byte[][][] getSceneFlags() {
-		return methods.client.getTileSettings();
+		return methods.proxy.getTileSettings();
 	}
 
 	/**

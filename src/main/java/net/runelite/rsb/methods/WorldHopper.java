@@ -8,10 +8,10 @@ public class WorldHopper extends MethodProvider {
     }
 
     public int getWorld() {
-        return methods.client.getWorld();
+        return methods.proxy.getWorld();
     }
 
     public boolean isCurrentWorldMembers() {
-        return methods.client.getWorldType().stream().anyMatch((worldType) -> worldType == WorldType.MEMBERS);
+        return methods.proxy.getWorldType().stream().anyMatch((worldType) -> worldType == WorldType.MEMBERS);
     }
 }

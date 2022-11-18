@@ -599,7 +599,9 @@ public class Inventory extends MethodProvider {
 	 * @return the index of the item selected; otherwise -1
 	 */
 	public int getSelected(Image img, RSWidgetItem[] comps) {
-		BufferedImage im = new BufferedImage(methods.client.getCanvasWidth(), methods.client.getCanvasHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage im = new BufferedImage(methods.proxy.getCanvasWidth(),
+											 methods.proxy.getCanvasHeight(),
+											 BufferedImage.TYPE_INT_ARGB);
 		Graphics graphics = im.getGraphics();
 		graphics.drawImage(img, 0, 0, null);
 		for (int c = 0; c < Math.min(comps.length, 28); ++c) {

@@ -177,7 +177,7 @@ public class Menu extends MethodProvider {
      * @return <code>true</code> if the menu is open; otherwise <code>false</code>.
      */
     public boolean isOpen() {
-        return methods.client.isMenuOpen();
+        return methods.proxy.isMenuOpen();
     }
 
     /**
@@ -239,7 +239,7 @@ public class Menu extends MethodProvider {
      */
     protected int calculateY() {
         if (isOpen()) {
-            final int CANVAS_LENGTH = methods.client.getCanvasHeight();
+            final int CANVAS_LENGTH = methods.proxy.getCanvasHeight();
             MenuEntry[] entries = getEntries();
             int offset = CANVAS_LENGTH - (methods.virtualMouse.getClientPressY() + calculateHeight());
             if (offset < 0 && entries.length >= MAX_DISPLAYABLE_ENTRIES) {
@@ -255,7 +255,7 @@ public class Menu extends MethodProvider {
 
     public MenuEntry[] getEntries() {
         // gets from runelite
-        MenuEntry[] entries = methods.client.getMenuEntries();
+        MenuEntry[] entries = methods.proxy.getMenuEntries();
         MenuEntry[] reversed = new MenuEntry[entries.length];
         for (int i = entries.length - 1, x = 0; i >= 0; i--, x++)
             reversed[i] = entries[x];

@@ -259,7 +259,7 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @return The child component, or null
      */
     public RSWidget getComponent(int idx) {
-        return new RSWidget(methods, methods.client.getWidget(GlobalWidgetInfo.TO_GROUP(this.getId()), idx));
+        return new RSWidget(methods, methods.proxy.getWidget(GlobalWidgetInfo.TO_GROUP(this.getId()), idx));
     }
 
     /**

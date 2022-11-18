@@ -250,7 +250,8 @@ public class Camera extends MethodProvider {
 		if (random(0, 10) < 8) {
 			methods.inputManager.pressKey((char) horizontal);
 		}
-		while (timeToHold.isRunning() && methods.client.getCameraZ() >= lowestCamAltPossible) {
+		while (timeToHold.isRunning() &&
+			   methods.proxy.getCameraZ() >= lowestCamAltPossible) {
 			sleep(10);
 		}
 		methods.inputManager.releaseKey((char) vertical);
@@ -376,7 +377,7 @@ public class Camera extends MethodProvider {
 		// the client uses fixed point radians 0 - 2^14
 		// degrees = yaw * 360 / 2^14 = yaw / 45.5111...
 		// This leaves it on a scale of 45 versus a scale of 360 so we multiply it by 8 to fix that.
-		return (int) Math.abs(methods.client.getCameraYaw() / 45.51 * 8);
+		return (int) Math.abs(methods.proxy.getCameraYaw() / 45.51 * 8);
 	}
 
 	/**
@@ -386,7 +387,7 @@ public class Camera extends MethodProvider {
 	 * @return The current camera altitude percentage.
 	 */
 	public int getPitch() {
-		return (int) ((methods.client.getCameraPitch() - 1024) / 20.48);
+		return (int) ((methods.proxy.getCameraPitch() - 1024) / 20.48);
 	}
 
 	/**
@@ -395,7 +396,7 @@ public class Camera extends MethodProvider {
 	 * @return The x position.
 	 */
 	public int getX() {
-		return methods.client.getCameraX();
+		return methods.proxy.getCameraX();
 	}
 
 	/**
@@ -404,7 +405,7 @@ public class Camera extends MethodProvider {
 	 * @return The y position.
 	 */
 	public int getY() {
-		return methods.client.getCameraY();
+		return methods.proxy.getCameraY();
 	}
 
 	/**
@@ -413,10 +414,8 @@ public class Camera extends MethodProvider {
 	 * @return The z position.
 	 */
 	public int getZ() {
-		return methods.client.getCameraZ();
+		return methods.proxy.getCameraZ();
 	}
-
-
 
 	public enum ROTATION_METHOD {
 		DEFAULT, ONLY_KEYS, ONLY_MOUSE;

@@ -25,8 +25,8 @@ public class InputManager {
 	}
 
 	private boolean isOnCanvas(final int x, final int y) {
-		return (x > 0 && x < bot.getMethodContext().client.getCanvasWidth() &&
-				y > 0 && y < bot.getMethodContext().client.getCanvasHeight());
+		return (x > 0 && x < bot.getMethodContext().proxy.getCanvasWidth() &&
+				y > 0 && y < bot.getMethodContext().proxy.getCanvasHeight());
 	}
 
 	public void clickMouse(final boolean left) {
@@ -75,7 +75,7 @@ public class InputManager {
 		dragLength = 0;
 	}
 
-	// ZZZ not sure this should be here exiter
+	// ZZZ not sure this should be here either
 	public void dragMouse(final int x, final int y) {
 		pressMouse(getX(), getY(), true);
 		sleepNoException(random(300, 500));
@@ -126,8 +126,8 @@ public class InputManager {
 
 			if (!isOnCanvas(getX(), getY())) {
 				log.info(String.format("ZZZ off CANVAS: %d %d",
-									   bot.getMethodContext().client.getCanvasWidth(),
-									   bot.getMethodContext().client.getCanvasHeight()));
+									   bot.getMethodContext().proxy.getCanvasWidth(),
+									   bot.getMethodContext().proxy.getCanvasHeight()));
 			}
 		}
 	}

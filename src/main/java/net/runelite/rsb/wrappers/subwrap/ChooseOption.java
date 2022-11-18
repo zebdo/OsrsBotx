@@ -13,7 +13,7 @@ public class ChooseOption extends Menu {
     }
 
     public RSMenuNode[] getMenuNodes() {
-        MenuEntry[] entries = methods.client.getMenuEntries();
+        MenuEntry[] entries = methods.proxy.getMenuEntries();
         RSMenuNode[] reversed = new RSMenuNode[entries.length];
         for (int i = entries.length - 1, x = 0; i >= 0; i--, x++) {
             int yOff = calculateY() + TOP_OF_MENU_BAR + (MENU_ENTRY_LENGTH * x); //Offset from top of the menu to the entry itself

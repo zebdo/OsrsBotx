@@ -115,7 +115,7 @@ public class Objects extends MethodProvider {
         double dist = -1;
         for (int x = 0; x < 104; x++) {
             for (int y = 0; y < 104; y++) {
-                int distanceToCheck = methods.calc.distanceTo(new WalkerTile(x, y, methods.client.getPlane(), WalkerTile.TYPES.SCENE).toWorldTile());
+                int distanceToCheck = methods.calc.distanceTo(new WalkerTile(x, y, methods.proxy.getPlane(), WalkerTile.TYPES.SCENE).toWorldTile());
                 if (distanceToCheck < distance) {
                     Set<RSObject> objects = getAtLocal(x, y, -1);
                     for (RSObject o : objects) {
@@ -243,8 +243,8 @@ public class Objects extends MethodProvider {
      */
     public RSObject[] getAt(final RSTile t, int mask) {
         Set<RSObject> objects = getAtLocal(
-                t.getWorldLocation().getX() - methods.client.getBaseX(),
-                t.getWorldLocation().getY() - methods.client.getBaseY(), mask);
+                t.getWorldLocation().getX() - methods.proxy.getBaseX(),
+                t.getWorldLocation().getY() - methods.proxy.getBaseY(), mask);
 
 		// zero length array? XXX
         return objects.toArray(new RSObject[0]);
@@ -259,8 +259,8 @@ public class Objects extends MethodProvider {
      */
     public RSObject[] getAllAt(final RSTile t) {
         Set<RSObject> objects = getAtLocal(
-                t.getWorldLocation().getX() - methods.client.getBaseX(),
-                t.getWorldLocation().getY() - methods.client.getBaseY(), -1);
+                t.getWorldLocation().getX() - methods.proxy.getBaseX(),
+                t.getWorldLocation().getY() - methods.proxy.getBaseY(), -1);
         return objects.toArray(new RSObject[objects.size()]);
     }
 
@@ -276,12 +276,12 @@ public class Objects extends MethodProvider {
      */
     private Set<RSObject> getAtLocal(int x, int y, int mask) {
         Set<RSObject> objects = new LinkedHashSet<>();
-        if (methods.client.getTileSettings() == null) {
+        if (methods.proxy.getTileSettings() == null) {
             return objects;
         }
 
-        int plane = methods.client.getPlane();
-        Tile tile = methods.client.getScene().getTiles()[plane][x][y];
+        int plane = methods.proxy.getPlane();
+        Tile tile = methods.proxy.getScene().getTiles()[plane][x][y];
 
         if (tile != null) {
             if (mask == -1 || (mask & 1) == 1) {

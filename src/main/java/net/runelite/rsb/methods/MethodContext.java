@@ -1,8 +1,5 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.api.Client;
-import net.runelite.client.callback.ClientThread;
-
 import net.runelite.rsb.internal.launcher.BotLite;
 
 import net.runelite.rsb.internal.input.VirtualKeyboard;
@@ -16,13 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.rsb.wrappers.subwrap.ChooseOption;
 import net.runelite.rsb.wrappers.subwrap.NPCChat;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 
 /**
- * For internal use to link MethodProviders.
- *
  * @author GigiaJ
  */
 @Slf4j
@@ -40,7 +32,6 @@ public class MethodContext {
 	public final Mouse mouse = new Mouse(this);
 	public final Keyboard keyboard = new Keyboard(this);
 	public final Menu menu = new Menu(this);
-	public final InputManager inputManager;
 	public final NPCs npcs = new NPCs(this);
 	public final Players players = new Players(this);
 	public final Tiles tiles = new Tiles(this);
@@ -63,8 +54,10 @@ public class MethodContext {
 	public final VirtualMouse virtualMouse = new VirtualMouse(this);
 	public final VirtualKeyboard virtualKeyboard = new VirtualKeyboard(this);
 	public final WorldHopper worldHopper = new WorldHopper(this);
-	public final RSClient client;
+
+	public final RSClient proxy;
 	public final BotLite runeLite;
+	public final InputManager inputManager;
 
 	public final ChooseOption chooseOption = new ChooseOption(this);
 	public final NPCChat npcChat = new NPCChat(this);
@@ -73,10 +66,10 @@ public class MethodContext {
 	 * Creates a method context for this client
 	 * @param runeLite The client to provide method contexts for
 	 */
-	public MethodContext(BotLite runeLite) {
+	public MethodContext(BotLite runeLite, RSClient proxy) {
 		this.runeLite = runeLite;
-		this.client = new RSClient(runeLite.getInjector().getInstance(Client.class),
-								   runeLite.getInjector().getInstance(ClientThread.class));
+		this.proxy = proxy;
+
 		this.inputManager = runeLite.getInputManager();
 
         this.bank.assignConstants();

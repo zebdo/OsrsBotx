@@ -16,7 +16,7 @@ public class ClientLocalStorage extends MethodProvider {
 	 *         otherwise <code>new int[0]</code>.
 	 */
 	public int[] getLoadedVarpValues() {
-		int[] varpValuesArray = methods.client.getVarps();
+		int[] varpValuesArray = methods.proxy.getVarps();
 		if (varpValuesArray == null) {
 			return new int[0];
 		}

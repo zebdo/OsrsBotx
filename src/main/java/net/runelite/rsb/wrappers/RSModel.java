@@ -78,7 +78,8 @@ public class RSModel extends MethodProvider {
 		}
 		Polygon[] triangles = getTriangles();
 		if (triangles == null) {
-			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.client, new LocalPoint(getLocalX(), getLocalY()));
+			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.proxy,
+															 new LocalPoint(getLocalX(), getLocalY()));
 			int minX = 0, maxX = 0, minY = 0, maxY = 0;
 			for (int i = 0; i < tilePoly.xpoints.length; i++) {
 				if (i == 0) {
@@ -196,7 +197,8 @@ public class RSModel extends MethodProvider {
 		Polygon[] polys = getTriangles();
 		ArrayList<Point> points = new ArrayList<>();
 		if (polys == null) {
-			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.client, new LocalPoint(getLocalX(), getLocalY()));
+			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.proxy,
+															 new LocalPoint(getLocalX(), getLocalY()));
 			int minX = 0, maxX = 0, minY = 0, maxY = 0;
 			for (int i = 0; i < tilePoly.xpoints.length; i++) {
 				if ( i == 0) {
@@ -238,7 +240,8 @@ public class RSModel extends MethodProvider {
 		try {
 			Polygon[] tris = getTriangles();
 			if (tris == null) {
-				Polygon tilePoly = Perspective.getCanvasTilePoly(methods.client, new LocalPoint(getLocalX(), getLocalY()));
+				Polygon tilePoly = Perspective.getCanvasTilePoly(methods.proxy,
+																 new LocalPoint(getLocalX(), getLocalY()));
 				int minX = 0, maxX = 0, minY = 0, maxY = 0;
 				for (int i = 0; i < tilePoly.xpoints.length; i++) {
 					if ( i == 0) {
@@ -297,9 +300,14 @@ public class RSModel extends MethodProvider {
 		int localX = getLocalX();
 		int localY = getLocalY();
 
-		final int tileHeight = Perspective.getTileHeight(methods.client, new LocalPoint(localX, localY), methods.client.getPlane());
+		final int tileHeight = Perspective.getTileHeight(methods.proxy,
+														 new LocalPoint(localX, localY), methods.proxy.getPlane());
 
-		Perspective.modelToCanvas(methods.client, count, localX, localY, tileHeight, getOrientation(), model.getVerticesX(), model.getVerticesZ(), model.getVerticesY(), x2d, y2d);
+		// XXX is this right?  Looks very wrong?
+		Perspective.modelToCanvas(methods.proxy, count, localX, localY,
+								  tileHeight, getOrientation(),
+								  model.getVerticesX(), model.getVerticesZ(),
+								  model.getVerticesY(), x2d, y2d);
 		ArrayList polys = new ArrayList(model.getFaceCount());
 
 		int[] trianglesX = model.getFaceIndices1();
@@ -363,7 +371,8 @@ public class RSModel extends MethodProvider {
 		int height = methods.calc.tileHeight(locX, locY);
 		Polygon[] triangles = this.getTriangles();
 		if (triangles == null) {
-			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.client, new LocalPoint(getLocalX(), getLocalY()));
+			Polygon tilePoly = Perspective.getCanvasTilePoly(methods.proxy,
+															 new LocalPoint(getLocalX(), getLocalY()));
 			int minX = 0, maxX = 0, minY = 0, maxY = 0;
 			for (int i = 0; i < tilePoly.xpoints.length; i++) {
 				if (i == 0) {
@@ -474,8 +483,14 @@ public class RSModel extends MethodProvider {
 		int[] x2d = new int[8];
 		int[] y2d = new int[8];
 
-		Perspective.modelToCanvas(methods.client, 8, getLocalX(), getLocalY(), Perspective.getTileHeight(methods.client, new LocalPoint(getLocalX(), getLocalY()), methods.client.getPlane()), getOrientation(), xa, ya, za, x2d, y2d);
+		var h = Perspective.getTileHeight(methods.proxy,
+										  new LocalPoint(getLocalX(), getLocalY()),
+										  methods.proxy.getPlane());
+		Perspective.modelToCanvas(methods.proxy, 8, getLocalX(),
+								  getLocalY(), h, getOrientation(), xa, ya, za, x2d, y2d);
 		SimplePolygon simplePolygon = Jarvis.convexHull(x2d, y2d);
-		return new Polygon(simplePolygon.getX(), simplePolygon.getY(), simplePolygon.size());
+		return new Polygon(simplePolygon.getX(),
+						   simplePolygon.getY(),
+						   simplePolygon.size());
 	}
 }

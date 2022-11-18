@@ -562,8 +562,9 @@ public class Bank extends MethodProvider {
 	 */
 	public int getCurrentTab() {
 		if (isOpen()) {
-			return methods.client.getVarbitValue(VarbitIndices.BANK_ACTIVE_TAB);
+			return methods.proxy.getVarbitValue(VarbitIndices.BANK_ACTIVE_TAB);
 		}
+
 		return -1;
 	}
 
@@ -662,7 +663,7 @@ public class Bank extends MethodProvider {
 	 * @return <code>true</code> if currently searching the bank.
 	 */
 	public boolean isSearchOpen() {
-		return methods.client.getVarcIntValue(VarcIntIndices.CHATBOX_INPUT_TYPE)
+		return methods.proxy.getVarcIntValue(VarcIntIndices.CHATBOX_INPUT_TYPE)
 				== VarcIntValues.SEARCH.getValue();
 	}
 

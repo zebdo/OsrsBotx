@@ -31,7 +31,7 @@ public class Players extends MethodProvider {
 	 * @return An <code>RSPlayer</code> object representing the player.
 	 */
 	public RSPlayer getMyPlayer() {
-		return new RSPlayer(methods, methods.client.getLocalPlayer());
+		return new RSPlayer(methods, methods.proxy.getLocalPlayer());
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class Players extends MethodProvider {
 	 * @return All valid RSPlayers.
 	 */
 	public RSPlayer[] getAll(final Filter<RSPlayer> filter) {
-		Player[] playerArray = methods.client.getCachedPlayers();
+		Player[] playerArray = methods.proxy.getCachedPlayers();
 		Set<RSPlayer> players = new HashSet<>();
 		for (Player player : playerArray) {
 			if (player != null) {
@@ -75,7 +75,7 @@ public class Players extends MethodProvider {
 	public RSPlayer getNearest(final Filter<RSPlayer> filter) {
 		int min = 20;
 		RSPlayer closest = null;
-		Player[] players = methods.client.getCachedPlayers();
+		Player[] players = methods.proxy.getCachedPlayers();
 		for (Player player : players) {
 			if (player == null) {
 				continue;

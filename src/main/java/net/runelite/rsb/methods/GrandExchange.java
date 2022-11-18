@@ -459,7 +459,8 @@ public class GrandExchange extends MethodProvider {
 	 * @return <code>True</code> unless we can't buy
 	 */
 	public boolean buy(int id, int quantity, int priceChange, boolean roundQuantity) {
-		return buy(methods.client.getItemDefinition(id).getName(), quantity, priceChange, roundQuantity);
+		return buy(methods.proxy.getItemDefinition(id).getName(),
+				   quantity, priceChange, roundQuantity);
 	}
 
 	/**
@@ -578,7 +579,8 @@ public class GrandExchange extends MethodProvider {
 	 * @return <code>True</code> unless we can't buy
 	 */
 	public boolean sell(int id, int quantity, int priceChange, boolean roundQuantity) {
-		return sell(methods.client.getItemDefinition(id).getName(), quantity, priceChange, roundQuantity);
+		return sell(methods.proxy.getItemDefinition(id).getName(),
+					quantity, priceChange, roundQuantity);
 	}
 
 	/**
