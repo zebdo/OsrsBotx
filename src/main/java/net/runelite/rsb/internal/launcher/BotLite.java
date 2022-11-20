@@ -121,8 +121,9 @@ public class BotLite extends RuneLite {
 			} else {
 				CacheProvider.fillFileCache();
 			}
-		} catch (IOException e) {
-			System.out.print("FUCK");
+		} catch (Exception e) {
+			log.warn("checkForCacheAndLoad failed " + e);
+			e.printStackTrace();
 		}
 	}
 
