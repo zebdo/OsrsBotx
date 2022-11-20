@@ -31,11 +31,10 @@ public class FileScriptSource implements ScriptSource {
 		if (file != null) {
 			if (file.isDirectory()) {
 				try {
-
 					ClassLoader scriptLoader = new ScriptClassLoader(file.toURI().toURL());
 					for (File file : Objects.requireNonNull(file.listFiles())) {
 						if (isJar(file)) {
-							log.warn("guess we get here!");
+							log.warn(String.format("guess we get here! %s",file));
 							load(new ScriptClassLoader(getJarUrl(file)), scriptDefinitions, new JarFile(file));
 						} else {
 							load(scriptLoader, scriptDefinitions, file, "");
@@ -53,6 +52,7 @@ public class FileScriptSource implements ScriptSource {
 				}
 			}
 		}
+
 		return scriptDefinitions;
 	}
 
@@ -118,13 +118,8 @@ public class FileScriptSource implements ScriptSource {
 			log.warn("and we add to our scripts here (well the defintion) {}", name);
 			FileScriptDefinition def = new FileScriptDefinition();
 			ScriptManifest manifest = clazz.getAnnotation(ScriptManifest.class);
-			def.id = 0;
 			def.name = manifest.name();
 			def.authors = manifest.authors();
-			def.version = manifest.version();
-			def.keywords = manifest.keywords();
-			def.description = manifest.description();
-			def.website = manifest.website();
 			def.clazz = clazz;
 			def.source = this;
 			scripts.add(def);
