@@ -9,8 +9,6 @@ import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.service.FileScriptSource;
 import net.runelite.rsb.service.ScriptDefinition;
-import net.runelite.rsb.service.ScriptSource;
-import net.runelite.rsb.service.ServiceException;
 import net.runelite.rsb.internal.globval.GlobalConfiguration;
 
 import javax.swing.*;
@@ -42,7 +40,8 @@ public class ScriptSelector extends JDialog {
 	// ZZZ none of these should be here
 	private BotLite bot;
 	private List<ScriptDefinition> scripts;
-	static ScriptSource SRC_PRECOMPILED = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsPrecompiledDirectory()));
+
+	static FileScriptSource SRC_PRECOMPILED = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsPrecompiledDirectory()));
 
 	// ZZZ only ScriptHandler (or rename ScriptManager)
 
@@ -92,10 +91,10 @@ public class ScriptSelector extends JDialog {
 	public void startAction() {
 		// forward to manager
 		ScriptDefinition def = model.getDefinition(table.getSelectedRow());
-		try {
-			bot.getScriptHandler().runScript(def.source.load(def));
-		} catch (ServiceException exception) {
-			exception.printStackTrace();
+
+		Script s = def.source.instantiate(def);
+		if (s != null) {
+			bot.getScriptHandler().runScript(def.source.instantiate(def));
 		}
 	}
 

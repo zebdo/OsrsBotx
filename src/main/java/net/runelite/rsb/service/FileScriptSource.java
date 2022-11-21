@@ -18,7 +18,7 @@ import java.util.jar.JarFile;
  * @author GigiaJ
  */
 @Slf4j
-public class FileScriptSource implements ScriptSource {
+public class FileScriptSource {
 
 	private File file;
 
@@ -28,44 +28,32 @@ public class FileScriptSource implements ScriptSource {
 
 	public List<ScriptDefinition> list() {
 		LinkedList<ScriptDefinition> scriptDefinitions = new LinkedList<>();
-		if (file != null) {
-			if (file.isDirectory()) {
-				try {
-					ClassLoader scriptLoader = new ScriptClassLoader(file.toURI().toURL());
-					for (File file : Objects.requireNonNull(file.listFiles())) {
-						if (isJar(file)) {
-							log.warn(String.format("guess we get here! %s",file));
-							load(new ScriptClassLoader(getJarUrl(file)), scriptDefinitions, new JarFile(file));
-						} else {
-							load(scriptLoader, scriptDefinitions, file, "");
-						}
-					}
-				} catch (IOException ioEx) {
-					log.debug("Failed to list files", ioEx);
-				}
-			} else if (isJar(file)) {
-				try {
-					ClassLoader scriptLoader = new ScriptClassLoader(getJarUrl(file));
-					load(scriptLoader, scriptDefinitions, new JarFile(file));
-				} catch (IOException ioEx) {
-					log.debug("Failed to list files", ioEx);
-				}
+		assert (file != null);
+		assert (file.isDirectory());
+
+		try {
+			ClassLoader scriptLoader = new ScriptClassLoader(file.toURI().toURL());
+			for (File file : Objects.requireNonNull(file.listFiles())) {
+				assert(isJar(file));
+				load(new ScriptClassLoader(getJarUrl(file)), scriptDefinitions, new JarFile(file));
 			}
+		} catch (IOException ioEx) {
+			log.debug("Failed to list files", ioEx);
+			ioEx.printStackTrace();
 		}
 
 		return scriptDefinitions;
 	}
 
-
-	public Script load(ScriptDefinition def) throws ServiceException {
-		log.warn("not here X!");
-		if (!(def instanceof FileScriptDefinition fsd)) {
-			throw new IllegalArgumentException("Invalid definition!");
-		}
+	public Script instantiate(ScriptDefinition def) {
 		try {
-			return fsd.clazz.asSubclass(Script.class).newInstance();
-		} catch (Exception ex) {
-			throw new ServiceException(ex.toString());
+			return def.clazz.asSubclass(Script.class).newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -77,30 +65,12 @@ public class FileScriptSource implements ScriptSource {
 			String name = e.getName().replace('/', '.');
 			String ext = ".class";
 			if (name.endsWith(ext) && !name.contains("$")) {
-				load(loader, scripts, name.substring(0, name.length() - ext.length()));
+				loadClazz(loader, scripts, name.substring(0, name.length() - ext.length()));
 			}
 		}
 	}
 
-	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, File file, String prefix) {
-		log.warn("not here 1!");
-		if (file.isDirectory()) {
-			if (!file.getName().startsWith(".")) {
-				for (File f : file.listFiles()) {
-					load(loader, scripts, f, prefix + file.getName() + ".");
-				}
-			}
-		} else {
-			String name = prefix + file.getName();
-			String ext = ".class";
-			if (name.endsWith(ext) && !name.startsWith(".") && !name.contains("!") && !name.contains("$")) {
-				name = name.substring(0, name.length() - ext.length());
-				load(loader, scripts, name);
-			}
-		}
-	}
-
-	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, String name) {
+	private void loadClazz(ClassLoader loader, LinkedList<ScriptDefinition> scripts, String name) {
 		log.warn("and now here {}", name);
 
 		Class<?> clazz;
@@ -116,7 +86,7 @@ public class FileScriptSource implements ScriptSource {
 
 		if (clazz.isAnnotationPresent(ScriptManifest.class)) {
 			log.warn("and we add to our scripts here (well the defintion) {}", name);
-			FileScriptDefinition def = new FileScriptDefinition();
+			ScriptDefinition def = new ScriptDefinition();
 			ScriptManifest manifest = clazz.getAnnotation(ScriptManifest.class);
 			def.name = manifest.name();
 			def.authors = manifest.authors();
@@ -134,14 +104,6 @@ public class FileScriptSource implements ScriptSource {
 		URL url = file.toURI().toURL();
 		url = new URL("jar:" + url.toExternalForm() + "!/");
 		return url;
-	}
-
-	private static class FileScriptDefinition extends ScriptDefinition {
-		Class<?> clazz;
-	}
-
-	public String toString() {
-		return this.file.getAbsolutePath();
 	}
 
 }

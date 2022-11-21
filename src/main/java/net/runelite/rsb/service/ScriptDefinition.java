@@ -8,6 +8,7 @@ public class ScriptDefinition {
 
 	public String[] authors;
 
-	public ScriptSource source;
+	public FileScriptSource source;
 
+	Class<?> clazz;
 }
