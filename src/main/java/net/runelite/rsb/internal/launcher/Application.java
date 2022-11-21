@@ -1,7 +1,6 @@
 package net.runelite.rsb.internal.launcher;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.internal.globval.GlobalConfiguration;
 
 import java.util.*;
 

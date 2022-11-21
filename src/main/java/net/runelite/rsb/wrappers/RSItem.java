@@ -5,7 +5,6 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.TileItem;
 import net.runelite.cache.definitions.ItemDefinition;
 import net.runelite.cache.definitions.ObjectDefinition;
-import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.methods.MethodProvider;
 import net.runelite.rsb.wrappers.common.CacheProvider;

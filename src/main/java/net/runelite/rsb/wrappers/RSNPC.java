@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import net.runelite.api.*;
 import net.runelite.cache.definitions.NpcDefinition;
-import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.wrappers.common.CacheProvider;
 

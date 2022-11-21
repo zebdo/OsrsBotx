@@ -140,13 +140,12 @@ public class BotLite extends RuneLite {
 	}
 
     public BotLite() throws Exception {
+		this.checkForCacheAndLoad();
 		sh = new ScriptHandler(this);
 
         Executors.newSingleThreadScheduledExecutor().submit(() -> {
             while (this.getClient() == null) {
 			}
-
-			this.checkForCacheAndLoad();
 
 			im = new InputManager(this);
 			proxy = new RSClient(injector.getInstance(Client.class),
