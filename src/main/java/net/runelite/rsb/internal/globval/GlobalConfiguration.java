@@ -17,31 +17,8 @@ public class GlobalConfiguration {
 	public static class Paths {
 
 		public static class Resources {
-			public static final String ROOT = "../../../net.runelite.rsb";
-			public static final String ROOT_IMG = ROOT ;//+ "/images";
 			public static final String ICON = GlobalConfiguration.class.getResource("rsb/plugin/rsb.png").getPath();
-			public static final String VERSION = ROOT + "/version.txt";
 		}
-
-		public static class URLs {
-			private static final String BASE = "https://github.com/OSRSB/";
-			public static final String FORUMS = "https://osrsbot.org/";
-			public static final String DOWNLOAD = BASE + "releases";
-			public static final String UPDATE = BASE + "modscript";
-			public static final String WEB = BASE + "webwalker.gz";
-			public static final String PROJECT = BASE + "RSB";
-			public static final String VERSION = BASE + PROJECT +"/version.txt";
-			public static final String SITE = BASE + "RSBSite-PlaceHolder-";
-			public static final String SDN_CONTROL = BASE + "sdn-control";
-			public static final String AD_INFO = BASE + "botad-info";
-		}
-
-		public static final String COMPILE_SCRIPTS_BAT = "Compile-Scripts.bat";
-		public static final String COMPILE_SCRIPTS_SH = "compile-scripts.sh";
-		public static final String COMPILE_FIND_JDK = "FindJDK.bat";
-
-		public static final String SCRIPTS_NAME_SRC = "scripts";
-		public static final String SCRIPTS_NAME_OUT = "Scripts";
 
 		/**
 		 * Retrieves the home directory using the operating system specific
@@ -73,78 +50,12 @@ public class GlobalConfiguration {
 			return Paths.getOsrsBotDirectory() + File.separator + "Logs";
 		}
 
-		public static String getMenuCache() {
-			return Paths.getSettingsDirectory() + File.separator + "Menu.txt";
-		}
-
-		public static String getPathCache() {
-			return Paths.getSettingsDirectory() + File.separator + "path.txt";
-		}
-
-		public static String getBootCache() {
-			return Paths.getSettingsDirectory() + File.separator + "boot.txt";
-		}
-
-		public static String getUIDsFile() {
-			return Paths.getSettingsDirectory() + File.separator + "uid.txt";
-		}
-
-		public static String getScreenshotsDirectory() {
-			return Paths.getOsrsBotDirectory() + File.separator + "Screenshots";
-		}
-
 		public static String getScriptsDirectory() {
-			return Paths.getOsrsBotDirectory() + File.separator + Paths.SCRIPTS_NAME_OUT;
-		}
-		
-
-		public static String getScriptsSourcesDirectory() {
-			return Paths.getScriptsDirectory() + File.separator + "Sources";
-		}
-
-		public static String getScriptsPrecompiledDirectory() {
-			return Paths.getScriptsDirectory() + File.separator + "Precompiled";
-		}
-
-		public static String getScriptsNetworkDirectory() {
-			return Paths.getScriptsDirectory() + File.separator + "Network";
+			return Paths.getOsrsBotDirectory() + File.separator + "Scripts";
 		}
 
 		public static String getCacheDirectory() {
 			return Paths.getOsrsBotDirectory() + File.separator + "Cache";
-		}
-
-
-		public static String getScriptsExtractedCache() {
-			return	Paths.getCacheDirectory() + File.separator + "script.dat";
-		}
-
-		public static String getVersionCache() {
-			return Paths.getCacheDirectory() + File.separator + "info.dat";
-		}
-
-		public static String getModScriptCache() {
-			return Paths.getCacheDirectory() + File.separator + "ms.dat";
-		}
-
-		public static String getClientCache() {
-			return Paths.getCacheDirectory() + File.separator + "client.dat";
-		}
-
-		public static String getWebCache() {
-			return Paths.getCacheDirectory() + File.separator + "web.dat";
-		}
-
-		public static String getHackCache() {
-			return Paths.getCacheDirectory() + File.separator + "hack.dat";
-		}
-
-		public static String getSettingsDirectory() {
-			return Paths.getOsrsBotDirectory() + File.separator + "Settings";
-		}
-
-		public static String getMenuBarPrefs() {
-			return Paths.getSettingsDirectory() + File.separator + "Menu.txt";
 		}
 
 		public static String getUnixHome() {
@@ -159,48 +70,50 @@ public class GlobalConfiguration {
 		 */
 		public static String getRuneLiteGameCacheDirectory() {
 			return System.getProperty("user.home") + File.separator + ".runelite" +
-					File.separator + "jagexcache" + File.separator + "oldschool" + File.separator + "LIVE" + File.separator;
+				File.separator + "jagexcache" + File.separator + "oldschool" + File.separator + "LIVE" + File.separator;
 		}
 
 		/**
 		 * Gets the bot directory where the object cache is stored.
 		 * @return	the object cache directory
 		 */
-		public static String getObjectsCacheDirectory() {return Paths.getCacheDirectory() + File.separator + "Objects" + File.separator;}
+		public static String getObjectsCacheDirectory() {
+			return Paths.getCacheDirectory() + File.separator + "Objects" + File.separator;
+		}
 
 		/**
 		 * Gets the bot directory where the sprites cache is stored.
 		 * @return	the sprites cache directory
 		 */
-		public static String getSpritesCacheDirectory() {return Paths.getCacheDirectory() + File.separator + "Sprites" + File.separator;}
+		public static String getSpritesCacheDirectory() {
+			return Paths.getCacheDirectory() + File.separator + "Sprites" + File.separator;
+		}
 
 		/**
 		 * Gets the bot directory where the npcs cache is stored.
 		 * @return	the npcs cache directory
 		 */
-		public static String getNPCsCacheDirectory() {return Paths.getCacheDirectory() + File.separator + "NPCs" + File.separator;}
+		public static String getNPCsCacheDirectory() {
+			return Paths.getCacheDirectory() + File.separator + "NPCs" + File.separator;
+		}
 
 		/**
 		 * Gets the bot directory where the items cache is stored.
 		 * @return	the items cache directory
 		 */
-		public static String getItemsCacheDirectory() {return Paths.getCacheDirectory() + File.separator + "Items" + File.separator;}
+		public static String getItemsCacheDirectory() {
+			return Paths.getCacheDirectory() + File.separator + "Items" + File.separator;
+		}
 	}
 
 	public static final String NAME = "OsrsBot";
-	public static final String NAME_LOWERCASE = NAME.toLowerCase();
 	private static final OperatingSystem CURRENT_OS;
-	public static boolean RUNNING_FROM_JAR = false;
-	public static final boolean SCRIPT_DRM = true;
 
 	/**
 	 * When executed it starts up the general configurations and paths as well as determines what files will be auto-generated
 	 */
 	static {
 		final URL resource = GlobalConfiguration.class.getProtectionDomain().getCodeSource().getLocation();
-		if (resource.toString().contains("jar")) {
-			GlobalConfiguration.RUNNING_FROM_JAR = true;
-		}
 		final String os = System.getProperty("os.name");
 		if (os.contains("Mac")) {
 			CURRENT_OS = OperatingSystem.MAC;
@@ -211,23 +124,13 @@ public class GlobalConfiguration {
 		} else {
 			CURRENT_OS = OperatingSystem.UNKNOWN;
 		}
+
+		// This is where folders and files are generated on start-up
 		final ArrayList<String> dirs = new ArrayList<>();
-		//This is where folders and files are generated on start-up
 		dirs.add(Paths.getOsrsBotDirectory());
 		dirs.add(Paths.getLogsDirectory());
-		dirs.add(Paths.getCacheDirectory());
-		dirs.add(Paths.getSettingsDirectory());
 		dirs.add(Paths.getScriptsDirectory());
-		dirs.add(Paths.getScriptsSourcesDirectory());
-		dirs.add(Paths.getScriptsPrecompiledDirectory());
-
-
-		if (GlobalConfiguration.RUNNING_FROM_JAR) {
-			dirs.add(Paths.getScriptsDirectory());
-			dirs.add(Paths.getScriptsSourcesDirectory());
-			dirs.add(Paths.getScriptsPrecompiledDirectory());
-		}
-
+		dirs.add(Paths.getCacheDirectory());
 
 		for (final String name : dirs) {
 			final File dir = new File(name);
@@ -235,36 +138,8 @@ public class GlobalConfiguration {
 				dir.mkdirs();
 			}
 		}
-		final ByteArrayOutputStream logout = new ByteArrayOutputStream();
-		if (GlobalConfiguration.RUNNING_FROM_JAR) {
-			String path = resource.toString();
-			try {
-				path = URLDecoder.decode(path, "UTF-8");
-			} catch (final UnsupportedEncodingException ignored) {
-			}
-			final String prefix = "jar:file:/";
-			if (path.indexOf(prefix) == 0) {
-				path = path.substring(prefix.length());
-				path = path.substring(0, path.indexOf('!'));
-				if (File.separatorChar != '/') {
-					path = path.replace('/', File.separatorChar);
-				}
-				try {
-					final File pathfile = new File(Paths.getPathCache());
-					if (pathfile.exists()) {
-						pathfile.delete();
-					}
-					pathfile.createNewFile();
-					Writer out = new BufferedWriter(new FileWriter(Paths.getPathCache()));
-					out.write(path);
-					out.close();
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
-	
+
 	public static URL getResourceURL(final String path) throws MalformedURLException {
 		return new File(path).toURI().toURL();
 	}

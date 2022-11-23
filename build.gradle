@@ -11,7 +11,6 @@ repositories {
     mavenCentral()
 }
 
-
 def lastSupportedVersion = "1.9.3"
 def runeLiteVersion = getRuneLiteVersion()
 def supportedCheck = false
@@ -107,18 +106,6 @@ task connectedVPN {
    }
 }
 
-task botRun(type: JavaExec) {
-    group = "Execution"
-    description = "Runs the main method within RSB"
-    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
-    getMainClass() set "net.runelite.rsb.internal.launcher.Application"
-    jvmArgs "-debug"
-    args "--bot-runelite --developer-mode".split(" ")
-
-    dependsOn(connectedVPN)
-    dependsOn(jar)
-}
-
 compileKotlin {
     kotlinOptions {
         jvmTarget = "17"
@@ -129,4 +116,16 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+task botRun(type: JavaExec) {
+    group = "Execution"
+    description = "Runs the main method within RSB"
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
+    getMainClass() set "net.runelite.rsb.internal.launcher.Application"
+    jvmArgs "-debug"
+    args "--bot-runelite --developer-mode".split(" ")
+
+    dependsOn(connectedVPN)
+    dependsOn(jar)
 }
