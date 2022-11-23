@@ -18,19 +18,24 @@ import java.util.ArrayList;
 /**
  * Bank related operations.
  */
+// XXX tmp MethodProvider
 public class Bank extends MethodProvider {
-	public static int[] BANKERS;
-	public static int[] BANK_DEPOSIT_BOX;
-	public static int[] BANK_CHESTS;
-	public static int[] BANK_BOOTHS;
-	public static Point[] UNREACHABLE_BANKERS = {
-			new Point(3191, 3445),
-			new Point(3180, 3433) // VARROCK EAST
+	private int[] BANKERS;
+	private int[] BANK_DEPOSIT_BOX;
+	private int[] BANK_CHESTS;
+	private int[] BANK_BOOTHS;
+	private Point[] UNREACHABLE_BANKERS = {
+		new Point(3191, 3445),
+		new Point(3180, 3433) // VARROCK EAST
 	};
 
+	private MethodContext ctx;
 	Bank(final MethodContext ctx) {
 		super(ctx);
+		this.ctx = ctx;
+		this.assignConstants();
 	}
+
 
 	/**
 	 * Assigns the ID constants for all the banking objects in RuneScape
@@ -67,7 +72,7 @@ public class Bank extends MethodProvider {
 		BANK_DEPOSIT_BOX = toIntArray(bankDepositBox);
 	}
 
-	private static int[] toIntArray(ArrayList<Integer> list) {
+	private int[] toIntArray(ArrayList<Integer> list) {
 		int[] ret = new int[list.size()];
 		for(int i = 0;i < ret.length;i++)
 			ret[i] = list.get(i);
@@ -90,11 +95,11 @@ public class Bank extends MethodProvider {
 	 * @return <code>true</code> if the deposit box interface is open; otherwise <code>false</code>.
 	 */
 	public boolean isDepositOpen() {
-		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX).isValid();
+		return ctx.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX).isValid();
 	}
 
 	public boolean isCollectionOpen() {
-		RSWidget widget = methods.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
+		RSWidget widget = ctx.interfaces.get(WidgetIndices.CollectionBox.GROUP_INDEX);
 		return widget.isValid() && widget.isVisible();
 	}
 
@@ -105,15 +110,15 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean close() {
 		if (isOpen()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_DYNAMIC_CONTAINER)
-					.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 1000));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_DYNAMIC_CONTAINER)
+				.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
+			ctx.sleepRandom(500, 1000);
 			return !isOpen();
 		}
 		if (isDepositOpen()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_DYNAMIC_COMPONENTS)
-					.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 1000));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_DYNAMIC_COMPONENTS)
+				.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
+			ctx.sleepRandom(500, 1000);
 			return !isDepositOpen();
 		}
 		return false;
@@ -121,11 +126,11 @@ public class Bank extends MethodProvider {
 
 	public boolean closeCollection() {
 		if (isCollectionOpen()) {
-			RSWidget w = methods.interfaces.getComponent(WidgetIndices.CollectionBox.GROUP_INDEX,
-														 WidgetIndices.CollectionBox.DYNAMIC_CONTAINER);
+			RSWidget w = ctx.interfaces.getComponent(WidgetIndices.CollectionBox.GROUP_INDEX,
+													 WidgetIndices.CollectionBox.DYNAMIC_CONTAINER);
 
 			w.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick();
-			sleep(random(500, 1000));
+			ctx.sleepRandom(500, 1000);
 			return !isOpen();
 		}
 
@@ -138,7 +143,7 @@ public class Bank extends MethodProvider {
 	 * @return The bank <code>RSWidget</code>.
 	 */
 	public RSWidget getInterface() {
-		return methods.interfaces.get(WidgetIndices.Bank.GROUP_INDEX);
+		return ctx.interfaces.get(WidgetIndices.Bank.GROUP_INDEX);
 	}
 
 	/**
@@ -147,18 +152,18 @@ public class Bank extends MethodProvider {
 	 * @return The deposit box <code>RSWidget</code>.
 	 */
 	public RSWidget getBoxInterface() {
-		return methods.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX);
+		return ctx.interfaces.get(WidgetIndices.DepositBox.GROUP_INDEX);
 	}
 
 	public int getAvailableBankSpace() {
 		if (isOpen()) {
-			return Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.BANK_ITEM_MAX).getText())
-					- Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.BANK_ITEM_COUNT).getText());
+			return Integer.parseInt(ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_ITEM_MAX).getText())
+					- Integer.parseInt(ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_ITEM_COUNT).getText());
 		}
 		return -1;
 	}
 
-	private static class ReachableBankerFilter implements Filter<RSNPC> {
+	private class ReachableBankerFilter implements Filter<RSNPC> {
 		@Override
 		public boolean test(RSNPC npc) {
 			final int id = npc.getID();
@@ -182,7 +187,7 @@ public class Bank extends MethodProvider {
 		}
 	}
 
-	private static class ValidBankFilter implements Filter<RSObject> {
+	private class ValidBankFilter implements Filter<RSObject> {
 		private int[] validIds;
 
 		public ValidBankFilter(int[] validIds) {
@@ -219,25 +224,24 @@ public class Bank extends MethodProvider {
 		}
 	}
 
-
 	public Object getNearest() {
-		RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
-		RSNPC banker = methods.npcs.getNearest(new ReachableBankerFilter());
-		RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
+		RSObject bankBooth = ctx.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
+		RSNPC banker = ctx.npcs.getNearest(new ReachableBankerFilter());
+		RSObject bankChest = ctx.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
 
 		/* Find the closest one, others are set to null. Remember distance and tile. */
 		int lowestDist = Integer.MAX_VALUE;
 		RSTile tile;
 		if (bankBooth != null) {
 			tile = bankBooth.getLocation();
-			lowestDist = methods.calc.distanceTo(tile);
+			lowestDist = ctx.calc.distanceTo(tile);
 		}
-		if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
+		if (banker != null && ctx.calc.distanceTo(banker) < lowestDist) {
 			tile = banker.getLocation();
-			lowestDist = methods.calc.distanceTo(tile);
+			lowestDist = ctx.calc.distanceTo(tile);
 			bankBooth = null;
 		}
-		if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+		if (bankChest != null && ctx.calc.distanceTo(bankChest) < lowestDist) {
 			bankBooth = null;
 			banker = null;
 		}
@@ -254,54 +258,54 @@ public class Bank extends MethodProvider {
 	public boolean open() {
 		if (isOpen()) { return true; }
 		try {
-			if (methods.menu.isOpen()) {
-				methods.mouse.moveSlightly();
-				sleep(random(20, 30));
+			if (ctx.menu.isOpen()) {
+				ctx.mouse.moveSlightly();
+				ctx.sleepRandom(20, 30);
 			}
-			RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
-			RSNPC banker = null; //methods.npcs.getNearest(new ReachableBankerFilter());
-			RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
+			RSObject bankBooth = ctx.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
+			RSNPC banker = null; //ctx.npcs.getNearest(new ReachableBankerFilter());
+			RSObject bankChest = ctx.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
 			/* Find the closest one, others are set to null. Remember distance and tile. */
 			int lowestDist = Integer.MAX_VALUE;
 			RSTile tile = null;
 			if (bankBooth != null) {
 				tile = bankBooth.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
+				lowestDist = ctx.calc.distanceTo(tile);
 			}
-			if (banker != null && methods.calc.distanceTo(banker) < lowestDist) {
+			if (banker != null && ctx.calc.distanceTo(banker) < lowestDist) {
 				tile = banker.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
+				lowestDist = ctx.calc.distanceTo(tile);
 				bankBooth = null;
 			}
-			if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+			if (bankChest != null && ctx.calc.distanceTo(bankChest) < lowestDist) {
 				tile = bankChest.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
+				lowestDist = ctx.calc.distanceTo(tile);
 				bankBooth = null;
 				banker = null;
 			}
 			/* Open closest one, if any found */
-			if (lowestDist < 5 && methods.calc.tileOnMap(tile) && methods.calc.canReach(tile, true)) {
+			if (lowestDist < 5 && ctx.calc.tileOnMap(tile) && ctx.calc.canReach(tile, true)) {
 				boolean didAction = false;
 				if (bankBooth != null) {
 					didAction = bankBooth.doAction("Bank") || bankBooth.doAction("Use-Quickly");
 				} else if (banker != null) {
 					didAction = banker.doAction("Bank", "Banker");
 				} else if (bankChest != null) {
-					didAction = bankChest.doAction("Bank") || methods.menu.doAction("Use");
+					didAction = bankChest.doAction("Bank") || ctx.menu.doAction("Use");
 				}
 				if (didAction) {
 					int count = 0;
 					while (!isOpen() && ++count < 10) {
-						sleep(random(200, 400));
-						if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+						ctx.sleepRandom(200, 400);
+						if (ctx.players.getMyPlayer().isLocalPlayerMoving()) {
 							count = 0;
 						}
 					}
 				} else {
-					methods.camera.turnTo(tile);
+					ctx.camera.turnTo(tile);
 				}
 			} else if (tile != null) {
-				methods.walking.walkTileMM(tile);
+				ctx.walking.walkTileMM(tile);
 			}
 			return isOpen();
 		} catch (final Exception e) {
@@ -313,45 +317,45 @@ public class Bank extends MethodProvider {
 	public boolean openNoBanker() {
 		if (isOpen()) { return true; }
 		try {
-			if (methods.menu.isOpen()) {
-				methods.mouse.moveSlightly();
-				sleep(random(20, 30));
+			if (ctx.menu.isOpen()) {
+				ctx.mouse.moveSlightly();
+				ctx.sleepRandom(20, 30);
 			}
-			RSObject bankBooth = methods.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
-			RSObject bankChest = methods.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
+			RSObject bankBooth = ctx.objects.getNearest(new ValidBankFilter(BANK_BOOTHS));
+			RSObject bankChest = ctx.objects.getNearest(new ValidBankFilter(BANK_CHESTS));
 			/* Find the closest one, others are set to null. Remember distance and tile. */
 			int lowestDist = Integer.MAX_VALUE;
 			RSTile tile = null;
 			if (bankBooth != null) {
 				tile = bankBooth.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
+				lowestDist = ctx.calc.distanceTo(tile);
 			}
-			if (bankChest != null && methods.calc.distanceTo(bankChest) < lowestDist) {
+			if (bankChest != null && ctx.calc.distanceTo(bankChest) < lowestDist) {
 				tile = bankChest.getLocation();
-				lowestDist = methods.calc.distanceTo(tile);
+				lowestDist = ctx.calc.distanceTo(tile);
 				bankBooth = null;
 			}
 			/* Open closest one, if any found */
-			if (lowestDist < 5 && methods.calc.tileOnMap(tile) && methods.calc.canReach(tile, true)) {
+			if (lowestDist < 5 && ctx.calc.tileOnMap(tile) && ctx.calc.canReach(tile, true)) {
 				boolean didAction = false;
 				if (bankBooth != null) {
 					didAction = bankBooth.doAction("Bank") || bankBooth.doAction("Use-Quickly");
 				} else if (bankChest != null) {
-					didAction = bankChest.doAction("Bank") || methods.menu.doAction("Use");
+					didAction = bankChest.doAction("Bank") || ctx.menu.doAction("Use");
 				}
 				if (didAction) {
 					int count = 0;
 					while (!isOpen() && ++count < 10) {
-						sleep(random(200, 400));
-						if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+						ctx.sleepRandom(200, 400);
+						if (ctx.players.getMyPlayer().isLocalPlayerMoving()) {
 							count = 0;
 						}
 					}
 				} else {
-					methods.camera.turnTo(tile);
+					ctx.camera.turnTo(tile);
 				}
 			} else if (tile != null) {
-				methods.walking.walkTileMM(tile);
+				ctx.walking.walkTileMM(tile);
 			}
 			return isOpen();
 		} catch (final Exception e) {
@@ -370,28 +374,28 @@ public class Bank extends MethodProvider {
 	public boolean openDepositBox() {
 		try {
 			if (!isDepositOpen()) {
-				if (methods.menu.isOpen()) {
-					methods.mouse.moveSlightly();
-					sleep(random(20, 30));
+				if (ctx.menu.isOpen()) {
+					ctx.mouse.moveSlightly();
+					ctx.sleepRandom(20, 30);
 				}
-				RSObject depositBox = methods.objects.getNearest(BANK_DEPOSIT_BOX);
-				if (depositBox != null && methods.calc.distanceTo(depositBox) < 8 && methods.calc.tileOnMap(
-						depositBox.getLocation()) && methods.calc.canReach(
+				RSObject depositBox = ctx.objects.getNearest(BANK_DEPOSIT_BOX);
+				if (depositBox != null && ctx.calc.distanceTo(depositBox) < 8 && ctx.calc.tileOnMap(
+						depositBox.getLocation()) && ctx.calc.canReach(
 						depositBox.getLocation(), true)) {
 					if (depositBox.doAction("Deposit")) {
 						int count = 0;
 						while (!isDepositOpen() && ++count < 10) {
-							sleep(random(200, 400));
-							if (methods.players.getMyPlayer().isLocalPlayerMoving()) {
+							ctx.sleepRandom(200, 400);
+							if (ctx.players.getMyPlayer().isLocalPlayerMoving()) {
 								count = 0;
 							}
 						}
 					} else {
-						methods.camera.turnTo(depositBox, 20);
+						ctx.camera.turnTo(depositBox, 20);
 					}
 				} else {
 					if (depositBox != null) {
-						methods.walking.walkTo(depositBox.getLocation());
+						ctx.walking.walkTo(depositBox.getLocation());
 					}
 				}
 			}
@@ -409,10 +413,10 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean depositAll() {
 		if (isOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_CARRIED_ITEMS).doClick();
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_CARRIED_ITEMS).doClick();
 
 		} else if (isDepositOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_INVENTORY_ITEMS).doClick();
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_INVENTORY_ITEMS).doClick();
 		}
 		return false;
 	}
@@ -425,9 +429,9 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean depositAllEquipped() {
 		if (isOpen()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
 		}
-		return isDepositOpen() && methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
+		return isDepositOpen() && ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_BUTTON_DEPOSIT_WORN_ITEMS).doClick();
 	}
 
 	/**
@@ -446,11 +450,11 @@ public class Bank extends MethodProvider {
 			}
 			RSWidget item = null;
 			int itemCount = 0;
-			int invCount = isOpen() ? methods.inventory.getCount(true) : getBoxCount();
+			int invCount = isOpen() ? ctx.inventory.getCount(true) : getBoxCount();
 			if (!isOpen()) {
 				boolean match = false;
 				for (int i = 0; i < 28; i++) {
-					RSWidget comp = methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getDynamicComponent(i);
+					RSWidget comp = ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getDynamicComponent(i);
 					if (comp.getId() == itemID) {
 						itemCount += comp.getStackSize();
 						if (!match) {
@@ -463,11 +467,11 @@ public class Bank extends MethodProvider {
 					}
 				}
 			} else {
-				RSItem rsItem = methods.inventory.getItem(itemID);
+				RSItem rsItem = ctx.inventory.getItem(itemID);
 				if (rsItem != null) {
 					item = rsItem.getComponent();
 				}
-				itemCount = methods.inventory.getCount(true, itemID);
+				itemCount = ctx.inventory.getCount(true, itemID);
 			}
 			if (item == null) {
 				return true;
@@ -485,14 +489,14 @@ public class Bank extends MethodProvider {
 				default:
 					if (!item.doAction("Deposit-" + number)) {
 						if (item.doAction("Deposit-X")) {
-							sleep(random(1000, 1300));
-							methods.inputManager.sendKeys(String.valueOf(number), true);
+							ctx.sleepRandom(1000, 1300);
+							ctx.inputManager.sendKeys(String.valueOf(number), true);
 						}
 					}
 					break;
 			}
-			sleep(300);
-			int cInvCount = isOpen() ? methods.inventory.getCount(true) : getBoxCount();
+			ctx.sleepRandom(250, 750);
+			int cInvCount = isOpen() ? ctx.inventory.getCount(true) : getBoxCount();
 			return cInvCount < invCount || cInvCount == 0;
 		}
 		return false;
@@ -508,11 +512,11 @@ public class Bank extends MethodProvider {
 	public boolean depositAllExcept(int... items) {
 		if (isOpen() || isDepositOpen()) {
 			boolean deposit = true;
-			int invCount = isOpen() ? methods.inventory.getCount(true) : getBoxCount();
+			int invCount = isOpen() ? ctx.inventory.getCount(true) : getBoxCount();
 			outer:
 			for (int i = 0; i < 28; i++) {
-				RSWidget item = isOpen() ? methods.inventory.getItemAt(i).getComponent() :
-						methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getDynamicComponent(i);
+				RSWidget item = isOpen() ? ctx.inventory.getItemAt(i).getComponent() :
+						ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getDynamicComponent(i);
 				if (item != null && item.getId() != -1) {
 					for (int id : items) {
 						if (item.getId() == id) {
@@ -521,8 +525,8 @@ public class Bank extends MethodProvider {
 					}
 					for (int tries = 0; tries < 5; tries++) {
 						deposit(item.getId(), 0);
-						sleep(random(600, 900));
-						int cInvCount = isOpen() ? methods.inventory.getCount(true) : getBoxCount();
+						ctx.sleepRandom(600, 900);
+						int cInvCount = isOpen() ? ctx.inventory.getCount(true) : getBoxCount();
 						if (cInvCount < invCount) {
 							invCount = cInvCount;
 							continue outer;
@@ -562,7 +566,7 @@ public class Bank extends MethodProvider {
 	 */
 	public int getCurrentTab() {
 		if (isOpen()) {
-			return methods.proxy.getVarbitValue(VarbitIndices.BANK_ACTIVE_TAB);
+			return ctx.proxy.getVarbitValue(VarbitIndices.BANK_ACTIVE_TAB);
 		}
 
 		return -1;
@@ -574,7 +578,7 @@ public class Bank extends MethodProvider {
 	 * @return 			The bank tab
 	 */
 	public RSWidget getTab(int index) {
-		return methods.interfaces.getComponent(GlobalWidgetInfo.BANK_TAB).getComponent(index);
+		return ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_TAB).getComponent(index);
 	}
 
 	/**
@@ -637,13 +641,13 @@ public class Bank extends MethodProvider {
 	 */
 	public RSItem[] getItems() {
 		RSWidget bankInterface = getInterface();
-		if ((bankInterface == null) || (methods.interfaces.getComponent(WidgetInfo.BANK_ITEM_CONTAINER) == null)) {
+		if ((bankInterface == null) || (ctx.interfaces.getComponent(WidgetInfo.BANK_ITEM_CONTAINER) == null)) {
 			return new RSItem[0];
 		}
-		RSWidget[] components = methods.interfaces.getComponent(WidgetInfo.BANK_ITEM_CONTAINER).getComponents();
+		RSWidget[] components = ctx.interfaces.getComponent(WidgetInfo.BANK_ITEM_CONTAINER).getComponents();
 		RSItem[] items = new RSItem[components.length];
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = new RSItem(methods, components[i]);
+			items[i] = new RSItem(ctx, components[i]);
 		}
 		return items;
 	}
@@ -663,7 +667,7 @@ public class Bank extends MethodProvider {
 	 * @return <code>true</code> if currently searching the bank.
 	 */
 	public boolean isSearchOpen() {
-		return methods.proxy.getVarcIntValue(VarcIntIndices.CHATBOX_INPUT_TYPE)
+		return ctx.proxy.getVarcIntValue(VarcIntIndices.CHATBOX_INPUT_TYPE)
 				== VarcIntValues.SEARCH.getValue();
 	}
 
@@ -676,14 +680,14 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean searchItem(final String itemName) {
 		if (!isOpen()) { return false; }
-		methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_SEARCH).doAction("Search");
-		sleep(random(1000, 1500));
+		ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_SEARCH).doAction("Search");
+		ctx.sleepRandom(1000, 1500);
 		if (!isSearchOpen()) {
-			sleep(500);
+			ctx.sleepRandom(250, 750);
 		}
 		if (isOpen() && isSearchOpen()) {
-			methods.inputManager.sendKeys(itemName, false);
-			sleep(random(300, 700));
+			ctx.inputManager.sendKeys(itemName, false);
+			ctx.sleepRandom(300, 700);
 			return true;
 		}
 		return false;
@@ -696,12 +700,12 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean setRearrangeModeToInsert() {
 		if (!isOpen()) { return false; }
-		if (methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
+		if (ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
 				== VarpValues.BANK_REARRANGE_MODE_SWAP.getValue()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_INSERT).doClick();
-			sleep(random(500, 700));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_INSERT).doClick();
+			ctx.sleepRandom(500, 700);
 		}
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
 				== VarpValues.BANK_REARRANGE_MODE_INSERT.getValue();
 	}
 
@@ -712,12 +716,12 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean setRearrangeModeToSwap() {
 		if (!isOpen()) { return false; }
-		if (methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
+		if (ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
 				== VarpValues.BANK_REARRANGE_MODE_INSERT.getValue()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_SWAP).doClick();
-			sleep(random(500, 700));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_SWAP).doClick();
+			ctx.sleepRandom(500, 700);
 		}
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_REARRANGE_MODE)
 				== VarpValues.BANK_REARRANGE_MODE_SWAP.getValue();
 	}
 
@@ -728,12 +732,12 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean setWithdrawModeToItem() {
 		if (!isOpen()) { return false; }
-		if (methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
+		if (ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
 				== VarpValues.BANK_WITHDRAW_MODE_NOTE.getValue()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_ITEM).doClick();
-			sleep(random(500, 700));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_ITEM).doClick();
+			ctx.sleepRandom(500, 700);
 		}
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
 				== VarpValues.BANK_WITHDRAW_MODE_ITEM.getValue();
 	}
 
@@ -744,12 +748,12 @@ public class Bank extends MethodProvider {
 	 */
 	public boolean setWithdrawModeToNote() {
 		if (!isOpen()) { return false; }
-		if (methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
+		if (ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
 				== VarpValues.BANK_WITHDRAW_MODE_ITEM.getValue()) {
-			methods.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_NOTE).doClick();
-			sleep(random(500, 700));
+			ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_BUTTON_NOTE).doClick();
+			ctx.sleepRandom(500, 700);
 		}
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_BANK_WITHDRAW_MODE)
 				== VarpValues.BANK_WITHDRAW_MODE_NOTE.getValue();
 	}
 
@@ -770,15 +774,15 @@ public class Bank extends MethodProvider {
 		if (rsi == null) { return false; }
 		RSWidget item = rsi.getComponent();
 		if (item == null) { return false; }
-		while (item.getRelativeX() == 0 && methods.bank.getCurrentTab() != 0) {
+		while (item.getRelativeX() == 0 && ctx.bank.getCurrentTab() != 0) {
 			if (getTab(0).doClick()) {
-				sleep(random(800, 1300));
+				ctx.sleepRandom(800, 1300);
 			}
 		}
-		if (!methods.interfaces.scrollTo(item, methods.interfaces.getComponent(GlobalWidgetInfo.BANK_SCROLLBAR))) {
+		if (!ctx.interfaces.scrollTo(item, ctx.interfaces.getComponent(GlobalWidgetInfo.BANK_SCROLLBAR))) {
 			return false;
 		}
-		int invCount = methods.inventory.getCount(true);
+		int invCount = ctx.inventory.getCount(true);
 		String defaultAction = "Withdraw-" + count;
 		String action = null;
 		switch (count) {
@@ -805,14 +809,14 @@ public class Bank extends MethodProvider {
 					action = defaultAction;
 				}
 				else if (item.doAction("Withdraw-X")) {
-					sleep(random(1000, 1300));
-					methods.keyboard.sendText(String.valueOf(count), true);
+					ctx.sleepRandom(1000, 1300);
+					ctx.keyboard.sendText(String.valueOf(count), true);
 				}
 		}
 		if (action != null && item.doAction(action)) {
-			sleep(random(1000, 1300));
+			ctx.sleepRandom(1000, 1300);
 		}
-		int newInvCount = methods.inventory.getCount(true);
+		int newInvCount = ctx.inventory.getCount(true);
 		return newInvCount > invCount || newInvCount == 28;
 	}
 
@@ -830,8 +834,8 @@ public class Bank extends MethodProvider {
 		int count = 0;
 		for (int i = 0; i < 28; ++i) {
 			for (int id : ids) {
-				if (methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).isValid()
-						&& methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getComponent(i).getId() == id) {
+				if (ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).isValid()
+						&& ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getComponent(i).getId() == id) {
 					count++;
 				}
 			}
@@ -851,8 +855,8 @@ public class Bank extends MethodProvider {
 		}
 		int count = 0;
 		for (int i = 0; i < 28; i++) {
-			if (methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).isValid()
-					&& methods.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getComponent(i).getId() != -1) {
+			if (ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).isValid()
+					&& ctx.interfaces.getComponent(GlobalWidgetInfo.DEPOSIT_ITEMS_CONTAINER).getComponent(i).getId() != -1) {
 				count++;
 			}
 		}
@@ -865,13 +869,13 @@ public class Bank extends MethodProvider {
 	 * @return All equipment items that are being worn.
 	 */
 	public RSItem[] getEquipmentItems() {
-		if (methods.interfaces.getComponent(GlobalWidgetInfo.EQUIPMENT_ITEMS_CONTAINER).isValid()) {
+		if (ctx.interfaces.getComponent(GlobalWidgetInfo.EQUIPMENT_ITEMS_CONTAINER).isValid()) {
 			return new RSItem[0];
 		}
-		RSWidget[] components = methods.interfaces.getComponent(GlobalWidgetInfo.EQUIPMENT_ITEMS_CONTAINER).getComponents();
+		RSWidget[] components = ctx.interfaces.getComponent(GlobalWidgetInfo.EQUIPMENT_ITEMS_CONTAINER).getComponents();
 		RSItem[] items = new RSItem[components.length];
 		for (int i = 0; i < items.length; i++) {
-			items[i] = new RSItem(methods, components[i]);
+			items[i] = new RSItem(ctx, components[i]);
 		}
 		return items;
 	}

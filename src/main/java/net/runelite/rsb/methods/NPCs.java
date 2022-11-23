@@ -11,11 +11,12 @@ import java.util.function.Predicate;
 /**
  * Provides access to non-player characters.
  */
-public class NPCs extends MethodProvider {
+public class NPCs {
 
-    NPCs(final MethodContext ctx) {
-        super(ctx);
-    }
+	private MethodContext ctx;
+	NPCs(final MethodContext ctx) {
+		this.ctx = ctx;
+	}
 
     /**
      * A filter that accepts all matches.
@@ -47,7 +48,7 @@ public class NPCs extends MethodProvider {
         NPC[] npcs = getNPCs();
         Set<RSNPC> rsNPCs = new HashSet<>();
         for (NPC npc : npcs) {
-            RSNPC rsnpc = new RSNPC(methods, npc);
+            RSNPC rsnpc = new RSNPC(ctx, npc);
             if (filter.test(rsnpc)) {
                 rsNPCs.add(rsnpc);
             }
@@ -69,9 +70,9 @@ public class NPCs extends MethodProvider {
         RSNPC closest = null;
         NPC[] npcs = getNPCs();
         for (NPC npc : npcs) {
-                RSNPC rsnpc = new RSNPC(methods, npc);
+                RSNPC rsnpc = new RSNPC(ctx, npc);
                 if (filter.test(rsnpc)) {
-                    int distance = methods.calc.distanceTo(rsnpc);
+                    int distance = ctx.calc.distanceTo(rsnpc);
                     if (distance < min) {
                         min = distance;
                         closest = rsnpc;
@@ -82,7 +83,7 @@ public class NPCs extends MethodProvider {
     }
 
     public NPC[] getNPCs() {
-        List<NPC> npcs = methods.proxy.getNpcs();
+        List<NPC> npcs = ctx.proxy.getNpcs();
         NPC[] npcArray = new NPC[npcs.size()];
         return npcs.toArray(npcArray);
     }

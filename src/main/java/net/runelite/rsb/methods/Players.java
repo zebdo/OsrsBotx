@@ -10,10 +10,11 @@ import java.util.Set;
 /**
  * Player related operations.
  */
-public class Players extends MethodProvider {
+public class Players {
 
+	private MethodContext ctx;
 	Players(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -31,7 +32,7 @@ public class Players extends MethodProvider {
 	 * @return An <code>RSPlayer</code> object representing the player.
 	 */
 	public RSPlayer getMyPlayer() {
-		return new RSPlayer(methods, methods.proxy.getLocalPlayer());
+		return new RSPlayer(ctx, ctx.proxy.getLocalPlayer());
 	}
 
 	/**
@@ -50,11 +51,11 @@ public class Players extends MethodProvider {
 	 * @return All valid RSPlayers.
 	 */
 	public RSPlayer[] getAll(final Filter<RSPlayer> filter) {
-		Player[] playerArray = methods.proxy.getCachedPlayers();
+		Player[] playerArray = ctx.proxy.getCachedPlayers();
 		Set<RSPlayer> players = new HashSet<>();
 		for (Player player : playerArray) {
 			if (player != null) {
-				RSPlayer rsPlayer = new RSPlayer(methods, player);
+				RSPlayer rsPlayer = new RSPlayer(ctx, player);
 				if (filter.test(rsPlayer)) {
 					players.add(rsPlayer);
 				}
@@ -75,14 +76,14 @@ public class Players extends MethodProvider {
 	public RSPlayer getNearest(final Filter<RSPlayer> filter) {
 		int min = 20;
 		RSPlayer closest = null;
-		Player[] players = methods.proxy.getCachedPlayers();
+		Player[] players = ctx.proxy.getCachedPlayers();
 		for (Player player : players) {
 			if (player == null) {
 				continue;
 			}
-			RSPlayer rsPlayer = new RSPlayer(methods, player);
+			RSPlayer rsPlayer = new RSPlayer(ctx, player);
 			if (filter.test(rsPlayer)) {
-				int distance = methods.calc.distanceTo(rsPlayer);
+				int distance = ctx.calc.distanceTo(rsPlayer);
 				if (distance < min) {
 					min = distance;
 					closest = rsPlayer;

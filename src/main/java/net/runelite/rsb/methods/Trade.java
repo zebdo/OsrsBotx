@@ -13,14 +13,14 @@ import java.util.regex.Pattern;
  *
  * @author GigiaJ
  */
-@SuppressWarnings("unused")
-public class Trade extends MethodProvider {
+public class Trade  {
 	public static final int TRADE_TYPE_MAIN = 0;
 	public static final int TRADE_TYPE_SECONDARY = 1;
 	public static final int TRADE_TYPE_NONE = 2;
 
-	Trade(MethodContext ctx) {
-		super(ctx);
+	private MethodContext ctx;
+	Trade(final MethodContext ctx) {
+		this.ctx = ctx;
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class Trade extends MethodProvider {
 	 * @return <code>true</code> if in first stage.
 	 */
 	public boolean inTradeMain() {
-		RSWidget tradeInterface = methods.interfaces.get(WidgetIndices.TradeFirstScreen.GROUP_INDEX);
+		RSWidget tradeInterface = ctx.interfaces.get(WidgetIndices.TradeFirstScreen.GROUP_INDEX);
 		return tradeInterface != null && tradeInterface.isValid();
 	}
 
@@ -39,7 +39,7 @@ public class Trade extends MethodProvider {
 	 * @return <code>true</code> if in second stage.
 	 */
 	public boolean inTradeSecond() {
-		RSWidget tradeInterface = methods.interfaces.get(WidgetIndices.TradeSecondScreen.GROUP_INDEX);
+		RSWidget tradeInterface = ctx.interfaces.get(WidgetIndices.TradeSecondScreen.GROUP_INDEX);
 		return tradeInterface != null && tradeInterface.isValid();
 	}
 
@@ -61,7 +61,7 @@ public class Trade extends MethodProvider {
 	 */
 	public boolean tradePlayer(final String playerName, final int tradeWait) {
 		if (!inTrade()) {
-			RSPlayer targetPlayer = methods.players.getNearest(playerName);
+			RSPlayer targetPlayer = ctx.players.getNearest(playerName);
 			if (targetPlayer != null) {
 				return targetPlayer.doAction("Trade with", targetPlayer.getName()) && waitForTrade(TRADE_TYPE_MAIN, tradeWait);
 			} else {
@@ -118,10 +118,10 @@ public class Trade extends MethodProvider {
 	 */
 	public boolean acceptTrade() {
 		if (inTradeMain()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_ACCEPT).doAction(
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_ACCEPT).doAction(
 					"Accept");
 		} else {
-			return inTradeSecond() && methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_ACCEPT).doAction("Accept");
+			return inTradeSecond() && ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_ACCEPT).doAction("Accept");
 		}
 	}
 
@@ -132,10 +132,10 @@ public class Trade extends MethodProvider {
 	 */
 	public boolean declineTrade() {
 		if (inTradeMain()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_DECLINE).doAction(
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_DECLINE).doAction(
 					"Decline");
 		} else {
-			return inTradeSecond() && methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_DECLINE).doAction("Decline");
+			return inTradeSecond() && ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_DECLINE).doAction("Decline");
 		}
 	}
 
@@ -166,8 +166,10 @@ public class Trade extends MethodProvider {
 					}
 					break;
 			}
-			sleep(5);
+
+			ctx.sleepRandom(10, 25);
 		}
+
 		return false;
 	}
 
@@ -178,10 +180,10 @@ public class Trade extends MethodProvider {
 	 */
 	private String getTradingWith() {
 		if (inTradeMain()) {
-			String name = methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_NAME).getText();
+			String name = ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_NAME).getText();
 			return name.substring(name.indexOf(": ") + 2);
 		} else if (inTradeSecond()) {
-			return methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_PARTNER_NAME).getText();
+			return ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_SECOND_SCREEN_PARTNER_NAME).getText();
 		}
 		return null;
 	}
@@ -204,7 +206,7 @@ public class Trade extends MethodProvider {
 	private int getNumberOfItemsOffered() {
 		int number = 0;
 		for (int i = 0; i < 28; i++) {
-			if (methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_OFFER_ITEMS).getComponent(i).getStackSize() != 0) {
+			if (ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_OFFER_ITEMS).getComponent(i).getStackSize() != 0) {
 				++number;
 			}
 		}
@@ -218,7 +220,7 @@ public class Trade extends MethodProvider {
 	 */
 	private int getFreeSlots() {
 		if (inTradeMain()) {
-			String text = methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_FREE_SLOTS).getText();
+			String text = ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_PARTNER_FREE_SLOTS).getText();
 			//
 			Matcher matcher = Pattern.compile("(has (.*\\d) free inventory slot)").matcher(text);
 			while (matcher.find())

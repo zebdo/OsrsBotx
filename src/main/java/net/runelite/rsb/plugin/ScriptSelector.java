@@ -41,7 +41,7 @@ public class ScriptSelector extends JDialog {
 	private BotLite bot;
 	private List<ScriptDefinition> scripts;
 
-	static FileScriptSource SRC_PRECOMPILED = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsPrecompiledDirectory()));
+	static FileScriptSource SCRIPTS_SOURCE = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsDirectory()));
 
 	// ZZZ only ScriptHandler (or rename ScriptManager)
 
@@ -79,7 +79,7 @@ public class ScriptSelector extends JDialog {
 		}
 
 		scripts.clear();
-		scripts.addAll(SRC_PRECOMPILED.list());
+		scripts.addAll(SCRIPTS_SOURCE.list());
 
 		for (ScriptDefinition def: scripts) {
 			log.info(String.format("loading '%s'", def.name));

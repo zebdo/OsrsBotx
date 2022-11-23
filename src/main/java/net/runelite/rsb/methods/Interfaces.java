@@ -7,17 +7,17 @@ import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.internal.globval.WidgetIndices;
 import net.runelite.rsb.wrappers.RSWidget;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * Provides access to interfaces.
  */
-public class Interfaces extends MethodProvider {
+public class Interfaces {
 
-	public Interfaces(final MethodContext ctx) {
-		super(ctx);
+	private MethodContext ctx;
+	Interfaces(final MethodContext ctx) {
+		this.ctx = ctx;
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class Interfaces extends MethodProvider {
 	 * @return The <code>RSWidget</code> for the given index.
 	 */
 	public RSWidget get(final int index) {
-		return new RSWidget(methods, methods.proxy.getWidget(index, 0));
+		return new RSWidget(ctx, ctx.proxy.getWidget(index, 0));
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class Interfaces extends MethodProvider {
 	 * @return <code>RSWidget</code> for the given index and child index.
 	 */
 	public RSWidget getComponent(final int index, final int childIndex) {
-		return new RSWidget(methods, methods.proxy.getWidget(index, childIndex));
+		return new RSWidget(ctx, ctx.proxy.getWidget(index, childIndex));
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class Interfaces extends MethodProvider {
 	 * @return			The RSWidget for the WidgetInfo
 	 */
 	public RSWidget getComponent(WidgetInfo info) {
-		return new RSWidget(methods, methods.proxy.getWidget(info.getGroupId(), info.getChildId()));
+		return new RSWidget(ctx, ctx.proxy.getWidget(info.getGroupId(), info.getChildId()));
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class Interfaces extends MethodProvider {
 	 * @return			The RSWidget for the WidgetInfo
 	 */
 	public RSWidget getComponent(GlobalWidgetInfo info) {
-		return new RSWidget(methods, methods.proxy.getWidget(info.getGroupId(), info.getChildId()));
+		return new RSWidget(ctx, ctx.proxy.getWidget(info.getGroupId(), info.getChildId()));
 	}
 
 	/**
@@ -84,10 +84,10 @@ public class Interfaces extends MethodProvider {
 	 *         otherwise null.
 	 */
 	public RSWidget getContinueComponent() {
-		Widget widget = methods.proxy.getWidget(GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getPackedId());
+		Widget widget = ctx.proxy.getWidget(GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getPackedId());
 		if (widget != null && !widget.isHidden())
 		{
-			return new RSWidget(methods, methods.proxy.getWidget(GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getGroupId(), GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getChildId()));
+			return new RSWidget(ctx, ctx.proxy.getWidget(GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getGroupId(), GlobalWidgetInfo.DIALOG_NPC_CONTINUE.getChildId()));
 		}
 		return null;
 	}
@@ -109,19 +109,21 @@ public class Interfaces extends MethodProvider {
 		if (rect.x == -1) {
 			return false;
 		}
+
 		// 1 pixel is not enough for all components
 		int minX = rect.x + 2, minY = rect.y + 2, width = rect.width - 4, height = rect.height - 4;
-		Rectangle actual = new Rectangle(minX, minY, width, height);
-		// Check if the menu already contains the action otherwise reposition
-		// before clicking
-		if (actual.contains(new Point (methods.mouse.getLocation().getX(), methods.mouse.getLocation().getY()))
-				&& methods.menu.contains(action)
-				&& methods.menu.doAction(action)) {
+
+		// Check if the menu already contains the action otherwise reposition before clicking
+		var r = new Rectangle(minX, minY, width, height);
+		var p = new Point (ctx.mouse.getLocation().getX(), ctx.mouse.getLocation().getY());
+		if (r.contains(p) && ctx.menu.contains(action) && ctx.menu.doAction(action)) {
 			return true;
 		}
-		methods.mouse.move(random(minX, minX + width),
-				random(minY, minY + height));
-		return methods.menu.doAction(action);
+
+		// ZZZ this needs to be better...
+		ctx.mouse.move(ctx.random(minX, minX + width - 4),
+					   ctx.random(minY, minY + height - 4));
+		return ctx.menu.doAction(action);
 	}
 
 	/**
@@ -231,7 +233,7 @@ public class Interfaces extends MethodProvider {
 		int contentHeight = scrollableArea.getScrollableContentHeight();
 
 		int pos = (int) ((float) scrollBarArea.getRealHeight() / contentHeight * (component
-				.getRelativeY() + random(-areaHeight / 2, areaHeight / 2
+				.getRelativeY() + ctx.random(-areaHeight / 2, areaHeight / 2
 				- component.getRealHeight())));
 		if (pos < 0) // inner
 		{
@@ -241,13 +243,13 @@ public class Interfaces extends MethodProvider {
 		}
 
 		// Click on the scrollbar
-		methods.mouse.click(
+		ctx.mouse.click(
 				scrollBarArea.getAbsoluteX()
-						+ random(0, scrollBarArea.getRealWidth()),
+						+ ctx.random(0, scrollBarArea.getRealWidth()),
 				scrollBarArea.getAbsoluteY() + pos, true);
 
 		// Wait a bit
-		sleep(random(200, 400));
+		ctx.sleepRandom(200, 400);
 
 		// Scroll to it if we missed it
 		while (component.getAbsoluteY() < areaY
@@ -256,7 +258,7 @@ public class Interfaces extends MethodProvider {
 			boolean scrollUp = component.getAbsoluteY() < areaY;
 			scrollBar.getComponent(scrollUp ? 4 : 5).doAction("");
 
-			sleep(random(100, 200));
+			ctx.sleepRandom(100, 200);
 		}
 
 		// Return whether or not the component is visible now.
@@ -275,8 +277,9 @@ public class Interfaces extends MethodProvider {
 	 */
 	public boolean waitFor(RSWidget iface, boolean valid, int timer) {
 		for (int w = 0; w < timer && iface.isValid() == valid ? true : false; w++) {
-			sleep(1);
+			ctx.sleepRandom(10, 25);
 		}
+
 		return iface.isValid() == valid ? true : false;
 	}
 
@@ -299,52 +302,52 @@ public class Interfaces extends MethodProvider {
 	public boolean makeX(int amount) {
 		RSWidget widget = null;
 		if (amount == -1) {
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ALL_DYNAMIC_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ALL_DYNAMIC_CONTAINER));
 			if (!widget.isValid()) {
 				return false;
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ALL_DYNAMIC_CONTAINER)).getDynamicComponent(9);
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ALL_DYNAMIC_CONTAINER)).getDynamicComponent(9);
 			//Determines if the widget is already selected
 			if (!widget.containsText("<col=ffffff>")) {
 				clickComponent(widget, "All");
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
 			return clickComponent(widget, "Make");
 		} else if (amount == 1) {
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ONE_DYNAMIC_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ONE_DYNAMIC_CONTAINER));
 			if (!widget.isValid()) {
 				return false;
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ONE_DYNAMIC_CONTAINER)).getDynamicComponent(9);
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_ONE_DYNAMIC_CONTAINER)).getDynamicComponent(9);
 			if (!widget.containsText("<col=ffffff>")) {
 				clickComponent(widget, "1");
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
 			return clickComponent(widget, "Make " + Menu.stripFormatting(widget.getName()));
 		} else if (amount == 5) {
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_FIVE_DYNAMIC_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_FIVE_DYNAMIC_CONTAINER));
 			if (!widget.isValid()) {
 				return false;
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_FIVE_DYNAMIC_CONTAINER)).getDynamicComponent(9);
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_FIVE_DYNAMIC_CONTAINER)).getDynamicComponent(9);
 			if (!widget.containsText("<col=ffffff>")) {
 				clickComponent(widget, "5");
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
 			return clickComponent(widget, "Make " + Menu.stripFormatting(widget.getName()));
 		} else {
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER));
 			if (!widget.isValid()) {
 				return false;
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER)).getDynamicComponent(9);
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER)).getDynamicComponent(9);
 			clickComponent(widget, "X");
-			methods.keyboard.sendText(String.valueOf(amount), true);
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER)).getDynamicComponent(9);
+			ctx.keyboard.sendText(String.valueOf(amount), true);
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BUTTON_X_DYNAMIC_CONTAINER)).getDynamicComponent(9);
 			if (!widget.containsText("<col=ffffff>")) {
 				clickComponent(widget, String.valueOf(amount));
 			}
-			widget = new RSWidget(methods, methods.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
+			widget = new RSWidget(ctx, ctx.proxy.getWidget(WidgetIndices.MakeDialog.GROUP_INDEX, WidgetIndices.MakeDialog.BOTTOM_BAR_FIRST_CHOICE_BAR_DYN_CONTAINER));
 			return clickComponent(widget, "Make " + Menu.stripFormatting(widget.getName()));
 		}
 	}

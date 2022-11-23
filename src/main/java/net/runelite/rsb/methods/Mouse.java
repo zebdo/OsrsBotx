@@ -9,7 +9,7 @@ import net.runelite.api.Point;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
-public class Mouse extends MethodProvider {
+public class Mouse {
 	/**
 	 * The maximum distance (in pixels) to move the mouse after clicks in either
 	 * direction on both axes.
@@ -17,8 +17,9 @@ public class Mouse extends MethodProvider {
 	private int defaultMaxMoveAfter = 10;
 	private int tempDefaultMaxMoveAfter = 0;
 
+	private MethodContext ctx;
 	Mouse(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	public void pushDefaultMoveAfter(int moveAfter) {
@@ -56,11 +57,11 @@ public class Mouse extends MethodProvider {
 	public void moveRandomly(final int minDistance, final int maxDistance) {
 		/* Generate a random vector for the direction the mouse will move in */
 		double xvec = Math.random();
-		if (random(0, 2) == 1) {
+		if (ctx.random(0, 2) == 1) {
 			xvec = -xvec;
 		}
 		double yvec = Math.sqrt(1 - xvec * xvec);
-		if (random(0, 2) == 1) {
+		if (ctx.random(0, 2) == 1) {
 			yvec = -yvec;
 		}
 		/* Start the maximum distance at maxDistance */
@@ -77,13 +78,13 @@ public class Mouse extends MethodProvider {
 		 * coordinate
 		 */
 		distance -= Math.abs((maxX - Math.max(0,
-				Math.min(methods.game.getWidth(), maxX)))
-				/ xvec);
+											  Math.min(ctx.game.getWidth(), maxX)))
+							 / xvec);
+
 		/* Do the same thing with the Y coordinate */
 		int maxY = (int) Math.round(yvec * distance + p.getY());
-		distance -= Math.abs((maxY - Math.max(0,
-				Math.min(methods.game.getHeight(), maxY)))
-				/ yvec);
+		distance -= Math.abs((maxY - Math.max(0, Math.min(ctx.game.getHeight(), maxY)))
+							 / yvec);
 		/*
 		 * If the maximum distance in the generated direction is too small,
 		 * don't move the mouse at all
@@ -95,7 +96,7 @@ public class Mouse extends MethodProvider {
 		 * With the calculated maximum distance, pick a random distance to move
 		 * the mouse between maxDistance and the calculated maximum distance
 		 */
-		distance = random(minDistance, (int) distance);
+		distance = ctx.random(minDistance, (int) distance);
 		/* Generate the point to move the mouse to and move it there */
 		move((int) (xvec * distance) + p.getX(), (int) (yvec * distance) + p.getY());
 	}
@@ -105,22 +106,28 @@ public class Mouse extends MethodProvider {
 	 */
 	public void moveOffScreen() {
 		if (isPresent()) {
-			switch (random(0, 4)) {
+			switch (ctx.random(0, 10)) {
 				case 0: // up
-					move(random(-10, methods.game.getWidth() + 10),
-						 random(-100, -10));
+					move(ctx.random(-10, ctx.game.getWidth() + 10),
+						 ctx.random(-100, -10));
 					break;
 				case 1: // down
-					move(random(-10, methods.game.getWidth() + 10),
-						 methods.game.getHeight() + random(10, 100));
+					move(ctx.random(-10, ctx.game.getWidth() + 10),
+						 ctx.game.getHeight() + ctx.random(10, 100));
 					break;
 				case 2: // left
-					move(random(-100, -10),
-						 random(-10, methods.game.getHeight() + 10));
+				case 3: // left
+				case 4: // left
+				case 5: // left
+					move(ctx.random(-100, -10),
+						 ctx.random(-10, ctx.game.getHeight() + 10));
 					break;
-				case 3: // right
-					move(random(10, 100) + methods.game.getWidth(),
-						 random(-10, methods.game.getHeight() + 10));
+				case 6: // left
+				case 7: // left
+				case 8: // left
+				case 9: // left
+					move(ctx.random(10, 100) + ctx.game.getWidth(),
+						 ctx.random(-10, ctx.game.getHeight() + 10));
 					break;
 			}
 		}
@@ -133,7 +140,7 @@ public class Mouse extends MethodProvider {
 	 * @param y The y coordinate to drag to.
 	 */
 	public void drag(final int x, final int y) {
-		methods.inputManager.dragMouse(x, y);
+		ctx.inputManager.dragMouse(x, y);
 	}
 
 	/**
@@ -174,16 +181,15 @@ public class Mouse extends MethodProvider {
 	public synchronized void click(final int x, final int y, final int randX,
 	                               final int randY, final boolean leftClick, final int moveAfterDist) {
 		move(x, y, randX, randY);
-		// ZZZ slower?
-		sleep(random(100, 250));
+		ctx.sleepRandom(100, 200);
 		click(leftClick, moveAfterDist);
 	}
 
 	public synchronized void click(final boolean leftClick, final int moveAfterDist) {
-		methods.inputManager.clickMouse(leftClick);
+		ctx.inputManager.clickMouse(leftClick);
 		if (moveAfterDist > 0) {
 			// ZZZ slower?
-			sleep(random(150, 350));
+			ctx.sleepRandom(150, 350);
 			Point pos = getLocation();
 			move(pos.getX() - moveAfterDist, pos.getY() - moveAfterDist,
 				 moveAfterDist * 2, moveAfterDist * 2);
@@ -209,25 +215,27 @@ public class Mouse extends MethodProvider {
 	}
 
 	public void move(int x, int y, final int randX, final int randY) {
-            if (randX > 0) {
-                x += random(-randX, randX, randX * 2);
-            }
+		if (randX > 0) {
+			double sd = Math.max(2.0, randX / 2.0);
+			x += ctx.random(-randX, randX, sd);
+		}
 
-            if (randY > 0) {
-                y += random(-randY, randY, randY * 2);
-            }
+		if (randY > 0) {
+			double sd = Math.max(2.0, randY / 2.0);
+			y += ctx.random(-randY, randY, sd);
+		}
 
-            methods.inputManager.windMouse(x, y);
+		ctx.inputManager.windMouse(x, y);
 	}
 
-       /**
+	/**
 	 * Hops mouse to the specified coordinate.
 	 *
 	 * @param x The x coordinate.
 	 * @param y The y coordinate
 	 */
 	public synchronized void hop(final int x, final int y) {
-		methods.inputManager.hopMouse(x, y);
+		ctx.inputManager.hopMouse(x, y);
 	}
 
 	/**
@@ -256,64 +264,24 @@ public class Mouse extends MethodProvider {
 		move(p);
 	}
 
-	/**
-	 * @param maxDistance The maximum distance outwards.
-	 * @return A random x value between the current client location and the max
-	 *         distance outwards.
-	 */
-	public int getRandomX(final int maxDistance) {
-		Point p = getLocation();
-		if (p.getX() < 0 || maxDistance <= 0) {
-			return -1;
-		}
-		if (random(0, 2) == 0) {
-			return p.getX() - random(0, p.getX() < maxDistance ? p.getX() : maxDistance);
-		} else {
-			int dist = methods.game.getWidth() - p.getX();
-			return p.getX()
-					+ random(1, dist < maxDistance && dist > 0 ? dist
-					: maxDistance);
-		}
-	}
-
-	/**
-	 * @param maxDistance The maximum distance outwards.
-	 * @return A random y value between the current client location and the max
-	 *         distance outwards.
-	 */
-	public int getRandomY(final int maxDistance) {
-		Point p = getLocation();
-		if (p.getY() < 0 || maxDistance <= 0) {
-			return -1;
-		}
-		if (random(0, 2) == 0) {
-			return p.getY() - random(0, p.getY() < maxDistance ? p.getY() : maxDistance);
-		} else {
-			int dist = methods.game.getHeight() - p.getY();
-			return p.getY()
-					+ random(1, dist < maxDistance && dist > 0 ? dist
-					: maxDistance);
-		}
-	}
-
 	public Point getLocation() {
-		return new Point(methods.virtualMouse.getClientX(), methods.virtualMouse.getClientY());
+		return new Point(ctx.virtualMouse.getClientX(), ctx.virtualMouse.getClientY());
 	}
 
 	public Point getPressLocation() {
-		return new Point(methods.virtualMouse.getClientPressX(), methods.virtualMouse.getClientPressY());
+		return new Point(ctx.virtualMouse.getClientPressX(), ctx.virtualMouse.getClientPressY());
 	}
 
 	public long getPressTime() {
-		return methods.virtualMouse.getClientPressTime();
+		return ctx.virtualMouse.getClientPressTime();
 	}
 
 	public boolean isPresent() {
-		return methods.virtualMouse.isClientPresent();
+		return ctx.virtualMouse.isClientPresent();
 	}
 
 	public boolean isPressed() {
-		return methods.virtualMouse.isClientPressed();
+		return ctx.virtualMouse.isClientPressed();
 	}
 
 }

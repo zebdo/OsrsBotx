@@ -13,10 +13,11 @@ import net.runelite.rsb.internal.globval.enums.ViewportLayout;
  * @author GigiaJ
  */
 @Slf4j
-public class GameGUI extends MethodProvider {
+public class GameGUI {
 
-	public GameGUI(MethodContext ctx) {
-		super(ctx);
+	private MethodContext ctx;
+	GameGUI(final MethodContext ctx) {
+		this.ctx = ctx;
 	}
 
 	/**
@@ -26,13 +27,13 @@ public class GameGUI extends MethodProvider {
 		ViewportLayout layout = getViewportLayout();
 		if (layout != null) {
 			return switch (layout) {
-				case FIXED_CLASSIC -> methods.proxy.getWidget(
+				case FIXED_CLASSIC -> ctx.proxy.getWidget(
 						WidgetIndices.FixedClassicViewport.GROUP_INDEX,
 						WidgetIndices.FixedClassicViewport.MINIMAP_COMPASS_SPRITE);
-				case RESIZABLE_CLASSIC -> methods.proxy.getWidget(
+				case RESIZABLE_CLASSIC -> ctx.proxy.getWidget(
 						WidgetIndices.ResizableClassicViewport.GROUP_INDEX,
 						WidgetIndices.ResizableClassicViewport.MINIMAP_COMPASS_SPRITE);
-				case RESIZABLE_MODERN -> methods.proxy.getWidget(
+				case RESIZABLE_MODERN -> ctx.proxy.getWidget(
 						WidgetIndices.ResizableModernViewport.GROUP_INDEX,
 						WidgetIndices.ResizableModernViewport.MINIMAP_COMPASS_SPRITE);
 			};
@@ -47,13 +48,13 @@ public class GameGUI extends MethodProvider {
 		ViewportLayout layout = getViewportLayout();
 		if (layout != null) {
 			return switch (layout) {
-				case FIXED_CLASSIC -> methods.proxy.getWidget(
+				case FIXED_CLASSIC -> ctx.proxy.getWidget(
 						WidgetIndices.FixedClassicViewport.GROUP_INDEX,
 						WidgetIndices.FixedClassicViewport.MINIMAP_CONTAINER);
-				case RESIZABLE_CLASSIC -> methods.proxy.getWidget(
+				case RESIZABLE_CLASSIC -> ctx.proxy.getWidget(
 						WidgetIndices.ResizableClassicViewport.GROUP_INDEX,
 						WidgetIndices.ResizableClassicViewport.MINIMAP_CONTAINER);
-				case RESIZABLE_MODERN -> methods.proxy.getWidget(
+				case RESIZABLE_MODERN -> ctx.proxy.getWidget(
 						WidgetIndices.ResizableModernViewport.GROUP_INDEX,
 						WidgetIndices.ResizableModernViewport.MINIMAP_CONTAINER);
 			};
@@ -70,7 +71,7 @@ public class GameGUI extends MethodProvider {
 		ViewportLayout layout = getViewportLayout();
 		if (layout != null) {
 			GlobalWidgetInfo info = interfaceTab.getWidgetInfo(layout);
-			return methods.proxy.getWidget(info.getGroupId(), info.getChildId());
+			return ctx.proxy.getWidget(info.getGroupId(), info.getChildId());
 		}
 
 		return null;
@@ -82,15 +83,16 @@ public class GameGUI extends MethodProvider {
 	 * @return <code>ViewportLayout</code>; otherwise <code>null</code>.
 	 */
 	public ViewportLayout getViewportLayout() {
-		Widget minimapOnFixedClassic = methods.proxy.getWidget(
+		Widget minimapOnFixedClassic = ctx.proxy.getWidget(
 				WidgetIndices.FixedClassicViewport.GROUP_INDEX,
 				WidgetIndices.FixedClassicViewport.MINIMAP_COMPASS_SPRITE);
-		Widget minimapOnResizableClassic = methods.proxy.getWidget(
+		Widget minimapOnResizableClassic = ctx.proxy.getWidget(
 				WidgetIndices.ResizableClassicViewport.GROUP_INDEX,
 				WidgetIndices.ResizableClassicViewport.MINIMAP_COMPASS_SPRITE);
-		Widget minimapOnResizableModern = methods.proxy.getWidget(
+		Widget minimapOnResizableModern = ctx.proxy.getWidget(
 				WidgetIndices.ResizableModernViewport.GROUP_INDEX,
 				WidgetIndices.ResizableModernViewport.MINIMAP_COMPASS_SPRITE);
+
 		if (minimapOnFixedClassic != null)
 			return ViewportLayout.FIXED_CLASSIC;
 		else if (minimapOnResizableClassic != null)

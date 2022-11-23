@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.cache.definitions.NpcDefinition;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 import net.runelite.rsb.util.OutputObjectComparer;
 import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
@@ -12,10 +11,10 @@ import net.runelite.rsb.wrappers.common.Positionable;
 import net.runelite.rsb.wrappers.subwrap.WalkerTile;
 
 @Slf4j
-public abstract class RSCharacter extends MethodProvider implements Clickable07, Positionable {
-
+public abstract class RSCharacter implements Clickable07, Positionable {
+	protected MethodContext ctx;
     public RSCharacter(MethodContext ctx) {
-        super(ctx);
+        this.ctx = ctx;
     }
 
     /**
@@ -56,7 +55,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
         if (actor != null) {
             Model model = actor.getModel();
             if (model != null) {
-                return new RSCharacterModel(methods, model, actor);
+                return new RSCharacterModel(ctx, model, actor);
             }
         }
 
@@ -102,9 +101,9 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
      */
     public Point getMinimapLocation() {
         Actor actor = getAccessor();
-        int actorX = methods.proxy.getBaseX() + (actor.getLocalLocation().getX() / 32 - 2) / 4;
-        int actorY = methods.proxy.getBaseY() + (actor.getLocalLocation().getY() / 32 - 2) / 4;
-        return methods.calc.worldToMinimap(actorX, actorY);
+        int actorX = ctx.proxy.getBaseX() + (actor.getLocalLocation().getX() / 32 - 2) / 4;
+        int actorY = ctx.proxy.getBaseY() + (actor.getLocalLocation().getY() / 32 - 2) / 4;
+        return ctx.calc.worldToMinimap(actorX, actorY);
     }
 
     public String getName() {
@@ -123,17 +122,16 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
         Actor actor = getAccessor();
         RSModel model = getModel();
         if (model == null) {
-            return methods.calc.groundToScreen(
-                    actor.getLocalLocation().getX(),
-                    actor.getLocalLocation().getY(),
-                    actor.getLogicalHeight() / 2);
+            return ctx.calc.groundToScreen(actor.getLocalLocation().getX(),
+										   actor.getLocalLocation().getY(),
+										   actor.getLogicalHeight() / 2);
         } else {
             return model.getPoint();
         }
     }
 
     public boolean isBeingAttacked() {
-        if (methods.game.isLoggedIn()) {
+        if (ctx.game.isLoggedIn()) {
             if (getAccessor().getInteracting() != null) {
                 return getAccessor().getHealthRatio() > 0;
             }
@@ -142,7 +140,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
     }
 
     public boolean isAttacking() {
-        if (methods.game.isLoggedIn()) {
+        if (ctx.game.isLoggedIn()) {
             if (getAccessor().getInteracting() != null) {
                 return getAccessor().getInteracting().getHealthRatio() > 0;
             }
@@ -156,7 +154,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
     }
 
     public boolean isInteractingWithLocalPlayer() {
-        Player localPlayer = methods.proxy.getLocalPlayer();
+        Player localPlayer = ctx.proxy.getLocalPlayer();
         if (localPlayer == null) return false;
         return getAccessor() == localPlayer.getInteracting();
     }
@@ -175,9 +173,9 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
     public boolean isOnScreen() {
         RSModel model = getModel();
         if (model == null) {
-            return methods.calc.tileOnScreen(getLocation());
+            return ctx.calc.tileOnScreen(getLocation());
         } else {
-            return methods.calc.pointOnScreen(model.getPoint());
+            return ctx.calc.pointOnScreen(model.getPoint());
         }
     }
 
@@ -217,7 +215,7 @@ public abstract class RSCharacter extends MethodProvider implements Clickable07,
      */
     public boolean turnTo() {
         if (!this.isOnScreen()) {
-            methods.camera.turnTo(this);
+            ctx.camera.turnTo(this);
             return this.isOnScreen();
         }
         return false;

@@ -1,28 +1,21 @@
 package net.runelite.rsb.wrappers;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.TileItem;
 import net.runelite.cache.definitions.ItemDefinition;
 import net.runelite.cache.definitions.ObjectDefinition;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
-import net.runelite.rsb.wrappers.subwrap.RSMenuNode;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 /**
  * Represents an item (with an id and stack size). May or may not
  * wrap a component.
  */
 @Slf4j
-public class RSItem extends MethodProvider implements Clickable07, CacheProvider<ItemDefinition>  {
+public class RSItem implements Clickable07, CacheProvider<ItemDefinition>  {
 
 	private final int id;
 	private final int stackSize;
@@ -30,8 +23,10 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 	private RSWidget component;
 	private RSWidgetItem item;
 
+	// XXX actually not used
+	private MethodContext ctx;
 	public RSItem(final MethodContext ctx, final RSWidgetItem item) {
-		super(ctx);
+		this.ctx = ctx;
 		this.id = item.getItemId();
 		this.stackSize = item.getStackSize();
 		this.item = item;
@@ -39,7 +34,7 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 	}
 
 	public RSItem(final MethodContext ctx, final TileItem item) {
-		super(ctx);
+		this.ctx = ctx;
 		this.id = item.getId();
 		this.stackSize = item.getQuantity();
 		this.def = this.getDefinition(id);
@@ -47,7 +42,7 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 	}
 
 	public RSItem(final MethodContext ctx, final RSWidget item) {
-		super(ctx);
+		this.ctx = ctx;
 		this.id = item.getItemId();
 		this.stackSize = item.getStackSize();
 		this.component = item;
@@ -216,18 +211,6 @@ public class RSItem extends MethodProvider implements Clickable07, CacheProvider
 	 */
 	public boolean doAction(final String action, final String option) {
 		return (component != null) ? component.doAction(action, option) : item.doAction(action, option);
-	}
-
-	public boolean doAction(Predicate<RSMenuNode> predicate) {
-		component.doClick(false);
-		for (RSMenuNode menuNode : methods.chooseOption.getMenuNodes()) {
-			if (predicate.test(menuNode)) {
-				return (component != null)
-						? component.doAction(menuNode.getAction(), menuNode.getTarget())
-						: item.doAction(menuNode.getAction(), menuNode.getTarget());
-			}
-		}
-		return false;
 	}
 
 	/**

@@ -12,19 +12,20 @@ import java.util.List;
 /**
  * Provides access to ground items.
  */
-public class GroundItems extends MethodProvider {
-	
-	//This will hold the maximum number of tiles away the client can render
-	private static final int MAX_RENDER_RANGE = 25;
+public class GroundItems {
 
-	public static final Filter<RSGroundItem> ALL_FILTER = new Filter<>() {
+	//This will hold the maximum number of tiles away the client can render
+	private final int MAX_RENDER_RANGE = 25;
+
+	public final Filter<RSGroundItem> ALL_FILTER = new Filter<>() {
 		public boolean test(RSGroundItem item) {
 			return true;
 		}
 	};
 
+	private MethodContext ctx;
 	GroundItems(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -67,8 +68,8 @@ public class GroundItems extends MethodProvider {
 	 */
 	public RSGroundItem[] getAll(int range, Filter<RSGroundItem> filter) {
 		ArrayList<RSGroundItem> temp = new ArrayList<>();
-		int pX = methods.players.getMyPlayer().getLocation().getWorldLocation().getX();
-		int pY = methods.players.getMyPlayer().getLocation().getWorldLocation().getY();
+		int pX = ctx.players.getMyPlayer().getLocation().getWorldLocation().getX();
+		int pY = ctx.players.getMyPlayer().getLocation().getWorldLocation().getY();
 		int minX = pX - range, minY = pY - range;
 		int maxX = pX + range, maxY = pY + range;
 		for (int x = minX; x < maxX; x++) {
@@ -97,8 +98,8 @@ public class GroundItems extends MethodProvider {
 	 */
 	public RSGroundItem getNearest(Filter<RSGroundItem> filter) {
 		int dist = 9999999;
-		int pX = methods.players.getMyPlayer().getLocation().getWorldLocation().getX();
-		int pY = methods.players.getMyPlayer().getLocation().getWorldLocation().getY();
+		int pX = ctx.players.getMyPlayer().getLocation().getWorldLocation().getX();
+		int pY = ctx.players.getMyPlayer().getLocation().getWorldLocation().getY();
 		int minX = pX - MAX_RENDER_RANGE, minY = pY - MAX_RENDER_RANGE;
 		int maxX = pX + MAX_RENDER_RANGE, maxY = pY + MAX_RENDER_RANGE;
 		RSGroundItem itm = null;
@@ -111,8 +112,8 @@ public class GroundItems extends MethodProvider {
 						continue;
 					}
 					if (filter.test(item)
-							&& methods.calc.distanceTo(item.getLocation()) < dist) {
-						dist = methods.calc.distanceTo(item.getLocation());
+							&& ctx.calc.distanceTo(item.getLocation()) < dist) {
+						dist = ctx.calc.distanceTo(item.getLocation());
 						itm = item;
 					}
 				}
@@ -152,13 +153,13 @@ public class GroundItems extends MethodProvider {
 	 * @return An array of the ground items on the specified tile.
 	 */
 	public RSGroundItem[] getAllAt(int x, int y) {
-		if (!methods.game.isLoggedIn()) {
+		if (!ctx.game.isLoggedIn()) {
 			return new RSGroundItem[0];
 		}
 		List<RSGroundItem> list = new ArrayList<>();
 
-		RSTile rsTile = new RSTile(x, y, methods.proxy.getPlane());
-		Tile tile = rsTile.getTile(methods);
+		RSTile rsTile = new RSTile(x, y, ctx.proxy.getPlane());
+		Tile tile = rsTile.getTile(ctx);
 		if (tile == null) {
 			return null;
 		}
@@ -167,7 +168,7 @@ public class GroundItems extends MethodProvider {
 
 		if (groundItems != null && !groundItems.isEmpty()) {
 			for (TileItem item : groundItems) {
-				list.add(new RSGroundItem(methods, rsTile, new RSItem(methods, item)));
+				list.add(new RSGroundItem(ctx, rsTile, new RSItem(ctx, item)));
 			}
 		}
 

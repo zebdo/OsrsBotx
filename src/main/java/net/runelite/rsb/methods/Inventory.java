@@ -24,12 +24,13 @@ import java.util.function.Predicate;
  *
  * @author GigiaJ
  */
-public class Inventory extends MethodProvider {
+public class Inventory {
 
 	private final int EMPTY_SLOT_ITEM_ID = 6512;
 
+	private MethodContext ctx;
 	Inventory(MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -40,20 +41,20 @@ public class Inventory extends MethodProvider {
 	public Map.Entry<String, RSWidget> getInterface() {
 		final String INVENTORY = "inventory", BANK = "bank", STORE = "store", GRAND_EXCHANGE = "grandexchange", TRADE = "trade";
 		HashMap<String, RSWidget> widgets = new HashMap<>();
-		switch (methods.gui.getViewportLayout()) {
-			case FIXED_CLASSIC -> widgets.put(INVENTORY, methods.interfaces.getComponent(WidgetInfo.FIXED_VIEWPORT_INVENTORY_CONTAINER));
-			case RESIZABLE_MODERN -> widgets.put(INVENTORY, methods.interfaces.getComponent(WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE_INVENTORY_CONTAINER));
-			case RESIZABLE_CLASSIC -> widgets.put(INVENTORY, methods.interfaces.getComponent(WidgetInfo.RESIZABLE_VIEWPORT_INVENTORY_CONTAINER));
+		switch (ctx.gui.getViewportLayout()) {
+			case FIXED_CLASSIC -> widgets.put(INVENTORY, ctx.interfaces.getComponent(WidgetInfo.FIXED_VIEWPORT_INVENTORY_CONTAINER));
+			case RESIZABLE_MODERN -> widgets.put(INVENTORY, ctx.interfaces.getComponent(WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE_INVENTORY_CONTAINER));
+			case RESIZABLE_CLASSIC -> widgets.put(INVENTORY, ctx.interfaces.getComponent(WidgetInfo.RESIZABLE_VIEWPORT_INVENTORY_CONTAINER));
 		}
-		widgets.put(BANK, methods.interfaces.getComponent(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER)); //Bug #137 - Bank has its own inventory container
-		widgets.put(STORE, methods.interfaces.getComponent(WidgetInfo.SHOP_INVENTORY_ITEMS_CONTAINER));
-		widgets.put(GRAND_EXCHANGE, methods.interfaces.getComponent(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER));
-		widgets.put(TRADE, methods.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_WINDOW_CONTAINER));
+		widgets.put(BANK, ctx.interfaces.getComponent(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER)); //Bug #137 - Bank has its own inventory container
+		widgets.put(STORE, ctx.interfaces.getComponent(WidgetInfo.SHOP_INVENTORY_ITEMS_CONTAINER));
+		widgets.put(GRAND_EXCHANGE, ctx.interfaces.getComponent(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER));
+		widgets.put(TRADE, ctx.interfaces.getComponent(GlobalWidgetInfo.TRADE_MAIN_SCREEN_WINDOW_CONTAINER));
 
 		for (Map.Entry<String, RSWidget> entry : widgets.entrySet()) {
-			if (entry.getKey().equals(INVENTORY) && methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
-				methods.game.openTab(InterfaceTab.INVENTORY);
-				sleep(random(50, 100));
+			if (entry.getKey().equals(INVENTORY) && ctx.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+				ctx.game.openTab(InterfaceTab.INVENTORY);
+				ctx.sleepRandom(50, 100);
 				return entry;
 			}
 			if (isOpen(entry.getValue())) {
@@ -80,12 +81,12 @@ public class Inventory extends MethodProvider {
 			return false;
 		}
 		while (item != null) {
-			if (methods.interfaces.get(GlobalWidgetInfo.DIALOG_DESTROY_ITEM.getGroupId()).isValid()) {
-				methods.interfaces.getComponent(GlobalWidgetInfo.DIALOG_DESTROY_ITEM_YES).doClick();
+			if (ctx.interfaces.get(GlobalWidgetInfo.DIALOG_DESTROY_ITEM.getGroupId()).isValid()) {
+				ctx.interfaces.getComponent(GlobalWidgetInfo.DIALOG_DESTROY_ITEM_YES).doClick();
 			} else {
 				item.doAction("Destroy");
 			}
-			sleep(random(700, 1100));
+			ctx.sleepRandom(700, 1100);
 			item = getItem(itemID);
 		}
 		return true;
@@ -109,10 +110,10 @@ public class Inventory extends MethodProvider {
 	 * @param items       The item IDs to drop
 	 */
 	public void dropAllExcept(final boolean leftToRight, final int... items) {
-		RSTile startLocation = methods.players.getMyPlayer().getLocation();
+		RSTile startLocation = ctx.players.getMyPlayer().getLocation();
 		boolean found_droppable = true;
 		while (found_droppable && getCountExcept(items) != 0) {
-			if (methods.calc.distanceTo(startLocation) > 100) {
+			if (ctx.calc.distanceTo(startLocation) > 100) {
 				break;
 			}
 			found_droppable = false;
@@ -131,7 +132,7 @@ public class Inventory extends MethodProvider {
 					}
 				}
 			}
-			sleep(random(500, 800));
+			ctx.sleepRandom(500, 800);
 		}
 	}
 
@@ -251,14 +252,14 @@ public class Inventory extends MethodProvider {
 	 *         <code>false</code> if not (e.g., if item is undroppable)
 	 */
 	public boolean dropItem(final int col, final int row) {
-		if (methods.interfaces.canContinue()) {
-			methods.interfaces.clickContinue();
-			sleep(random(800, 1300));
+		if (ctx.interfaces.canContinue()) {
+			ctx.interfaces.clickContinue();
+			ctx.sleepRandom(800, 1300);
 		}
-		if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY
-				&& !methods.interfaces.get(WidgetIndices.Bank.GROUP_INDEX).isValid()
-				&& !methods.interfaces.get(WidgetIndices.Store.GROUP_INDEX).isValid()) {
-			methods.game.openTab(InterfaceTab.INVENTORY);
+		if (ctx.game.getCurrentTab() != InterfaceTab.INVENTORY
+				&& !ctx.interfaces.get(WidgetIndices.Bank.GROUP_INDEX).isValid()
+				&& !ctx.interfaces.get(WidgetIndices.Store.GROUP_INDEX).isValid()) {
+			ctx.game.openTab(InterfaceTab.INVENTORY);
 		}
 		if (col < 0 || col > 3 || row < 0 || row > 6) {
 			return false;
@@ -416,10 +417,10 @@ public class Inventory extends MethodProvider {
 		if (!item.doAction("Use")) { return false; }
 		/*
 		for (int c = 0; c < 5 && getSelectedItem() == null; c++) {
-			sleep(random(40, 60));
+			ctx.sleepRandom(40, 60);
 		}
 		*/
-		sleep(random(60, 80));
+		ctx.sleepRandom(60, 80);
 		selItem = getSelectedItem();
 		return selItem != null && selItem.getID() == itemID;
 	}
@@ -433,8 +434,8 @@ public class Inventory extends MethodProvider {
 	 *         otherwise <code>false</code>.
 	 */
 	public boolean useItem(final RSItem item, final RSItem targetItem) {
-		if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
-			methods.game.openTab(InterfaceTab.INVENTORY);
+		if (ctx.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+			ctx.game.openTab(InterfaceTab.INVENTORY);
 		}
 		return selectItem(item) && targetItem.doAction("Use");
 	}
@@ -474,8 +475,8 @@ public class Inventory extends MethodProvider {
 	 *         RSItem and RSObject; otherwise <code>false</code>.
 	 */
 	public boolean useItem(RSItem item, RSObject targetObject) {
-		if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
-			methods.game.openTab(InterfaceTab.INVENTORY);
+		if (ctx.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+			ctx.game.openTab(InterfaceTab.INVENTORY);
 		}
 		return selectItem(item) && targetObject.doAction("Use", targetObject.getName());
 	}
@@ -513,8 +514,8 @@ public class Inventory extends MethodProvider {
 	 *         <code>Point</code>.
 	 */
 	public Point randomizeItemPoint(final Point inventoryPoint) {
-		return new Point(inventoryPoint.x + random(-10, 10), inventoryPoint.y
-				+ random(-10, 10));
+		return new Point(inventoryPoint.x + ctx.random(-10, 10),
+						 inventoryPoint.y + ctx.random(-10, 10));
 	}
 
 	/**
@@ -570,7 +571,7 @@ public class Inventory extends MethodProvider {
 		Consumer<Image> imageCallback = (img) ->
 		{ // This callback is on the game thread, move to executor thread
 			{
-				methods.runeLite.getInjector().getInstance(ScheduledExecutorService.class).submit(()-> {
+				ctx.runeLite.getInjector().getInstance(ScheduledExecutorService.class).submit(()-> {
 					selector.setSelected(getSelected(img, comps));
 					synchronized (selector) {
 						selector.notify();
@@ -578,7 +579,7 @@ public class Inventory extends MethodProvider {
 				});
 			}
 		};
-		methods.runeLite.getInjector().getInstance(DrawManager.class).requestNextFrameListener(imageCallback);
+		ctx.runeLite.getInjector().getInstance(DrawManager.class).requestNextFrameListener(imageCallback);
 		synchronized (selector) {
 			try {
 				selector.wait();
@@ -599,16 +600,16 @@ public class Inventory extends MethodProvider {
 	 * @return the index of the item selected; otherwise -1
 	 */
 	public int getSelected(Image img, RSWidgetItem[] comps) {
-		BufferedImage im = new BufferedImage(methods.proxy.getCanvasWidth(),
-											 methods.proxy.getCanvasHeight(),
+		BufferedImage im = new BufferedImage(ctx.proxy.getCanvasWidth(),
+											 ctx.proxy.getCanvasHeight(),
 											 BufferedImage.TYPE_INT_ARGB);
 		Graphics graphics = im.getGraphics();
 		graphics.drawImage(img, 0, 0, null);
 		for (int c = 0; c < Math.min(comps.length, 28); ++c) {
-			RSItem item = new RSItem(methods, comps[c]);
+			RSItem item = new RSItem(ctx, comps[c]);
 			int x = item.getItem().getItemLocation().getX();
 			int y = item.getItem().getItemLocation().getY();
-			BufferedImage itemImage = methods.runeLite.getItemManager().getImage(item.getID());
+			BufferedImage itemImage = ctx.runeLite.getItemManager().getImage(item.getID());
 			int height = itemImage.getHeight();
 			int width = itemImage.getWidth();
 			for (int i = 0; i < height; i++) {
@@ -668,7 +669,7 @@ public class Inventory extends MethodProvider {
 	public RSItem getItemAt(final int index) {
 		RSWidget invInterface = getInterface().getValue();
 		RSWidget comp = invInterface.getComponent(index);
-		return 0 <= index && index < 28 && comp.getId() != EMPTY_SLOT_ITEM_ID ? new RSItem(methods, comp) : null;
+		return 0 <= index && index < 28 && comp.getId() != EMPTY_SLOT_ITEM_ID ? new RSItem(ctx, comp) : null;
 	}
 
 	/**
@@ -683,7 +684,7 @@ public class Inventory extends MethodProvider {
 		RSItem[] items = new RSItem[invItems.length];
 		for (int i = 0; i < invItems.length; i++) {
 			if (invItems[i].getId() != EMPTY_SLOT_ITEM_ID)
-				items[i] = new RSItem(methods, invItems[i]);
+				items[i] = new RSItem(ctx, invItems[i]);
 		}
 		return items;
 	}
@@ -730,7 +731,7 @@ public class Inventory extends MethodProvider {
 		RSWidget[] invItems = invInterface.getComponents();
 		RSItem[] items = new RSItem[invItems.length];
 		for (int i = 0; i < invItems.length; i++) {
-			items[i] = new RSItem(methods, invItems[i]);
+			items[i] = new RSItem(ctx, invItems[i]);
 		}
 		return items;
 	}

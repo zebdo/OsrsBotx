@@ -7,7 +7,6 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.cache.definitions.ObjectDefinition;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
@@ -20,13 +19,14 @@ import net.runelite.rsb.wrappers.subwrap.WalkerTile;
  * RSObject can represent any {@link Type types} game object
  */
 @Slf4j
-public class RSObject extends MethodProvider implements Clickable07, Positionable, CacheProvider<ObjectDefinition>   {
+public class RSObject implements Clickable07, Positionable, CacheProvider<ObjectDefinition>   {
 
 	private final TileObject obj;
 	private final Type type;
 	private final int plane;
 	private final ObjectDefinition def;
 	private final int id;
+	private final MethodContext ctx;
 
 	/**
 	 * Creates a new RSObject with the following parameters:
@@ -38,7 +38,7 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	public RSObject(final MethodContext ctx,
 					final TileObject obj, final Type type,
 					final int plane) {
-		super(ctx);
+		this.ctx = ctx;
 		this.obj = obj;
 		this.type = type;
 		this.plane = plane;
@@ -67,14 +67,14 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 		if (obj instanceof GameObject) {
 			Point sceneMin = ((GameObject) obj).getSceneMinLocation();
 			Point sceneMax = ((GameObject) obj).getSceneMaxLocation();
-			WorldPoint worldMin = WorldPoint.fromScene(methods.proxy,
+			WorldPoint worldMin = WorldPoint.fromScene(ctx.proxy,
 													   sceneMin.getX(),
 													   sceneMin.getY(),
-													   methods.proxy.getPlane());
-			WorldPoint worldMax = WorldPoint.fromScene(methods.proxy,
+													   ctx.proxy.getPlane());
+			WorldPoint worldMax = WorldPoint.fromScene(ctx.proxy,
 													   sceneMax.getX(),
 													   sceneMax.getY(),
-													   methods.proxy.getPlane());
+													   ctx.proxy.getPlane());
 
 			return new RSArea(new RSTile(worldMin), new RSTile(worldMax));
 		}
@@ -130,39 +130,53 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	 *
 	 * @return The RSModel, or <code>null</code> if unavailable.
 	 */
+
+	/**
+	 * Gets the Model of this object.
+	 * Checks what kind of object it is and returns the model of the object based on that
+	 *
+	 * @return The RSModel, or <code>null</code> if unavailable.
+	 */
 	public RSModel getModel() {
 		try {
-			// XXX TODO check these, does getRenderable() return model? XXX
+			Model model;
 			if (obj instanceof WallObject) {
-				Model model = (Model) ((WallObject) obj).getRenderable1();
+				model = toModel(((WallObject) obj).getRenderable1());
 				if (model != null && model.getVerticesX() != null)
 					if (((WallObject) obj).getRenderable2() != null)
-						return new RSWallObjectModel(methods, model, (Model) ((WallObject) obj).getRenderable2(), obj);
+						return new RSWallObjectModel(ctx, model, toModel(((WallObject) obj).getRenderable2()), obj);
 					else {
-						return new RSWallObjectModel(methods, model, obj);
+						return new RSWallObjectModel(ctx, model, obj);
 					}
-				return new RSWallObjectModel(methods, null, obj);
+				return new RSWallObjectModel(ctx, null, obj);
 			} else if (obj instanceof GroundObject) {
-				Model model = (Model) ((GroundObject) obj).getRenderable();
+				model = toModel(((GroundObject) obj).getRenderable());
 				if (model != null && model.getVerticesX() != null)
-					return new RSGroundObjectModel(methods, model, new RSTile(obj.getWorldLocation()).getTile(methods));
+					return new RSGroundObjectModel(ctx, model, new RSTile(obj.getWorldLocation()).getTile(ctx));
 			} else if (obj instanceof DecorativeObject) {
-				Model model = (Model) ((DecorativeObject) obj).getRenderable();
+				model = toModel(((DecorativeObject) obj).getRenderable());
 				if (model != null && model.getVerticesX() != null)
-					return new RSGroundObjectModel(methods, model, new RSTile(obj.getWorldLocation()).getTile(methods));
+					return new RSGroundObjectModel(ctx, model, new RSTile(obj.getWorldLocation()).getTile(ctx));
 			} else if (obj instanceof ItemLayer) {
 				return null;
 			} else if (obj instanceof GameObject) {
-				Renderable renderable = ((GameObject) obj).getRenderable();
-				Model model = renderable instanceof Model ? (Model) renderable : renderable.getModel();
-				if (model != null && model.getVerticesX() != null) {
-					return new RSObjectModel(methods, model, (GameObject) obj);
-				}
+				model = toModel(((GameObject) obj).getRenderable());
+				if (model != null && model.getVerticesX() != null)
+					return new RSObjectModel(ctx, model, (GameObject) obj);
 			}
 		} catch (AbstractMethodError e) {
 			log.debug("Error", e);
 		}
 		return null;
+	}
+	private Model toModel(Renderable r) {
+		if (r instanceof Model) {
+			return (Model) r;
+		} else if (r != null) {
+			return r.getModel();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -173,9 +187,9 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	public boolean isOnScreen() {
 		RSModel model = getModel();
 		if (model == null) {
-			return methods.calc.tileOnScreen(getLocation());
+			return ctx.calc.tileOnScreen(getLocation());
 		} else {
-			return methods.calc.pointOnScreen(model.getPoint());
+			return ctx.calc.pointOnScreen(model.getPoint());
 		}
 	}
 
@@ -212,7 +226,7 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 		if (model != null) {
 			return model.doAction(action, option);
 		}
-		return methods.tiles.doAction(getLocation(), action, option);
+		return ctx.tiles.doAction(getLocation(), action, option);
 	}
 
 	/**
@@ -235,17 +249,17 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 		if (model != null) {
 			return model.doClick(leftClick);
 		} else {
-			Point p = methods.calc.tileToScreen(getLocation());
-			if (methods.calc.pointOnScreen(p)) {
-				methods.mouse.move(p);
-				if (methods.calc.pointOnScreen(p)) {
-					methods.mouse.click(leftClick);
+			Point p = ctx.calc.tileToScreen(getLocation());
+			if (ctx.calc.pointOnScreen(p)) {
+				ctx.mouse.move(p);
+				if (ctx.calc.pointOnScreen(p)) {
+					ctx.mouse.click(leftClick);
 					return true;
 				} else {
-					p = methods.calc.tileToScreen(getLocation());
-					if (methods.calc.pointOnScreen(p)) {
-						methods.mouse.move(p);
-						methods.mouse.click(leftClick);
+					p = ctx.calc.tileToScreen(getLocation());
+					if (ctx.calc.pointOnScreen(p)) {
+						ctx.mouse.move(p);
+						ctx.mouse.click(leftClick);
 						return true;
 					}
 				}
@@ -264,9 +278,9 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 			model.hover();
 			return true;
 		} else {
-			Point p = methods.calc.tileToScreen(getLocation());
-			if (methods.calc.pointOnScreen(p)) {
-				methods.mouse.move(p);
+			Point p = ctx.calc.tileToScreen(getLocation());
+			if (ctx.calc.pointOnScreen(p)) {
+				ctx.mouse.move(p);
 				return true;
 			}
 		}
@@ -291,10 +305,10 @@ public class RSObject extends MethodProvider implements Clickable07, Positionabl
 	 * @return <code>true</code> If RSObject is on screen after attempted to move camera angle.
 	 */
 	public boolean turnTo() {
-		final RSObject o = methods.objects.getNearest(getID());
+		final RSObject o = ctx.objects.getNearest(getID());
 		if(o != null) {
 			if(!o.isOnScreen()) {
-				methods.camera.turnTo(o);
+				ctx.camera.turnTo(o);
 				return o.isOnScreen();
 			}
 		}

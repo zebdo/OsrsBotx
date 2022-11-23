@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-public class Menu extends MethodProvider {
+public class Menu {
     private static final Pattern HTML_TAG = Pattern
             .compile("(^[^<]+>|<[^>]+>|<[^>]+$)");
 
@@ -24,11 +24,12 @@ public class Menu extends MethodProvider {
     protected static final int MENU_SIDE_BORDER = 7;
     protected static final int MAX_DISPLAYABLE_ENTRIES = 32;
 
-    protected Menu(final MethodContext ctx) {
-        super(ctx);
-    }
+	private boolean LOG_MENU = false;
+	private MethodContext ctx;
+	Menu(final MethodContext ctx) {
+		this.ctx = ctx;
+	}
 
-	private boolean LOG_MENU = true;
 
     /**
      * Clicks the menu target. Will left-click if the menu item is the first,
@@ -59,8 +60,8 @@ public class Menu extends MethodProvider {
 
         if (idx == -1 || idx > MAX_DISPLAYABLE_ENTRIES) {
             while (isOpen()) {
-                methods.mouse.moveRandomly(750);
-                sleep(random(150, 250));
+                ctx.mouse.moveRandomly(750);
+                ctx.sleepRandom(150, 250);
             }
 
             return false;
@@ -72,7 +73,7 @@ public class Menu extends MethodProvider {
 					log.info(String.format("left clicking action"));
 				}
 
-                methods.mouse.click(true);
+                ctx.mouse.click(true);
                 return true;
             }
 
@@ -81,9 +82,9 @@ public class Menu extends MethodProvider {
 			}
 
             // ensure we don't move after
-            methods.mouse.click(false, 0);
+            ctx.mouse.click(false, 0);
             for (int ii=0; ii<5; ii++) {
-                sleep(random(150, 250));
+                ctx.sleepRandom(150, 250);
                 if (isOpen()) {
                     log.info(String.format("menu is now open"));
                     break;
@@ -110,23 +111,23 @@ public class Menu extends MethodProvider {
         MenuEntry[] entries = getEntries();
         String item = (entries[i].getOption() + " " + entries[i].getTarget().replaceAll("<.*?>", ""));
         Point menu = getLocation();
-        FontMetrics fm = methods.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+        FontMetrics fm = ctx.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
 
         int width = (fm.stringWidth(item) + MENU_SIDE_BORDER) / 2;
         int rwidth = Math.max(2, (int) (width * 0.8));
-        int xOff = width + random(-rwidth, rwidth);
+        int xOff = width + ctx.random(-rwidth, rwidth);
 
 		if (LOG_MENU) {
 			log.info(String.format("width %d, rwidth %d, xOff %d", width, rwidth, xOff));
 		}
 
-        int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + random(2, MENU_ENTRY_LENGTH - 2)));
+        int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + ctx.random(2, MENU_ENTRY_LENGTH - 2)));
 
-        methods.mouse.move(menu.x + xOff, menu.y + yOff);
-        sleep(random(75, 150));
+        ctx.mouse.move(menu.x + xOff, menu.y + yOff);
+        ctx.sleepRandom(75, 150);
 
         if (this.isOpen()) {
-            methods.mouse.click(true);
+            ctx.mouse.click(true);
             return true;
         }
 
@@ -168,7 +169,7 @@ public class Menu extends MethodProvider {
      * @return <code>true</code> if the menu is open; otherwise <code>false</code>.
      */
     public boolean isOpen() {
-        return methods.proxy.isMenuOpen();
+        return ctx.proxy.isMenuOpen();
     }
 
     /**
@@ -189,7 +190,7 @@ public class Menu extends MethodProvider {
     protected int calculateWidth() {
         MenuEntry[] entries = getEntries();
         final int MIN_MENU_WIDTH = 102;
-        FontMetrics fm = methods.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+        FontMetrics fm = ctx.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
         int longestEntry = 0;
         for (MenuEntry entry : entries) longestEntry = (fm.stringWidth(entry.getOption() + " " +
                 entry.getTarget().replaceAll("<.*?>", ""))
@@ -218,7 +219,7 @@ public class Menu extends MethodProvider {
         if (isOpen()) {
             final int MIN_MENU_WIDTH = 102;
             int width = calculateWidth();
-            return (width + MENU_SIDE_BORDER < MIN_MENU_WIDTH) ? (methods.virtualMouse.getClientPressX() - (MIN_MENU_WIDTH / 2)) : (methods.virtualMouse.getClientPressX() - (width / 2));
+            return (width + MENU_SIDE_BORDER < MIN_MENU_WIDTH) ? (ctx.virtualMouse.getClientPressX() - (MIN_MENU_WIDTH / 2)) : (ctx.virtualMouse.getClientPressX() - (width / 2));
         }
         return -1;
     }
@@ -230,23 +231,23 @@ public class Menu extends MethodProvider {
      */
     protected int calculateY() {
         if (isOpen()) {
-            final int CANVAS_LENGTH = methods.proxy.getCanvasHeight();
+            final int CANVAS_LENGTH = ctx.proxy.getCanvasHeight();
             MenuEntry[] entries = getEntries();
-            int offset = CANVAS_LENGTH - (methods.virtualMouse.getClientPressY() + calculateHeight());
+            int offset = CANVAS_LENGTH - (ctx.virtualMouse.getClientPressY() + calculateHeight());
             if (offset < 0 && entries.length >= MAX_DISPLAYABLE_ENTRIES) {
                 return 0;
             }
             if (offset < 0) {
-                return methods.virtualMouse.getClientPressY() + offset;
+                return ctx.virtualMouse.getClientPressY() + offset;
             }
-            return methods.virtualMouse.getClientPressY();
+            return ctx.virtualMouse.getClientPressY();
         }
         return -1;
     }
 
     public MenuEntry[] getEntries() {
         // gets from runelite
-        MenuEntry[] entries = methods.proxy.getMenuEntries();
+        MenuEntry[] entries = ctx.proxy.getMenuEntries();
         MenuEntry[] reversed = new MenuEntry[entries.length];
         for (int i = entries.length - 1, x = 0; i >= 0; i--, x++)
             reversed[i] = entries[x];
@@ -346,4 +347,11 @@ public class Menu extends MethodProvider {
     public boolean contains(final String action, final String target) {
         return getIndex(action, target) != -1;
     }
+
+	public String getHoverText() {
+		// used from DAX - untested
+		var entries = getEntriesString();
+		String item = entries[0];
+		return (entries.length > 2) ? item + " / " + (entries.length - 1) + " more options" : item;
+	}
 }

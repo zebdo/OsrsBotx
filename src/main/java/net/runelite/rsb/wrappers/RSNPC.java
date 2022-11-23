@@ -80,7 +80,7 @@ public class RSNPC extends RSCharacter implements CacheProvider<NpcDefinition> {
     public boolean isInteractingWithLocalPlayer() {
         RSNPC npc = this;
         return npc.getInteracting() != null
-                && npc.getInteracting().equals(methods.players.getMyPlayer().getAccessor());
+                && npc.getInteracting().equals(ctx.players.getMyPlayer().getAccessor());
     }
 
     NpcDefinition getDef() {

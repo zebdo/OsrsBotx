@@ -6,10 +6,11 @@ import net.runelite.rsb.wrappers.RSTile;
 /**
  * Tile related operations.
  */
-public class Tiles extends MethodProvider {
+public class Tiles {
 
+	private MethodContext ctx;
 	Tiles(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -28,16 +29,16 @@ public class Tiles extends MethodProvider {
 	 */
 	public boolean doAction(final RSTile tile, final double xd,
 	                        final double yd, final int h, final String action) {
-		return methods.tiles.doAction(tile, xd, yd, h, action, null);
+		return doAction(tile, xd, yd, h, action, null);
 	}
 
 	public boolean doAction(final RSTile tile, final double xd,
 	                        final double yd, final int h, final String action, final String option) {
-		Point location = methods.calc.tileToScreen(tile, xd, yd, h);
+		Point location = ctx.calc.tileToScreen(tile, xd, yd, h);
 		if (location.getX() != -1 && location.getY() != -1) {
-			methods.mouse.move(location, 3, 3);
-			sleep(random(20, 100));
-			return methods.menu.doAction(action, option);
+			ctx.mouse.move(location, 3, 3);
+			ctx.sleepRandom(20, 100);
+			return ctx.menu.doAction(action, option);
 		}
 		return false;
 	}
@@ -53,7 +54,7 @@ public class Tiles extends MethodProvider {
 	 *         <code>false</code>.
 	 */
 	public boolean doAction(final RSTile tile, final String action) {
-		return methods.tiles.doAction(tile, action, null);
+		return doAction(tile, action, null);
 	}
 
 	/**
@@ -70,17 +71,18 @@ public class Tiles extends MethodProvider {
 	public boolean doAction(final RSTile tile, final String action, final String option) {
 		try {
 			for (int i = 0; i < 5; i++) {
-			        Point location = methods.calc.tileToScreen(tile, 0.5, 0.5, 0);
-                                if (location.getX() == -1 || location.getY() == -1) {
-                                        return false;
-                                }
+				Point location = ctx.calc.tileToScreen(tile, 0.5, 0.5, 0);
+				if (location.getX() == -1 || location.getY() == -1) {
+					return false;
+				}
 
-                                // XXX TODO should calculate randomness to pass in
-                                methods.mouse.move(location, 10, 10);
-                                if (methods.menu.doAction(action, option)) {
-                                    return true;
-                                }
+				// XXX TODO should calculate randomness to pass in
+				ctx.mouse.move(location, 10, 10);
+				if (ctx.menu.doAction(action, option)) {
+					return true;
+				}
 			}
+
 			return false;
 		} catch (Exception e) {
 			return false;
@@ -94,21 +96,21 @@ public class Tiles extends MethodProvider {
 	 *         not over the viewport.
 	 */
 	public RSTile getTileUnderMouse() {
-		Point p = methods.mouse.getLocation();
-		if (!methods.calc.pointOnScreen(p)) {
+		Point p = ctx.mouse.getLocation();
+		if (!ctx.calc.pointOnScreen(p)) {
 			return null;
 		}
 		RSTile close = null;
 		for (int x = 0; x < 104; x++) {
 			for (int y = 0; y < 104; y++) {
-				RSTile t = new RSTile(x + methods.proxy.getBaseX(), y
-						+ methods.proxy.getBaseY(), methods.proxy.getPlane());
-				Point s = methods.calc.tileToScreen(t);
+				RSTile t = new RSTile(x + ctx.proxy.getBaseX(), y
+						+ ctx.proxy.getBaseY(), ctx.proxy.getPlane());
+				Point s = ctx.calc.tileToScreen(t);
 				if (s.getX() != -1 && s.getY() != -1) {
 					if (close == null) {
 						close = t;
 					}
-					if (methods.calc.tileToScreen(close).distanceTo(p) > methods.calc
+					if (ctx.calc.tileToScreen(close).distanceTo(p) > ctx.calc
 							.tileToScreen(t).distanceTo(p)) {
 						close = t;
 					}
@@ -125,20 +127,20 @@ public class Tiles extends MethodProvider {
 	 * @return RSTile at the point's location
 	 */
 	public RSTile getTileUnderPoint(final Point point) {
-		if (!methods.calc.pointOnScreen(point)) {
+		if (!ctx.calc.pointOnScreen(point)) {
 			return null;
 		}
 		RSTile close = null;
 		for (int x = 0; x < 104; x++) {
 			for (int y = 0; y < 104; y++) {
-				RSTile tile = new RSTile(x + methods.proxy.getBaseX(), y
-						+ methods.proxy.getBaseY(), methods.proxy.getPlane());
-				Point pointOfTile = methods.calc.tileToScreen(tile);
+				RSTile tile = new RSTile(x + ctx.proxy.getBaseX(), y
+						+ ctx.proxy.getBaseY(), ctx.proxy.getPlane());
+				Point pointOfTile = ctx.calc.tileToScreen(tile);
 				if (pointOfTile.getX() != -1 && pointOfTile.getY() != -1) {
 					if (close == null) {
 						close = tile;
 					}
-					if (methods.calc.tileToScreen(close).distanceTo(point) > methods.calc
+					if (ctx.calc.tileToScreen(close).distanceTo(point) > ctx.calc
 							.tileToScreen(tile).distanceTo(point)) {
 						close = tile;
 					}
@@ -157,6 +159,6 @@ public class Tiles extends MethodProvider {
 	 *         tile, otherwise false.
 	 */
 	public boolean isCloser(RSTile tile1, RSTile tile2) {
-		return methods.calc.distanceTo(tile1) < methods.calc.distanceTo(tile2);
+		return ctx.calc.distanceTo(tile1) < ctx.calc.distanceTo(tile2);
 	}
 }

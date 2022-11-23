@@ -16,10 +16,10 @@ import java.awt.image.BufferedImage;
 /**
  * Game state and GUI operations.
  */
-public class Game extends MethodProvider {
-
+public class Game {
+	private MethodContext ctx;
 	Game(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class Game extends MethodProvider {
 	 */
 	public boolean setChatOption(int chatOption, ChatMode mode) {
 		mouseChatButton(chatOption, false);
-		return methods.menu.doAction(mode.toString());
+		return ctx.menu.doAction(mode.toString());
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class Game extends MethodProvider {
 	 * @return The last message spoken by a player or "" if none
 	 */
 	public String getLastMessage() {
-		RSWidget messages = methods.interfaces.getComponent(GlobalWidgetInfo.CHATBOX_MESSAGES);
+		RSWidget messages = ctx.interfaces.getComponent(GlobalWidgetInfo.CHATBOX_MESSAGES);
 		RSWidget first = messages.getDynamicComponent(WidgetIndices.ChatBox.FIRST_MESSAGE_LABEL);
 		if (!first.getText().isEmpty()) {
 			RSWidget last = messages.getDynamicComponent(WidgetIndices.ChatBox.LAST_MESSAGE_LABEL);
@@ -90,19 +90,19 @@ public class Game extends MethodProvider {
 
 		if (useHotkey) {
 			if (interfaceTab.getHotkey() == 0) { return false; } // no hotkey for specified tab
-			methods.keyboard.pressKey((char) interfaceTab.getHotkey());
-			sleep(random(80, 200));
-			methods.keyboard.releaseKey((char) interfaceTab.getHotkey());
+			ctx.keyboard.pressKey((char) interfaceTab.getHotkey());
+			ctx.sleepRandom(80, 200);
+			ctx.keyboard.releaseKey((char) interfaceTab.getHotkey());
 
 		} else {
-			net.runelite.api.widgets.Widget tabWidget = methods.gui.getTab(interfaceTab);
+			net.runelite.api.widgets.Widget tabWidget = ctx.gui.getTab(interfaceTab);
 			if (tabWidget == null) { return false; }
-			methods.interfaces.getComponent(
+			ctx.interfaces.getComponent(
 					GlobalWidgetInfo.TO_GROUP(tabWidget.getParent().getId()),
 					GlobalWidgetInfo.TO_CHILD(tabWidget.getId())).doClick();
 		}
 
-		sleep(random(400, 600));
+		ctx.sleepRandom(400, 600);
 		return interfaceTab == getCurrentTab();
 	}
 
@@ -111,13 +111,13 @@ public class Game extends MethodProvider {
 	 */
 	public void closeTab() {
 		InterfaceTab interfaceTab = getCurrentTab();
-		if (methods.gui.getViewportLayout() == ViewportLayout.FIXED_CLASSIC ||
+		if (ctx.gui.getViewportLayout() == ViewportLayout.FIXED_CLASSIC ||
 			interfaceTab == InterfaceTab.LOGOUT) {
 			return;
 		}
-		net.runelite.api.widgets.Widget tabWidget = methods.gui.getTab(interfaceTab);
+		net.runelite.api.widgets.Widget tabWidget = ctx.gui.getTab(interfaceTab);
 		if (tabWidget != null) {
-			methods.interfaces.getComponent(
+			ctx.interfaces.getComponent(
 					GlobalWidgetInfo.TO_GROUP(tabWidget.getParent().getId()),
 					GlobalWidgetInfo.TO_CHILD(tabWidget.getId())).doClick();
 		}
@@ -131,7 +131,7 @@ public class Game extends MethodProvider {
 	 * @return <code>true</code> if it was clicked.
 	 */
 	public boolean mouseChatButton(int button, boolean left) {
-		RSWidget chatButton = methods.interfaces.get(WidgetID.CHATBOX_GROUP_ID).getComponent(button);
+		RSWidget chatButton = ctx.interfaces.get(WidgetID.CHATBOX_GROUP_ID).getComponent(button);
 		return chatButton.isValid() && chatButton.doClick(left);
 	}
 
@@ -141,7 +141,7 @@ public class Game extends MethodProvider {
 	 * @return The currently open interfaceTab if tab recognized else null;
 	 */
 	public InterfaceTab getCurrentTab() {
-		int varcIntValue = methods.proxy.getVarcIntValue(VarcIntIndices.CURRENT_INTERFACE_TAB);
+		int varcIntValue = ctx.proxy.getVarcIntValue(VarcIntIndices.CURRENT_INTERFACE_TAB);
 		return switch (VarcIntValues.valueOf2(varcIntValue)) {
 			case TAB_COMBAT_OPTIONS -> InterfaceTab.COMBAT;
 			case TAB_SKILLS -> InterfaceTab.SKILLS;
@@ -169,7 +169,7 @@ public class Game extends MethodProvider {
 	//  * TODO: this feels broken
 	//  */
 	// public Boolean inRandom() {
-	// 	for (Random random : methods.runeLite.getScriptHandler().getRandoms()) {
+	// 	for (Random random : ctx.runeLite.getScriptHandler().getRandoms()) {
 	// 		if (random.getClass().equals(new LoginBot())) {
 	// 				//|| random.getClass().equals(new BankPins())
 	// 				//|| random.getClass().equals(new TeleotherCloser())
@@ -192,7 +192,7 @@ public class Game extends MethodProvider {
 	 *         otherwise null.
 	 */
 	public RSWidget getTalkInterface() {
-		for (RSWidget component : methods.interfaces.getComponent(GlobalWidgetInfo.CHATBOX_FULL_INPUT).getComponents()) {
+		for (RSWidget component : ctx.interfaces.getComponent(GlobalWidgetInfo.CHATBOX_FULL_INPUT).getComponents()) {
 			if (component.isValid() && component.isVisible())
 				return component;
 		}
@@ -205,38 +205,40 @@ public class Game extends MethodProvider {
 	 * @return <code>true</code> if the player was logged out.
 	 */
 	public boolean logout() {
-		if (methods.bank.isOpen()) {
-			methods.bank.close();
-			sleep(random(200, 400));
+		if (ctx.bank.isOpen()) {
+			ctx.bank.close();
+			ctx.sleepRandom(200, 400);
 		}
 
-		if (methods.bank.isOpen()) {
+		if (ctx.bank.isOpen()) {
 			return false;
 		}
 
-		if (methods.inventory.isItemSelected()) {
-			InterfaceTab currentTab = methods.game.getCurrentTab();
-			InterfaceTab randomTab = InterfaceTab.values()[random(1, 6)];
+		if (ctx.inventory.isItemSelected()) {
+			InterfaceTab currentTab = ctx.game.getCurrentTab();
+			InterfaceTab randomTab = InterfaceTab.values()[ctx.random(1, 6)];
+
 			while (randomTab == currentTab) {
-				randomTab = InterfaceTab.values()[random(1, 6)];
+				randomTab = InterfaceTab.values()[ctx.random(1, 6)];
 			}
-			methods.game.openTab(randomTab);
-			sleep(random(400, 800));
+
+			ctx.game.openTab(randomTab);
+			ctx.sleepRandom(400, 800);
 		}
 
-		if (methods.inventory.isItemSelected()) {
+		if (ctx.inventory.isItemSelected()) {
 			return false;
 		}
 
 		if (getCurrentTab() != InterfaceTab.LOGOUT) {
 			openTab(InterfaceTab.LOGOUT);
-			sleep(random(300, 600));
+			ctx.sleepRandom(300, 600);
 		}
 
-		methods.interfaces.getComponent(GlobalWidgetInfo.LOGOUT_BUTTON).doClick();
+		ctx.interfaces.getComponent(GlobalWidgetInfo.LOGOUT_BUTTON).doClick();
 
 		// Final logout button in the logout tab
-		sleep(random(1500, 2000));
+		ctx.sleepRandom(1500, 2000);
 		return !isLoggedIn();
 	}
 
@@ -247,7 +249,7 @@ public class Game extends MethodProvider {
 	 * @return <code>true</code> if logged in; otherwise <code>false</code>.
 	 */
 	public boolean isLoggedIn() {
-		return methods.proxy.getLocalPlayer() != null;
+		return ctx.proxy.getLocalPlayer() != null;
 	}
 
 	/**
@@ -257,7 +259,7 @@ public class Game extends MethodProvider {
 	 *         otherwise <code>false</code>.
 	 */
 	public boolean isLoginScreen() {
-		return methods.proxy.getLocalPlayer() == null;
+		return ctx.proxy.getLocalPlayer() == null;
 	}
 
 	/**
@@ -267,7 +269,7 @@ public class Game extends MethodProvider {
 	 *         otherwise <code>false</code>.
 	 */
 	public boolean isWelcomeScreen() {
-		var w = methods.interfaces.getComponent(GlobalWidgetInfo.LOGIN_MOTW_TEXT);
+		var w = ctx.interfaces.getComponent(GlobalWidgetInfo.LOGIN_MOTW_TEXT);
 		return w != null && w.isValid() && w.getAbsoluteY() > 2;
 	}
 
@@ -277,7 +279,7 @@ public class Game extends MethodProvider {
 	 * @return The game state.
 	 */
 	public GameState getClientState() {
-		return methods.proxy.getGameState();
+		return ctx.proxy.getGameState();
 	}
 
 	/**
@@ -288,7 +290,7 @@ public class Game extends MethodProvider {
 	 * @return The current plane.
 	 */
 	public int getPlane() {
-		return methods.proxy.getPlane();
+		return ctx.proxy.getPlane();
 	}
 
 	/**
@@ -297,7 +299,7 @@ public class Game extends MethodProvider {
 	 * @return The region base x.
 	 */
 	public int getBaseX() {
-		return methods.proxy.getBaseX();
+		return ctx.proxy.getBaseX();
 	}
 
 	/**
@@ -306,7 +308,7 @@ public class Game extends MethodProvider {
 	 * @return The region base y.
 	 */
 	public int getBaseY() {
-		return methods.proxy.getBaseY();
+		return ctx.proxy.getBaseY();
 	}
 
 	/**
@@ -316,7 +318,7 @@ public class Game extends MethodProvider {
 	 * @return The region base tile.
 	 */
 	public RSTile getMapBase() {
-		return new RSTile(methods.proxy.getBaseX(), methods.proxy.getBaseY(), methods.proxy.getPlane());
+		return new RSTile(ctx.proxy.getBaseX(), ctx.proxy.getBaseY(), ctx.proxy.getPlane());
 	}
 
 	/**
@@ -325,7 +327,7 @@ public class Game extends MethodProvider {
 	 * @return the flags for all the tiles in the current scene
 	 */
 	public byte[][][] getSceneFlags() {
-		return methods.proxy.getTileSettings();
+		return ctx.proxy.getTileSettings();
 	}
 
 	/**
@@ -334,7 +336,7 @@ public class Game extends MethodProvider {
 	 * @return The canvas' width.
 	 */
 	public int getWidth() {
-		return methods.runeLite.getCanvas().getWidth();
+		return ctx.runeLite.getCanvas().getWidth();
 	}
 
 	/**
@@ -343,7 +345,7 @@ public class Game extends MethodProvider {
 	 * @return The canvas' height.
 	 */
 	public int getHeight() {
-		return methods.runeLite.getCanvas().getHeight();
+		return ctx.runeLite.getCanvas().getHeight();
 	}
 
 }

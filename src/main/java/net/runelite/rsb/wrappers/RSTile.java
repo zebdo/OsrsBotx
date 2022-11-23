@@ -1,9 +1,11 @@
 package net.runelite.rsb.wrappers;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+
+import net.runelite.api.Tile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.wrappers.common.Positionable;
 import net.runelite.rsb.wrappers.subwrap.WalkerTile;
@@ -63,7 +65,7 @@ public class RSTile implements Positionable {
             this.plane = NO_PLANE_SET;
             throw exception;
         } catch (NoPlaneException e) {
-            log.debug(debugMsg, exception);
+            log.error(debugMsg, exception);
         }
     }
 

@@ -13,10 +13,11 @@ import java.util.Arrays;
 /**
  * Combat related operations.
  */
-public class Combat extends MethodProvider {
+public class Combat {
 
+	private MethodContext ctx;
 	public Combat(MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	// ZZZ XXX part of tasks
@@ -47,10 +48,10 @@ public class Combat extends MethodProvider {
 	// public boolean eatFoodsUntilHP(final int percent, final int... foods) {
 	// 	int firstPercent = getHealth();
 	// 	for (int food : foods) {
-	// 		if (!methods.inventory.contains(food)) {
+	// 		if (!ctx.inventory.contains(food)) {
 	// 			continue;
 	// 		}
-	// 		if (methods.inventory.getItem(food).doAction("Eat")) {
+	// 		if (ctx.inventory.getItem(food).doAction("Eat")) {
 	// 			for (int i = 0; i < 100; i++) {
 	// 				sleep(random(100, 300));
 	// 				if (firstPercent < percent) {
@@ -74,7 +75,7 @@ public class Combat extends MethodProvider {
 	//  */
 	// public boolean eatEdibleUntilHP(final int percent) {
 	// 	int firstPercent = getHealth();
-	// 	RSItem[] edibleItems = methods.inventory.getAllWithAction("Eat");
+	// 	RSItem[] edibleItems = ctx.inventory.getAllWithAction("Eat");
 	// 	if (edibleItems == null || edibleItems.length == 0) {
 	// 		return false;
 	// 	}
@@ -100,12 +101,12 @@ public class Combat extends MethodProvider {
 	 * @param enable <code>true</code> to enable; <code>false</code> to disable.
 	 */
 	public void setAutoRetaliate(final boolean enable) {
-		final RSWidget autoRetaliate = methods.interfaces.getComponent(GlobalWidgetInfo.COMBAT_AUTO_RETALIATE);
+		final RSWidget autoRetaliate = ctx.interfaces.getComponent(GlobalWidgetInfo.COMBAT_AUTO_RETALIATE);
 		if (isAutoRetaliateEnabled() != enable) {
-			if (methods.game.getCurrentTab() != InterfaceTab.COMBAT) {
-				methods.game.openTab(InterfaceTab.COMBAT);
+			if (ctx.game.getCurrentTab() != InterfaceTab.COMBAT) {
+				ctx.game.openTab(InterfaceTab.COMBAT);
 			}
-			if (methods.game.getCurrentTab() == InterfaceTab.COMBAT && autoRetaliate != null) {
+			if (ctx.game.getCurrentTab() == InterfaceTab.COMBAT && autoRetaliate != null) {
 				autoRetaliate.doClick();
 			}
 		}
@@ -117,7 +118,7 @@ public class Combat extends MethodProvider {
 	 * @return <code>true</code> if retaliate is enabled; otherwise <code>false</code>.
 	 */
 	public boolean isAutoRetaliateEnabled() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_AUTO_RETALIATE)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_AUTO_RETALIATE)
 				== VarpValues.AUTO_RETALIATE_ENABLED.getValue();
 	}
 
@@ -127,7 +128,7 @@ public class Combat extends MethodProvider {
 	 * @return The current fight mode setting.
 	 */
 	public int getFightMode() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.COMBAT_STYLE);
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.COMBAT_STYLE);
 	}
 
 	/**
@@ -142,15 +143,15 @@ public class Combat extends MethodProvider {
 	 */
 	public boolean setFightMode(int fightMode) {
 		if (fightMode != getFightMode()) {
-			methods.game.openTab(InterfaceTab.COMBAT);
+			ctx.game.openTab(InterfaceTab.COMBAT);
 			if (fightMode == VarpValues.COMBAT_STYLE_FIRST.getValue()) {
-				return methods.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_ONE).doClick();
+				return ctx.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_ONE).doClick();
 			} else if (fightMode == VarpValues.COMBAT_STYLE_SECOND.getValue()) {
-				return methods.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_TWO).doClick();
+				return ctx.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_TWO).doClick();
 			} else if (fightMode == VarpValues.COMBAT_STYLE_THIRD.getValue()) {
-				return methods.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_THREE).doClick();
+				return ctx.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_THREE).doClick();
 			} else if (fightMode == VarpValues.COMBAT_STYLE_FOURTH.getValue()) {
-				return methods.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_FOUR).doClick();
+				return ctx.interfaces.getComponent(GlobalWidgetInfo.COMBAT_STYLE_FOUR).doClick();
 			}
 		}
 		return false;
@@ -162,7 +163,7 @@ public class Combat extends MethodProvider {
 	 * @return The current wilderness level otherwise, 0.
 	 */
 	public int getWildernessLevel() {
-		RSWidget widget = methods.interfaces.getComponent(GlobalWidgetInfo.PVP_WILDERNESS_LEVEL);
+		RSWidget widget = ctx.interfaces.getComponent(GlobalWidgetInfo.PVP_WILDERNESS_LEVEL);
 		return (widget.isValid() && widget.isVisible())
 				? Integer.parseInt(widget.getText().replace("Level: ", "").trim())
 				: 0;
@@ -175,7 +176,7 @@ public class Combat extends MethodProvider {
 	 */
 	public int getLifePoints() {
 		try {
-			return Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_HEALTH_ORB_TEXT)
+			return Integer.parseInt(ctx.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_HEALTH_ORB_TEXT)
 					.getText());
 		} catch (NumberFormatException ex) {
 			return 0;
@@ -188,8 +189,8 @@ public class Combat extends MethodProvider {
 	 * @return <code>true</code> if poisoned; otherwise <code>false</code>.
 	 */
 	public boolean isPoisoned() {
-		return 0 < methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON)
-				&& methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) < 1000000;
+		return 0 < ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON)
+				&& ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) < 1000000;
 	}
 
 	/**
@@ -199,7 +200,7 @@ public class Combat extends MethodProvider {
 	 */
 	public double getPoisonDamage() {
 		if (isPoisoned())
-			return Math.ceil(methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) / 5.0f);
+			return Math.ceil(ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) / 5.0f);
 		return 0;
 	}
 
@@ -209,7 +210,7 @@ public class Combat extends MethodProvider {
 	 * @return <code>true</code> if immune; otherwise <code>false</code>.
 	 */
 	public boolean isPoisonImmune() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) == -1;
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) == -1;
 	}
 
 	/**
@@ -218,7 +219,7 @@ public class Combat extends MethodProvider {
 	 * @return	<code>true</code> if the local player is envenomed; otherwise <code>false</code>
 	 */
 	public boolean isEnvenomed() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) >= 1000000;
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) >= 1000000;
 	}
 
 	/**
@@ -228,7 +229,7 @@ public class Combat extends MethodProvider {
 	 */
 	public int getVenomDamage() {
 		if (isEnvenomed())
-			return (methods.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) - 999997) * 2;
+			return (ctx.clientLocalStorage.getVarpValueAt(VarpIndices.POISON) - 999997) * 2;
 		return 0;
 	}
 
@@ -238,7 +239,7 @@ public class Combat extends MethodProvider {
 	 * @return <code>true</code> if special attack is enabled; otherwise <code>false</code>.
 	 */
 	public boolean isSpecialAttackEnabled() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_SPECIAL_ATTACK)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_SPECIAL_ATTACK)
 				== VarpValues.SPECIAL_ATTACK_ENABLED.getValue();
 	}
 
@@ -248,7 +249,7 @@ public class Combat extends MethodProvider {
 	 * @return 0 - 100
 	 */
 	public int getSpecialAttackEnergy() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.SPECIAL_ATTACK_ENERGY);
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.SPECIAL_ATTACK_ENERGY);
 	}
 
 	/**
@@ -258,7 +259,7 @@ public class Combat extends MethodProvider {
 	 */
 	public int getSpecialBarEnergy() {
 		try {
-			return Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_SPEC_ORB_TEXT)
+			return Integer.parseInt(ctx.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_SPEC_ORB_TEXT)
 					.getText()
 					.trim());
 		} catch (NumberFormatException ex) {
@@ -273,7 +274,7 @@ public class Combat extends MethodProvider {
 	 */
 	public int getPrayerPoints() {
 		try {
-			return Integer.parseInt(methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_QUICK_PRAYER_ORB_TEXT)
+			return Integer.parseInt(ctx.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_QUICK_PRAYER_ORB_TEXT)
 					.getText()
 					.trim());
 		} catch (NumberFormatException ex) {
@@ -287,7 +288,7 @@ public class Combat extends MethodProvider {
 	 * @return The current percentage health remaining.
 	 */
 	//public int getHealth() {
-	//	return ((getLifePoints() * 100) / methods.skills.getRealLevel(Skill.HITPOINTS.ordinal()));
+	//	return ((getLifePoints() * 100) / ctx.skills.getRealLevel(Skill.HITPOINTS.ordinal()));
 	//}
 
 	/**
@@ -298,7 +299,7 @@ public class Combat extends MethodProvider {
 	 */
 	public boolean isAttacking(final RSNPC npc) {
 		// Helpful for new scripters confused by the function of isInCombat()
-		Actor interact = methods.players.getMyPlayer().getInteracting();
+		Actor interact = ctx.players.getMyPlayer().getInteracting();
 		return interact != null && interact.equals(npc.getAccessor());
 	}
 

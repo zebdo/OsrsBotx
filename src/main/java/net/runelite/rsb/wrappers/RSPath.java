@@ -1,7 +1,6 @@
 package net.runelite.rsb.wrappers;
 
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 
 import java.util.EnumSet;
 
@@ -10,7 +9,7 @@ import java.util.EnumSet;
  *
  * @author GigiaJ
  */
-public abstract class RSPath extends MethodProvider {
+public abstract class RSPath {
 
 	/**
 	 * Defines the path traversal options.
@@ -19,8 +18,9 @@ public abstract class RSPath extends MethodProvider {
 		HANDLE_RUN, SPACE_ACTIONS
 	}
 
+	protected MethodContext ctx;
 	public RSPath(MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**

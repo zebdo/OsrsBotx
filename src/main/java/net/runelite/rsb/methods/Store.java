@@ -9,10 +9,12 @@ import java.util.ArrayList;
 /**
  * Store related operations.
  */
-public class Store extends MethodProvider {
+public class Store {
+
+	private MethodContext ctx;
 
 	Store(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -30,46 +32,46 @@ public class Store extends MethodProvider {
 		if (!isOpen()) {
 			return false;
 		}
-		final int inventoryCount = methods.inventory.getCount(true);
+		final int inventoryCount = ctx.inventory.getCount(true);
 		RSItem item = getItem(itemID);
 		if (item != null) {
 			if (count >= 500) {
 				if (item.doAction("Buy 500")) {
-					sleep(random(500, 700));
+					ctx.sleepRandom(500, 700);
 					return buy(itemID, (count - 500));
 				} else {
 					return false;
 				}
 			} else if (count >= 50) {
 				if (item.doAction("Buy 50")) {
-					sleep(random(500, 700));
+					ctx.sleepRandom(500, 700);
 					return buy(itemID, (count - 50));
 				} else {
 					return false;
 				}
 			} else if (count >= 10) {
 				if (item.doAction("Buy 10")) {
-					sleep(random(500, 700));
+					ctx.sleepRandom(500, 700);
 					return buy(itemID, (count - 10));
 				} else {
 					return false;
 				}
 			} else if (count >= 5) {
 				if (item.doAction("Buy 5")) {
-					sleep(random(500, 700));
+					ctx.sleepRandom(500, 700);
 					return buy(itemID, (count - 5));
 				} else {
 					return false;
 				}
 			} else if (count >= 1) {
 				if (item.doAction("Buy 1")) {
-					sleep(random(500, 700));
+					ctx.sleepRandom(500, 700);
 					return buy(itemID, (count - 1));
 				} else {
 					return false;
 				}
 			} else {
-				return methods.inventory.getCount(true) > inventoryCount;
+				return ctx.inventory.getCount(true) > inventoryCount;
 			}
 		}
 		return false;
@@ -85,9 +87,10 @@ public class Store extends MethodProvider {
 			return true;
 		}
 
-		if (methods.interfaces.getComponent(GlobalWidgetInfo.STORE_DYNAMIC_COMPONENTS)
+		if (ctx.interfaces.getComponent(GlobalWidgetInfo.STORE_DYNAMIC_COMPONENTS)
 				.getDynamicComponent(WidgetIndices.DynamicComponents.Global.DYNAMIC_CLOSE_BUTTON).doClick()) {
-			sleep(random(500, 600));
+
+			ctx.sleepRandom(500, 700);
 			return !isOpen();
 		} else {
 			return false;
@@ -100,7 +103,7 @@ public class Store extends MethodProvider {
 	 * @return the store <code>RSWidget</code>
 	 */
 	public RSWidget getInterface() {
-		return methods.interfaces.get(WidgetIndices.Store.GROUP_INDEX);
+		return ctx.interfaces.get(WidgetIndices.Store.GROUP_INDEX);
 	}
 
 	/**
@@ -163,7 +166,7 @@ public class Store extends MethodProvider {
 		for (RSWidget component : components) {
 
 			if (component != null && component.getId() != -1) {
-				items.add(new RSItem(methods, component));
+				items.add(new RSItem(ctx, component));
 			}
 		}
 

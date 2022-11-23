@@ -4,21 +4,22 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.rsb.internal.globval.GlobalWidgetInfo;
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RSWidget extends MethodProvider implements Clickable07 {
+public class RSWidget implements Clickable07 {
     private final int id;
     private final int parentId;
     private final Widget widget;
     private final Widget parentWidget;
 
+	private final MethodContext ctx;
     public RSWidget(final MethodContext ctx, final Widget widget) {
-        super(ctx);
+        this.ctx = ctx;
+
         if (widget != null) {
             this.id = widget.getId();
             this.widget = widget;
@@ -70,15 +71,15 @@ public class RSWidget extends MethodProvider implements Clickable07 {
         if (rect.x == -1 || rect.y == -1 || rect.width == -1 || rect.height == -1) {
             return false;
         }
-        if (!rect.contains(new Point (methods.mouse.getLocation().getX(), methods.mouse.getLocation().getY()))) {
+        if (!rect.contains(new Point (ctx.mouse.getLocation().getX(), ctx.mouse.getLocation().getY()))) {
             int min_x = rect.x + 1, min_y = rect.y + 1;
             int max_x = min_x + rect.width - 2, max_y = min_y + rect.height - 2;
 
-            methods.mouse.move(random(min_x, max_x, rect.width / 3),
-                    random(min_y, max_y, rect.height / 3));
-            sleep(random(40, 80));
+            ctx.mouse.move(ctx.random(min_x, max_x, rect.width / 2),
+							   ctx.random(min_y, max_y, rect.height / 3));
+            ctx.sleepRandom(40, 80);
         }
-        return methods.menu.doAction(action, option);
+        return ctx.menu.doAction(action, option);
     }
 
     /**
@@ -105,16 +106,17 @@ public class RSWidget extends MethodProvider implements Clickable07 {
         if (rect.x == -1 || rect.y == -1 || rect.width == -1 || rect.height == -1) {
             return false;
         }
-        if (rect.contains(new Point (methods.mouse.getLocation().getX(), methods.mouse.getLocation().getY()))) {
-            methods.mouse.click(true);
+        if (rect.contains(new Point (ctx.mouse.getLocation().getX(), ctx.mouse.getLocation().getY()))) {
+            ctx.mouse.click(true);
             return true;
         }
 
         int min_x = rect.x + 1, min_y = rect.y + 1;
         int max_x = min_x + rect.width - 2, max_y = min_y + rect.height - 2;
 
-        methods.mouse.click(random(min_x, max_x, rect.width / 3),
-                random(min_y, max_y, rect.height / 3), leftClick);
+        ctx.mouse.click(ctx.random(min_x, max_x, rect.width / 3),
+							ctx.random(min_y, max_y, rect.height / 3),
+							leftClick);
         return true;
     }
 
@@ -133,15 +135,15 @@ public class RSWidget extends MethodProvider implements Clickable07 {
         if (rect.x == -1 || rect.y == -1 || rect.width == -1 || rect.height == -1) {
             return false;
         }
-        if (rect.contains(new Point (methods.mouse.getLocation().getX(), methods.mouse.getLocation().getY()))) {
+        if (rect.contains(new Point (ctx.mouse.getLocation().getX(), ctx.mouse.getLocation().getY()))) {
             return false;
         }
 
         int min_x = rect.x + 1, min_y = rect.y + 1;
         int max_x = min_x + rect.width - 2, max_y = min_y + rect.height - 2;
 
-        methods.mouse.move(random(min_x, max_x, rect.width / 3),
-                random(min_y, max_y, rect.height / 3));
+        ctx.mouse.move(ctx.random(min_x, max_x, rect.width / 3),
+						   ctx.random(min_y, max_y, rect.height / 3));
         return true;
     }
 
@@ -243,13 +245,13 @@ public class RSWidget extends MethodProvider implements Clickable07 {
     RSWidget[] convertToRSWidget(Widget[] widgets) {
         final RSWidget[] components = new RSWidget[widgets.length];
         for (int i = 0; i < widgets.length; i++) {
-            components[i] = new RSWidget(methods, widgets[i]);
+            components[i] = new RSWidget(ctx, widgets[i]);
         }
         return components;
     }
 
     public RSWidget getDynamicComponent(int idx) {
-        return new RSWidget(methods, widget.getChild(idx));
+        return new RSWidget(ctx, widget.getChild(idx));
     }
 
     /**
@@ -259,7 +261,7 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @return The child component, or null
      */
     public RSWidget getComponent(int idx) {
-        return new RSWidget(methods, methods.proxy.getWidget(GlobalWidgetInfo.TO_GROUP(this.getId()), idx));
+        return new RSWidget(ctx, ctx.proxy.getWidget(GlobalWidgetInfo.TO_GROUP(this.getId()), idx));
     }
 
     /**
@@ -400,7 +402,7 @@ public class RSWidget extends MethodProvider implements Clickable07 {
      * @return  the parent widget for this RSWidget object
      */
     public RSWidget getParent() {
-        return new RSWidget(methods, parentWidget);
+        return new RSWidget(ctx, parentWidget);
     }
 
     /**

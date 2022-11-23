@@ -13,10 +13,12 @@ import java.util.function.Predicate;
 /**
  * Provides access to in-game physical objects.
  */
-public class Objects extends MethodProvider {
-    Objects(final MethodContext ctx) {
-        super(ctx);
-    }
+public class Objects {
+
+	private MethodContext ctx;
+	Objects(final MethodContext ctx) {
+		this.ctx = ctx;
+	}
 
     /**
      * A filter that accepts all matches.
@@ -82,8 +84,8 @@ public class Objects extends MethodProvider {
                         continue;
                     }
                     if (filter.test(o)) {
-                        double distTmp = methods.calc.distanceBetween(
-                                methods.players.getMyPlayer().getLocation(),
+                        double distTmp = ctx.calc.distanceBetween(
+                                ctx.players.getMyPlayer().getLocation(),
                                 o.getLocation());
                         if (cur == null) {
                             dist = distTmp;
@@ -115,7 +117,7 @@ public class Objects extends MethodProvider {
         double dist = -1;
         for (int x = 0; x < 104; x++) {
             for (int y = 0; y < 104; y++) {
-                int distanceToCheck = methods.calc.distanceTo(new WalkerTile(x, y, methods.proxy.getPlane(), WalkerTile.TYPES.SCENE).toWorldTile());
+                int distanceToCheck = ctx.calc.distanceTo(new WalkerTile(x, y, ctx.proxy.getPlane(), WalkerTile.TYPES.SCENE).toWorldTile());
                 if (distanceToCheck < distance) {
                     Set<RSObject> objects = getAtLocal(x, y, -1);
                     for (RSObject o : objects) {
@@ -123,8 +125,8 @@ public class Objects extends MethodProvider {
                             continue;
                         }
                         if (filter.test(o)) {
-                            double distTmp = methods.calc.distanceBetween(
-                                    methods.players.getMyPlayer().getLocation(),
+                            double distTmp = ctx.calc.distanceBetween(
+                                    ctx.players.getMyPlayer().getLocation(),
                                     o.getLocation());
                             if (cur == null) {
                                 dist = distTmp;
@@ -243,8 +245,8 @@ public class Objects extends MethodProvider {
      */
     public RSObject[] getAt(final RSTile t, int mask) {
         Set<RSObject> objects = getAtLocal(
-                t.getWorldLocation().getX() - methods.proxy.getBaseX(),
-                t.getWorldLocation().getY() - methods.proxy.getBaseY(), mask);
+                t.getWorldLocation().getX() - ctx.proxy.getBaseX(),
+                t.getWorldLocation().getY() - ctx.proxy.getBaseY(), mask);
 
 		// zero length array? XXX
         return objects.toArray(new RSObject[0]);
@@ -259,8 +261,8 @@ public class Objects extends MethodProvider {
      */
     public RSObject[] getAllAt(final RSTile t) {
         Set<RSObject> objects = getAtLocal(
-                t.getWorldLocation().getX() - methods.proxy.getBaseX(),
-                t.getWorldLocation().getY() - methods.proxy.getBaseY(), -1);
+                t.getWorldLocation().getX() - ctx.proxy.getBaseX(),
+                t.getWorldLocation().getY() - ctx.proxy.getBaseY(), -1);
         return objects.toArray(new RSObject[objects.size()]);
     }
 
@@ -276,37 +278,37 @@ public class Objects extends MethodProvider {
      */
     private Set<RSObject> getAtLocal(int x, int y, int mask) {
         Set<RSObject> objects = new LinkedHashSet<>();
-        if (methods.proxy.getTileSettings() == null) {
+        if (ctx.proxy.getTileSettings() == null) {
             return objects;
         }
 
-        int plane = methods.proxy.getPlane();
-        Tile tile = methods.proxy.getScene().getTiles()[plane][x][y];
+        int plane = ctx.proxy.getPlane();
+        Tile tile = ctx.proxy.getScene().getTiles()[plane][x][y];
 
         if (tile != null) {
             if (mask == -1 || (mask & 1) == 1) {
                 for (GameObject gameObject : tile.getGameObjects()) {
                     if (gameObject != null) {
-                        addObject(objects, new RSObject(methods, gameObject, RSObject.Type.GAME, plane));
+                        addObject(objects, new RSObject(ctx, gameObject, RSObject.Type.GAME, plane));
                     }
                 }
             }
             if (mask == -1 || (mask >> 1 & 1) == 1) {
                 TileObject tileObject = tile.getDecorativeObject();
                 if (tileObject != null) {
-                    addObject(objects, new RSObject(methods, tile.getDecorativeObject(), RSObject.Type.DECORATIVE, plane));
+                    addObject(objects, new RSObject(ctx, tile.getDecorativeObject(), RSObject.Type.DECORATIVE, plane));
                 }
             }
             if (mask == -1 || (mask >> 2 & 1) == 1) {
                 GroundObject groundObject = tile.getGroundObject();
                 if (groundObject != null) {
-                    addObject(objects, new RSObject(methods, groundObject, RSObject.Type.GROUND, plane));
+                    addObject(objects, new RSObject(ctx, groundObject, RSObject.Type.GROUND, plane));
                 }
             }
             if (mask == -1 || (mask >> 3 & 1) == 1) {
                 WallObject wallObject = tile.getWallObject();
                 if (wallObject != null) {
-                    addObject(objects, new RSObject(methods, wallObject, RSObject.Type.WALL, plane));
+                    addObject(objects, new RSObject(ctx, wallObject, RSObject.Type.WALL, plane));
                 }
             }
         }

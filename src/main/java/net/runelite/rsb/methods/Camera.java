@@ -11,12 +11,13 @@ import java.awt.event.KeyEvent;
 /**
  * Camera related operations.
  */
-public class Camera extends MethodProvider {
+public class Camera {
 
-	ROTATION_METHOD rotationMethod;
+	private MethodContext ctx;
+	private ROTATION_METHOD rotationMethod;
 
 	Camera(MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 		rotationMethod = ROTATION_METHOD.DEFAULT;
 	}
 
@@ -52,7 +53,7 @@ public class Camera extends MethodProvider {
 	@Deprecated
 	public void turnToCharacter(RSCharacter c, int dev) {
 		int angle = getCharacterAngle(c);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -64,7 +65,7 @@ public class Camera extends MethodProvider {
 	 */
 	public void turnTo(final RSCharacter c, final int dev) {
 		int angle = getCharacterAngle(c);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -100,7 +101,7 @@ public class Camera extends MethodProvider {
 	@Deprecated
 	public void turnToObject(RSObject o, int dev) {
 		int angle = getObjectAngle(o);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -112,7 +113,7 @@ public class Camera extends MethodProvider {
 	 */
 	public void turnTo(final RSObject o, final int dev) {
 		int angle = getObjectAngle(o);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -148,7 +149,7 @@ public class Camera extends MethodProvider {
 	@Deprecated
 	public void turnToTile(RSTile tile, int dev) {
 		int angle = getTileAngle(tile);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -160,7 +161,7 @@ public class Camera extends MethodProvider {
 	 */
 	public void turnTo(final RSTile tile, final int dev) {
 		int angle = getTileAngle(tile);
-		angle = random(angle - dev, angle + dev + 1);
+		angle = ctx.random(angle - dev, angle + dev + 1);
 		setAngle(angle);
 	}
 
@@ -206,30 +207,30 @@ public class Camera extends MethodProvider {
 		if (curAlt == percent) {
 			return true;
 		} else if (curAlt < percent) {
-			methods.inputManager.pressKey((char) KeyEvent.VK_UP);
+			ctx.inputManager.pressKey((char) KeyEvent.VK_UP);
 			long start = System.currentTimeMillis();
-			while (curAlt < percent && System.currentTimeMillis() - start < random(50, 100)) {
+			while (curAlt < percent && System.currentTimeMillis() - start < ctx.random(50, 100)) {
 				if (lastAlt != curAlt) {
 					start = System.currentTimeMillis();
 				}
 				lastAlt = curAlt;
-				sleep(random(5, 10));
+				ctx.sleepRandom(20, 30);
 				curAlt = getPitch();
 			}
-			methods.inputManager.releaseKey((char) KeyEvent.VK_UP);
+			ctx.inputManager.releaseKey((char) KeyEvent.VK_UP);
 			return true;
 		} else {
-			methods.inputManager.pressKey((char) KeyEvent.VK_DOWN);
+			ctx.inputManager.pressKey((char) KeyEvent.VK_DOWN);
 			long start = System.currentTimeMillis();
-			while (curAlt > percent && System.currentTimeMillis() - start < random(50, 100)) {
+			while (curAlt > percent && System.currentTimeMillis() - start < ctx.random(50, 100)) {
 				if (lastAlt != curAlt) {
 					start = System.currentTimeMillis();
 				}
 				lastAlt = curAlt;
-				sleep(random(5, 10));
+				ctx.sleepRandom(20, 30);
 				curAlt = getPitch();
 			}
-			methods.inputManager.releaseKey((char) KeyEvent.VK_DOWN);
+			ctx.inputManager.releaseKey((char) KeyEvent.VK_DOWN);
 			return true;
 		}
 	}
@@ -241,21 +242,21 @@ public class Camera extends MethodProvider {
 	 */
 	public void moveRandomly(int timeOut) {
 		Timer timeToHold = new Timer(timeOut);
-		int lowestCamAltPossible = random(75, 100);
-		int vertical = random(0, 20) < 15 ? KeyEvent.VK_UP : KeyEvent.VK_DOWN;
-		int horizontal = random(0, 20) < 5 ? KeyEvent.VK_LEFT : KeyEvent.VK_RIGHT;
-		if (random(0, 10) < 8) {
-			methods.inputManager.pressKey((char) vertical);
+		int lowestCamAltPossible = ctx.random(75, 100);
+		int vertical = ctx.random(0, 20) < 15 ? KeyEvent.VK_UP : KeyEvent.VK_DOWN;
+		int horizontal = ctx.random(0, 20) < 5 ? KeyEvent.VK_LEFT : KeyEvent.VK_RIGHT;
+		if (ctx.random(0, 10) < 8) {
+			ctx.inputManager.pressKey((char) vertical);
 		}
-		if (random(0, 10) < 8) {
-			methods.inputManager.pressKey((char) horizontal);
+		if (ctx.random(0, 10) < 8) {
+			ctx.inputManager.pressKey((char) horizontal);
 		}
 		while (timeToHold.isRunning() &&
-			   methods.proxy.getCameraZ() >= lowestCamAltPossible) {
-			sleep(10);
+			   ctx.proxy.getCameraZ() >= lowestCamAltPossible) {
+			ctx.sleep(10);
 		}
-		methods.inputManager.releaseKey((char) vertical);
-		methods.inputManager.releaseKey((char) horizontal);
+		ctx.inputManager.releaseKey((char) vertical);
+		ctx.inputManager.releaseKey((char) horizontal);
 	}
 
 	/**
@@ -265,19 +266,22 @@ public class Camera extends MethodProvider {
 	 */
 	public void setAngle(int degrees) {
 		if (getAngleTo(degrees) > 5) {
-			methods.inputManager.pressKey((char) KeyEvent.VK_LEFT);
+			ctx.inputManager.pressKey((char) KeyEvent.VK_LEFT);
 			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) > 5) {
-				sleep(10);
+				ctx.sleepRandom(10, 25);
 			}
-			methods.inputManager.releaseKey((char) KeyEvent.VK_LEFT);
+
+			ctx.inputManager.releaseKey((char) KeyEvent.VK_LEFT);
+
 		} else if (getAngleTo(degrees) < -5) {
-			methods.inputManager.pressKey((char) KeyEvent.VK_RIGHT);
+			ctx.inputManager.pressKey((char) KeyEvent.VK_RIGHT);
 			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) < -5) {
-				sleep(10);
+				ctx.sleepRandom(10, 25);
 			}
-			methods.inputManager.releaseKey((char) KeyEvent.VK_RIGHT);
+
+			ctx.inputManager.releaseKey((char) KeyEvent.VK_RIGHT);
 		}
 	}
 
@@ -311,7 +315,7 @@ public class Camera extends MethodProvider {
 	 * Uses the compass component to set the camera to face north.
 	 */
 	public void setNorth() {
-		new RSWidget(methods, methods.gui.getCompass()).doClick();
+		new RSWidget(ctx, ctx.gui.getCompass()).doClick();
 	}
 
 	/**
@@ -344,7 +348,7 @@ public class Camera extends MethodProvider {
 	 * @return The angle in degrees
 	 */
 	public int getTileAngle(RSTile t) {
-		int a = (methods.calc.angleToTile(t) - 90) % 360;
+		int a = (ctx.calc.angleToTile(t) - 90) % 360;
 		return a < 0 ? a + 360 : a;
 	}
 
@@ -377,7 +381,7 @@ public class Camera extends MethodProvider {
 		// the client uses fixed point radians 0 - 2^14
 		// degrees = yaw * 360 / 2^14 = yaw / 45.5111...
 		// This leaves it on a scale of 45 versus a scale of 360 so we multiply it by 8 to fix that.
-		return (int) Math.abs(methods.proxy.getCameraYaw() / 45.51 * 8);
+		return (int) Math.abs(ctx.proxy.getCameraYaw() / 45.51 * 8);
 	}
 
 	/**
@@ -387,7 +391,7 @@ public class Camera extends MethodProvider {
 	 * @return The current camera altitude percentage.
 	 */
 	public int getPitch() {
-		return (int) ((methods.proxy.getCameraPitch() - 1024) / 20.48);
+		return (int) ((ctx.proxy.getCameraPitch() - 1024) / 20.48);
 	}
 
 	/**
@@ -396,7 +400,7 @@ public class Camera extends MethodProvider {
 	 * @return The x position.
 	 */
 	public int getX() {
-		return methods.proxy.getCameraX();
+		return ctx.proxy.getCameraX();
 	}
 
 	/**
@@ -405,7 +409,7 @@ public class Camera extends MethodProvider {
 	 * @return The y position.
 	 */
 	public int getY() {
-		return methods.proxy.getCameraY();
+		return ctx.proxy.getCameraY();
 	}
 
 	/**
@@ -414,7 +418,7 @@ public class Camera extends MethodProvider {
 	 * @return The z position.
 	 */
 	public int getZ() {
-		return methods.proxy.getCameraZ();
+		return ctx.proxy.getCameraZ();
 	}
 
 	public enum ROTATION_METHOD {

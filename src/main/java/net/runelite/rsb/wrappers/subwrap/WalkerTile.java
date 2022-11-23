@@ -6,9 +6,9 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
 import net.runelite.rsb.methods.MethodContext;
-import net.runelite.rsb.methods.MethodProvider;
 
 import net.runelite.rsb.wrappers.RSTile;
+import net.runelite.rsb.wrappers.MethodProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
 
@@ -181,17 +181,17 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
         ANIMABLE, LOCAL, WORLD, SCENE;
     }
 
-    @Override
-    public WalkerTile getLocation() {
-        return this;
-    }
-
     public int distanceTo(Positionable positionable) {
         return (int) ctx.calc.distanceBetween(this.toWorldTile(), positionable.getLocation());
     }
 
     public double distanceToDouble(Positionable positionable) {
         return ctx.calc.distanceBetween(this.toWorldTile(), positionable.getLocation());
+    }
+
+    @Override
+    public WalkerTile getLocation() {
+        return this;
     }
 
     public WalkerTile translate(int x, int y) {

@@ -10,11 +10,12 @@ import java.util.function.Predicate;
 /**
  * Equipment related operations.
  */
-public class Equipment extends MethodProvider {
+public class Equipment {
 	private static final int EQUIPMENT_ITEM_SLOTS = 11;
 
+	private MethodContext ctx;
 	Equipment(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -24,14 +25,14 @@ public class Equipment extends MethodProvider {
 	 */
 	public RSWidget getInterface() {
 		// Tab needs to be open for it to update its content -.-
-		if (methods.game.getCurrentTab() != InterfaceTab.EQUIPMENT) {
-			if (methods.bank.isOpen()) {
-				methods.bank.close();
+		if (ctx.game.getCurrentTab() != InterfaceTab.EQUIPMENT) {
+			if (ctx.bank.isOpen()) {
+				ctx.bank.close();
 			}
-			methods.game.openTab(InterfaceTab.EQUIPMENT);
-			sleep(random(900, 1500));
+			ctx.game.openTab(InterfaceTab.EQUIPMENT);
+			ctx.sleepRandom(900, 1500);
 		}
-		return methods.interfaces.get(WidgetIndices.WornEquipmentTab.GROUP_INDEX);
+		return ctx.interfaces.get(WidgetIndices.WornEquipmentTab.GROUP_INDEX);
 	}
 
 	/**
@@ -43,7 +44,7 @@ public class Equipment extends MethodProvider {
 		RSWidget[] equip = getInterface().getComponents();
 		RSItem[] items = new RSItem[EQUIPMENT_ITEM_SLOTS];
 		for (int i = 0; i < items.length; i++) {
-			items[i] = new RSItem(methods, equip[i + WidgetIndices.WornEquipmentTab.HEAD_DYNAMIC_CONTAINER].getDynamicComponent(1));
+			items[i] = new RSItem(ctx, equip[i + WidgetIndices.WornEquipmentTab.HEAD_DYNAMIC_CONTAINER].getDynamicComponent(1));
 		}
 		return items;
 	}
@@ -59,7 +60,7 @@ public class Equipment extends MethodProvider {
 		RSWidget[] components = equipment.getComponents();
 		RSItem[] items = new RSItem[EQUIPMENT_ITEM_SLOTS];
 		for (int i = 0; i < items.length; i++) {
-			items[i] = new RSItem(methods, components[i + WidgetIndices.WornEquipmentTab.HEAD_DYNAMIC_CONTAINER].getDynamicComponent(1));
+			items[i] = new RSItem(ctx, components[i + WidgetIndices.WornEquipmentTab.HEAD_DYNAMIC_CONTAINER].getDynamicComponent(1));
 		}
 		return items;
 	}
@@ -71,7 +72,7 @@ public class Equipment extends MethodProvider {
 	 * @return The equipped item.
 	 */
 	public RSItem getItem(int index) {
-		return new RSItem(methods, getInterface().getComponent(index));
+		return new RSItem(ctx, getInterface().getComponent(index));
 	}
 
 

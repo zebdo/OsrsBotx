@@ -11,14 +11,15 @@ import net.runelite.rsb.wrappers.RSPath;
 import net.runelite.rsb.wrappers.RSTile;
 import net.runelite.rsb.wrappers.RSTilePath;
 
-import java.lang.reflect.Field;
 
 /**
  * Walking related operations.
  */
-public class Walking extends MethodProvider {
+public class Walking {
+	private MethodContext ctx;
+
 	Walking(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	private RSPath lastPath;
@@ -35,7 +36,7 @@ public class Walking extends MethodProvider {
 		if (tiles == null) {
 			throw new IllegalArgumentException("null waypoint list");
 		}
-		return new RSTilePath(methods, tiles);
+		return new RSTilePath(ctx, tiles);
 	}
 
 	/**
@@ -46,7 +47,7 @@ public class Walking extends MethodProvider {
 	 * @return The path as an RSPath.
 	 */
 	public RSPath getPath(final RSTile destination) {
-		return new RSLocalPath(methods, destination);
+		return new RSLocalPath(ctx, destination);
 	}
 
 	/**
@@ -57,8 +58,8 @@ public class Walking extends MethodProvider {
 	 */
 	public boolean isLocal(final RSTile tile) {
 		int[][] flags = getCollisionData();
-		int x = tile.getWorldLocation().getX() - methods.game.getBaseX();
-		int y = tile.getWorldLocation().getY() - methods.game.getBaseY();
+		int x = tile.getWorldLocation().getX() - ctx.game.getBaseX();
+		int y = tile.getWorldLocation().getY() - ctx.game.getBaseY();
 		return (flags != null && x >= 0 && y >= 0 && x < flags.length && y < flags.length);
 	}
 
@@ -71,7 +72,7 @@ public class Walking extends MethodProvider {
 	 */
 	public boolean walkTo(final RSTile destination) {
 		if (destination.equals(lastDestination)
-				&& methods.calc.distanceTo(lastStep) < 10) {
+				&& ctx.calc.distanceTo(lastStep) < 10) {
 			return lastPath.traverse();
 		}
 		lastDestination = destination;
@@ -94,6 +95,19 @@ public class Walking extends MethodProvider {
 		return walkTileMM(t, 0, 0);
 	}
 
+	private int addRandom(int r) {
+		if (r < 1) {
+			return 0;
+		}
+
+		if (ctx.random(0, 2) == 1) {
+			return ctx.random(0, r + 1);
+
+		} else {
+			return ctx.random(1, r + 1) * -1;
+		}
+	}
+
 	/**
 	 * Walks to the given tile using the minimap with given randomness.
 	 *
@@ -103,45 +117,36 @@ public class Walking extends MethodProvider {
 	 * @return <code>true</code> if the tile was clicked; otherwise <code>false</code>.
 	 */
 	public boolean walkTileMM(final RSTile t, final int x, final int y) {
-		int xx = t.getWorldLocation().getX(), yy = t.getWorldLocation().getY();
-		if (x > 0) {
-			if (random(1, 2) == random(1, 2)) {
-				xx += random(0, x);
-			} else {
-				xx -= random(0, x);
-			}
-		}
-
-		if (y > 0) {
-			if (random(1, 2) == random(1, 2)) {
-				yy += random(0, y);
-			} else {
-				yy -= random(0, y);
-			}
-		}
+		int xx = t.getWorldLocation().getX() + addRandom(x);
+		int yy = t.getWorldLocation().getY() + addRandom(y);
 
 		RSTile dest = new RSTile(xx, yy, t.getWorldLocation().getPlane());
-		if (!methods.calc.tileOnMap(dest)) {
+		if (!ctx.calc.tileOnMap(dest)) {
 			dest = getClosestTileOnMap(dest);
 		}
 
-		Point p = methods.calc.tileToMinimap(dest);
+		Point p = ctx.calc.tileToMinimap(dest);
 		if (p.getX() != -1 && p.getY() != -1) {
-			methods.mouse.move(p);
-			Point p2 = methods.calc.tileToMinimap(dest);
-			if (p2 == null) { // methods.mouse takes time, if character got far enough (i.e. died) p2 will be null
+			ctx.mouse.move(p);
+
+			Point p2 = ctx.calc.tileToMinimap(dest);
+			// ctx.mouse takes time, if character got far enough (i.e. died) p2 will be null
+			if (p2 == null) {
 				return false;
 			}
+
 			if (p2.getX() != -1 && p2.getY() != -1) {
-				if (!methods.mouse.getLocation().equals(p2)) {//Get exact since we're moving... should be removed?
-					methods.mouse.hop(p2);
+				//Get exact since we're moving... should be removed?
+				if (!ctx.mouse.getLocation().equals(p2)) {
+					ctx.mouse.hop(p2);
 				}
 
-                sleep(random(75, 150));
-				methods.mouse.click(true);
+                ctx.sleepRandom(50, 100);
+				ctx.mouse.click(true);
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -153,20 +158,11 @@ public class Walking extends MethodProvider {
 	 * @return <code>true</code> if the tile was clicked; otherwise <code>false</code>.
 	 */
 	public boolean walkTileMM(final RSTile t, final int r) {
-		int x = t.getWorldLocation().getX();
-		int y = t.getWorldLocation().getY();
-		if (random(1, 2) == random(1, 2)) {
-			x += random(0, r);
-		} else {
-			x -= random(0, r);
-		}
-		if (random(1, 2) == random(1, 2)) {
-			y += random(0, r);
-		} else {
-			y -= random(0, r);
-		}
-		RSTile dest = new RSTile(x, y);
-		return !methods.players.getMyPlayer().getLocation().equals(dest) && walkTileMM(dest, 0, 0);
+		int x = t.getWorldLocation().getX() + addRandom(r);
+		int y = t.getWorldLocation().getY() + addRandom(r);
+
+		RSTile dest = new RSTile(x, y, t.getWorldLocation().getPlane());
+		return !ctx.players.getMyPlayer().getLocation().equals(dest) && walkTileMM(dest, 0, 0);
 	}
 
 	/**
@@ -178,7 +174,7 @@ public class Walking extends MethodProvider {
 	 * @return True if successful.
 	 */
 	public boolean walkTileOnScreen(final RSTile tileToWalk) {
-		return methods.tiles.doAction(methods.calc.getTileOnScreen(tileToWalk), "Walk ");
+		return ctx.tiles.doAction(ctx.calc.getTileOnScreen(tileToWalk), "Walk ");
 	}
 
 	/**
@@ -190,8 +186,8 @@ public class Walking extends MethodProvider {
 	public boolean setRun(final boolean enable) {
 		if (isRunEnabled() != enable) {
 			// hack...
-			return methods.interfaces.getComponent(WidgetIndices.Minimap.GROUP_INDEX, 27).doClick();
-			//return methods.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_RUN_ORB).doClick();
+			return ctx.interfaces.getComponent(WidgetIndices.Minimap.GROUP_INDEX, 27).doClick();
+			//return ctx.interfaces.getComponent(GlobalWidgetInfo.MINIMAP_RUN_ORB).doClick();
 		}
         return false;
     }
@@ -205,7 +201,7 @@ public class Walking extends MethodProvider {
 	 */
 	@Deprecated
 	public RSTile[] findPath(RSTile destination) {
-		RSLocalPath path = new RSLocalPath(methods, destination);
+		RSLocalPath path = new RSLocalPath(ctx, destination);
 		if (path.isValid()) {
 			RSTilePath tp = path.getCurrentTilePath();
 			if (tp != null) {
@@ -235,25 +231,16 @@ public class Walking extends MethodProvider {
 	 * @return Returns the closest tile to the destination on the minimap.
 	 */
 	public RSTile getClosestTileOnMap(final RSTile tile) {
-		if (!methods.calc.tileOnMap(tile) && methods.game.isLoggedIn()) {
-			RSTile loc = methods.players.getMyPlayer().getLocation();
+		if (!ctx.calc.tileOnMap(tile) && ctx.game.isLoggedIn()) {
+			RSTile loc = ctx.players.getMyPlayer().getLocation();
+
 			int xx = (loc.getWorldLocation().getX() + tile.getWorldLocation().getX()) / 2;
 			int yy = (loc.getWorldLocation().getY() + tile.getWorldLocation().getY()) / 2;
-
-			if (random(1, 2) == random(1, 2)) {
-				xx += random(0, 1);
-			} else {
-				xx -= random(0, 1);
-			}
-
-			if (random(1, 2) == random(1, 2)) {
-				yy += random(0, 1);
-			} else {
-				yy -= random(0, 1);
-			}
+			xx += addRandom(1);
+			yy += addRandom(1);
 
 			RSTile walk = new RSTile(xx, yy, tile.getWorldLocation().getPlane());
-			return methods.calc.tileOnMap(walk) ? walk : getClosestTileOnMap(walk);
+			return ctx.calc.tileOnMap(walk) ? walk : getClosestTileOnMap(walk);
 		}
 
 		return tile;
@@ -265,7 +252,7 @@ public class Walking extends MethodProvider {
 	 * @return <code>true</code> if run mode is enabled; otherwise <code>false</code>.
 	 */
 	public boolean isRunEnabled() {
-		return methods.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_RUN)
+		return ctx.clientLocalStorage.getVarpValueAt(VarpIndices.TOGGLE_RUN)
 				== VarpValues.RUN_ENABLED.getValue();
 	}
 
@@ -275,7 +262,7 @@ public class Walking extends MethodProvider {
 	 * @return The player's current run energy.
 	 */
 	public int getEnergy() {
-		return methods.proxy.getEnergy();
+		return ctx.proxy.getEnergy();
 	}
 
 	/**
@@ -285,26 +272,8 @@ public class Walking extends MethodProvider {
 	 * @return The current destination tile, or null.
 	 */
 	public RSTile getDestination() {
-		var d = methods.proxy.getLocalDestinationLocation();
-		return (d != null) ? new RSTile(d.getX(), d.getY(), methods.proxy.getPlane()) : null;
-	}
-
-	/**
-	 * Checks the obfuscated field to determine if it is collisiondata or not. If it is, then the method will return
-	 * its obfuscated name.
-	 * @param field The field from the client class to check
-	 * @return The obfuscated type name for CollisionData[]
-	 */
-	public String xxxgetObType(Field field) {
-		String typeName = null;
-		try {
-			typeName = ((CollisionData[]) field.get(methods.proxy.wrappedClient)).getClass().getTypeName();
-		} catch (IllegalAccessException | ClassCastException e) {
-			//This will cause a number of class cast exceptions while searching for a match
-			//This is a byproduct of using reflection and attempting to create an algorithm
-			//To find the field we want
-		}
-		return typeName;
+		var d = ctx.proxy.getLocalDestinationLocation();
+		return (d != null) ? new RSTile(d.getX(), d.getY(), ctx.proxy.getPlane()) : null;
 	}
 
 	/**
@@ -411,8 +380,8 @@ public class Walking extends MethodProvider {
 	public boolean walkPathOnScreen(RSTile[] path, int maxDist) {
 		RSTile next = nextTile(path, maxDist);
 		if (next != null) {
-			RSTile os = methods.calc.getTileOnScreen(next);
-			return os != null && methods.tiles.doAction(os, "Walk");
+			RSTile os = ctx.calc.getTileOnScreen(next);
+			return os != null && ctx.tiles.doAction(os, "Walk");
 		}
 		return false;
 	}
@@ -463,7 +432,7 @@ public class Walking extends MethodProvider {
 		int closest = -1;
 		for (int i = path.length - 1; i >= 0; i--) {
 			RSTile tile = path[i];
-			int d = methods.calc.distanceTo(tile);
+			int d = ctx.calc.distanceTo(tile);
 			if (d < dist) {
 				dist = d;
 				closest = i;
@@ -474,7 +443,7 @@ public class Walking extends MethodProvider {
 
 		for (int i = closest; i < path.length; i++) {
 
-			if (methods.calc.distanceTo(path[i]) <= skipDist) {
+			if (ctx.calc.distanceTo(path[i]) <= skipDist) {
 				feasibleTileIndex = i;
 			} else {
 				break;
@@ -508,6 +477,6 @@ public class Walking extends MethodProvider {
 
 
     public int[][] getCollisionData() {
-		return methods.proxy.getCollisionMaps()[methods.game.getPlane()].getFlags();
+		return ctx.proxy.getCollisionMaps()[ctx.game.getPlane()].getFlags();
 	}
 }

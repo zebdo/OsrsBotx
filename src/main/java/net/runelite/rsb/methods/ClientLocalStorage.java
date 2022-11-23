@@ -3,10 +3,11 @@ package net.runelite.rsb.methods;
 /**
  * Provides access to game local storage which holds VarPlayers, VarBits and VarClients
  */
-public class ClientLocalStorage extends MethodProvider {
+public class ClientLocalStorage {
 
+	private MethodContext ctx;
 	ClientLocalStorage(final MethodContext ctx) {
-		super(ctx);
+		this.ctx = ctx;
 	}
 
 	/**
@@ -16,7 +17,7 @@ public class ClientLocalStorage extends MethodProvider {
 	 *         otherwise <code>new int[0]</code>.
 	 */
 	public int[] getLoadedVarpValues() {
-		int[] varpValuesArray = methods.proxy.getVarps();
+		int[] varpValuesArray = ctx.proxy.getVarps();
 		if (varpValuesArray == null) {
 			return new int[0];
 		}
@@ -31,10 +32,11 @@ public class ClientLocalStorage extends MethodProvider {
 	 *         otherwise <code>-1</code>.
 	 */
 	public int getVarpValueAt(final int varpIndex) {
-		int[] varpValuesArray = getLoadedVarpValues();
+		var varpValuesArray = getLoadedVarpValues();
 		if (varpIndex < varpValuesArray.length) {
 			return varpValuesArray[varpIndex];
 		}
+
 		return -1;
 	}
 }

@@ -41,24 +41,24 @@ public class RSLocalPath extends RSPath {
 	 * {@inheritDoc}
 	 */
 	public boolean isValid() {
-		return getNext() != null && !methods.players.getMyPlayer().getLocation().equals(getEnd());
+		return getNext() != null && !ctx.players.getMyPlayer().getLocation().equals(getEnd());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public RSTile getNext() {
-		if (!methods.game.getMapBase().equals(base)) {
-			int[][] flags = methods.proxy.getCollisionMaps()[methods.game.getPlane()].getFlags();
+		if (!ctx.game.getMapBase().equals(base)) {
+			int[][] flags = ctx.proxy.getCollisionMaps()[ctx.game.getPlane()].getFlags();
 			if (flags != null) {
-				base = methods.game.getMapBase();
-				RSTile start = methods.players.getMyPlayer().getLocation();
+				base = ctx.game.getMapBase();
+				RSTile start = ctx.players.getMyPlayer().getLocation();
 				RSTile[] tiles = findPath(start, end);
 				if (tiles == null) {
 					base = null;
 					return null;
 				}
-				tilePath = methods.walking.newTilePath(tiles);
+				tilePath = ctx.walking.newTilePath(tiles);
 			}
 		}
 		return tilePath.getNext();
@@ -142,8 +142,8 @@ public class RSLocalPath extends RSPath {
 		int dest_x = end.getWorldLocation().getX() - base_x, dest_y = end.getWorldLocation().getY() - base_y;
 
 		// load client data
-		int plane = methods.game.getPlane();
-		flags = methods.proxy.getCollisionMaps()[plane].getFlags();
+		int plane = ctx.game.getPlane();
+		flags = ctx.proxy.getCollisionMaps()[plane].getFlags();
 
 		// loaded region only
 		if (flags == null || curr_x < 0 || curr_y < 0 || curr_x >= flags.length || curr_y >= flags.length) {
@@ -200,14 +200,14 @@ public class RSLocalPath extends RSPath {
 		}
 
 		// no path
-		if (!remote || methods.calc.distanceTo(end) < 10) {
+		if (!remote || ctx.calc.distanceTo(end) < 10) {
 			return null;
 		}
 		return findPath(start, pull(end));
 	}
 
 	private RSTile pull(RSTile tile) {
-		RSTile p = methods.players.getMyPlayer().getLocation();
+		RSTile p = ctx.players.getMyPlayer().getLocation();
 		int x = tile.getWorldLocation().getX(), y = tile.getWorldLocation().getY();
 		if (p.getWorldLocation().getX() < x) {
 			x -= 2;

@@ -2,16 +2,19 @@ package net.runelite.rsb.methods;
 
 import net.runelite.api.WorldType;
 
-public class WorldHopper extends MethodProvider {
-    WorldHopper(MethodContext ctx) {
-        super(ctx);
-    }
+public class WorldHopper {
+
+	private MethodContext ctx;
+	WorldHopper(final MethodContext ctx) {
+		this.ctx = ctx;
+	}
+
 
     public int getWorld() {
-        return methods.proxy.getWorld();
+        return ctx.proxy.getWorld();
     }
 
     public boolean isCurrentWorldMembers() {
-        return methods.proxy.getWorldType().stream().anyMatch((worldType) -> worldType == WorldType.MEMBERS);
+        return ctx.proxy.getWorldType().stream().anyMatch((worldType) -> worldType == WorldType.MEMBERS);
     }
 }

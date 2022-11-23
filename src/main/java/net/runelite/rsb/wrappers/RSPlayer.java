@@ -37,8 +37,8 @@ public class RSPlayer extends RSCharacter {
 	}
 
 	public boolean isLocalPlayerMoving() {
-		if (methods.proxy.getLocalDestinationLocation() != null) {
-			return methods.proxy.getLocalPlayer().getLocalLocation() == methods.proxy.getLocalDestinationLocation();
+		if (ctx.proxy.getLocalDestinationLocation() != null) {
+			return ctx.proxy.getLocalPlayer().getLocalLocation() == ctx.proxy.getLocalDestinationLocation();
 		}
 
 		return false;
@@ -72,25 +72,30 @@ public class RSPlayer extends RSCharacter {
 			Point screenLoc;
 			for (int i = 0; i < 20; i++) {
 				screenLoc = getScreenLocation();
-				if (!isValid() || !methods.calc.pointOnScreen(screenLoc)) {
+				if (!isValid() || !ctx.calc.pointOnScreen(screenLoc)) {
 					return false;
 				}
-				if (methods.mouse.getLocation().equals(screenLoc)) {
+
+				if (ctx.mouse.getLocation().equals(screenLoc)) {
 					break;
 				}
-				methods.mouse.move(screenLoc);
+
+				ctx.mouse.move(screenLoc);
 			}
-			MenuEntry[] entries = methods.menu.getEntries();
+			MenuEntry[] entries = ctx.menu.getEntries();
 			if (entries.length <= 1) {
 				return false;
 			}
+
 			if (entries[0].getOption().toLowerCase().contains(action.toLowerCase())) {
-				methods.mouse.click(true);
+				ctx.mouse.click(true);
 				return true;
+
 			} else {
-				methods.mouse.click(false);
-				return methods.menu.doAction(action, target);
+				ctx.mouse.click(false);
+				return ctx.menu.doAction(action, target);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
