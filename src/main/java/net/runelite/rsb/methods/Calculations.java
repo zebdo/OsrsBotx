@@ -148,7 +148,7 @@ public class Calculations {
 	 *         <code>new Point(-1, -1)</code>.
 	 */
 	public Point tileToScreen(final RSTile tile, final double dX, final double dY, final int height) {
-		WalkerTile walkerTile = new WalkerTile(tile).toLocalTile();
+		WalkerTile walkerTile = ctx.tiles.createWalkerTile(tile).toLocalTile();
 		return Perspective.localToCanvas(ctx.proxy,
 										 new LocalPoint(walkerTile.getX(), walkerTile.getY()),
 										 ctx.proxy.getPlane(),

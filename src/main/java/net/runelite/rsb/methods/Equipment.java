@@ -17,7 +17,6 @@ public class Equipment {
 	Equipment(final MethodContext ctx) {
 		this.ctx = ctx;
 	}
-
 	/**
 	 * Gets the equipment interface.
 	 *

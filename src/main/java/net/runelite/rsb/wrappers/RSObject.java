@@ -54,7 +54,9 @@ public class RSObject implements Clickable07, Positionable, CacheProvider<Object
 	 * @see #getArea()
 	 */
 	public WalkerTile getLocation() {
-		return new WalkerTile(obj.getWorldLocation().getX(), obj.getWorldLocation().getY(), obj.getWorldLocation().getPlane());
+		return ctx.tiles.createWalkerTile(obj.getWorldLocation().getX(),
+										  obj.getWorldLocation().getY(),
+										  obj.getWorldLocation().getPlane());
 	}
 
 	/**

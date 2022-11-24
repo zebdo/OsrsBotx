@@ -18,8 +18,7 @@ import java.util.ArrayList;
 /**
  * Bank related operations.
  */
-// XXX tmp MethodProvider
-public class Bank extends MethodProvider {
+public class Bank {
 	private int[] BANKERS;
 	private int[] BANK_DEPOSIT_BOX;
 	private int[] BANK_CHESTS;
@@ -31,11 +30,9 @@ public class Bank extends MethodProvider {
 
 	private MethodContext ctx;
 	Bank(final MethodContext ctx) {
-		super(ctx);
 		this.ctx = ctx;
 		this.assignConstants();
 	}
-
 
 	/**
 	 * Assigns the ID constants for all the banking objects in RuneScape

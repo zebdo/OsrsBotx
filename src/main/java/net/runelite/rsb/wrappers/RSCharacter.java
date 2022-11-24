@@ -85,8 +85,11 @@ public abstract class RSCharacter implements Clickable07, Positionable {
 
     public WalkerTile getLocation() {
         Actor actor = getAccessor();
-        if (actor == null) { return null; }
-        return new WalkerTile(actor.getWorldLocation());
+        if (actor == null) {
+			return null;
+		}
+
+        return ctx.tiles.createWalkerTile(actor.getWorldLocation());
     }
 
     public String getMessage() {

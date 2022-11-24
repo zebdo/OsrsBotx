@@ -117,7 +117,10 @@ public class Objects {
         double dist = -1;
         for (int x = 0; x < 104; x++) {
             for (int y = 0; y < 104; y++) {
-                int distanceToCheck = ctx.calc.distanceTo(new WalkerTile(x, y, ctx.proxy.getPlane(), WalkerTile.TYPES.SCENE).toWorldTile());
+				var worldTile = new WalkerTile(ctx, x, y,
+											   ctx.proxy.getPlane(),
+											   WalkerTile.TYPES.SCENE).toWorldTile();
+                int distanceToCheck = ctx.calc.distanceTo(worldTile);
                 if (distanceToCheck < distance) {
                     Set<RSObject> objects = getAtLocal(x, y, -1);
                     for (RSObject o : objects) {

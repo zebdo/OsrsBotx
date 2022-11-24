@@ -1,7 +1,10 @@
 package net.runelite.rsb.methods;
 
 import net.runelite.api.Point;
+import net.runelite.api.coords.WorldPoint;
+
 import net.runelite.rsb.wrappers.RSTile;
+import net.runelite.rsb.wrappers.subwrap.WalkerTile;
 
 /**
  * Tile related operations.
@@ -161,4 +164,25 @@ public class Tiles {
 	public boolean isCloser(RSTile tile1, RSTile tile2) {
 		return ctx.calc.distanceTo(tile1) < ctx.calc.distanceTo(tile2);
 	}
+
+	public WalkerTile createWalkerTile(RSTile tile) {
+        var x = tile.getWorldLocation().getX();
+        var y = tile.getWorldLocation().getY();
+        var plane = tile.getWorldLocation().getPlane();
+
+		return new WalkerTile(ctx, x, y, plane, WalkerTile.TYPES.WORLD);
+	}
+
+	public WalkerTile createWalkerTile(WorldPoint point) {
+        var x = point.getX();
+        var y = point.getY();
+        var plane = point.getPlane();
+
+		return new WalkerTile(ctx, x, y, plane, WalkerTile.TYPES.WORLD);
+	}
+
+	public WalkerTile createWalkerTile(int x, int y, int plane) {
+		return new WalkerTile(ctx, x, y, plane, WalkerTile.TYPES.WORLD);
+	}
+
 }

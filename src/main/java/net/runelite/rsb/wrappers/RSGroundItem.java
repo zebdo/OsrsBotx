@@ -78,7 +78,7 @@ public class RSGroundItem implements Clickable07, Positionable {
 	}
 
 	public WalkerTile getLocation() {
-		return new WalkerTile(location);
+		return ctx.tiles.createWalkerTile(location);
 	}
 
 	public boolean isOnScreen() {

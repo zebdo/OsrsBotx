@@ -15,7 +15,7 @@ import net.runelite.rsb.wrappers.subwrap.WalkerTile;
  * Should be using World location values. Not local or scene.
  */
 @Slf4j
-public class RSTile implements Positionable {
+public class RSTile {
 
     private final int NO_PLANE_SET = -99;
     protected int x;
@@ -150,24 +150,9 @@ public class RSTile implements Positionable {
         return "(X: " + x + ", Y:" + y + ", Plane:" + plane + ")";
     }
 
-
     class NoPlaneException extends Exception {
         NoPlaneException(String message) {
             super(message);
         }
-    }
-
-    @Override
-    public WalkerTile getLocation() {
-        return new WalkerTile(this);
-    }
-
-    /**
-     * Do not use
-     * @return Always false
-     */
-    @Deprecated
-    public boolean turnTo() {
-        return false;
     }
 }

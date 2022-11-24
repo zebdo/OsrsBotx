@@ -8,63 +8,35 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.rsb.methods.MethodContext;
 
 import net.runelite.rsb.wrappers.RSTile;
-import net.runelite.rsb.wrappers.MethodProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
 
 public class WalkerTile extends RSTile implements Clickable07, Positionable {
 
-    private MethodContext ctx;
+
+    public enum TYPES {
+        ANIMABLE, LOCAL, WORLD, SCENE;
+    }
 
     private TYPES type;
 
-    public WalkerTile(RSTile tile) {
-        super(tile.getWorldLocation());
-        this.ctx = MethodProvider.methods;
-        type = TYPES.WORLD;
-    }
+    private MethodContext ctx;
 
-    public WalkerTile(WalkerTile tile) {
-		super(tile.getX(), tile.getY(),
-			  MethodProvider.methods.proxy.getPlane());
-        this.ctx = MethodProvider.methods;
-        type = tile.type;
-    };
+	public WalkerTile(WalkerTile tile) {
+		super(tile.getX(), tile.getY(), tile.ctx.proxy.getPlane());
+		this.ctx = tile.ctx;
+		type = tile.type;
+	};
 
-    public WalkerTile(WorldPoint point) {
-        super(point);
-        this.ctx = MethodProvider.methods;
-        type = TYPES.WORLD;
-    }
+	public WalkerTile(MethodContext ctx, int x, int y, int plane, TYPES type) {
+		super(x, y, plane);
+		this.ctx = ctx;
+		this.type = type;
+	}
 
-
-    public WalkerTile(int x, int y, int plane) {
-        super(x, y, plane);
-        this.ctx = MethodProvider.methods;
-        this.type = TYPES.WORLD;
-    }
-
-    public WalkerTile(int x, int y, int plane, TYPES type) {
-        super(x, y, plane);
-        this.ctx = MethodProvider.methods;
-        this.type = type;
-    }
-
-    public WalkerTile(int x, int y, TYPES type) {
-        super(x, y);
-        this.ctx = MethodProvider.methods;
-        this.type = type;
-    }
-
-    public LocalPoint getLocalLocation() {
-        return this.getTile(ctx).getLocalLocation();
-    }
-
-    @Override
     public boolean isClickable() {
         return ctx.calc.tileOnScreen(this.toWorldTile());
     }
-
 
     @Override
     public boolean doAction(String action) {
@@ -81,7 +53,6 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
         return ctx.tiles.doAction(this.toWorldTile(), "Walk here");
     }
 
-    @Deprecated
     @Override
     public boolean doClick(boolean leftClick) {
         return ctx.tiles.doAction(this.toWorldTile(), "Walk here");
@@ -138,6 +109,7 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
             LocalPoint point = LocalPoint.fromScene(x - baseX, y - baseY);
             walkerTile.x = point.getX();
             walkerTile.y = point.getY();
+
         } else if (walkerTile.type == TYPES.SCENE) {
             LocalPoint point = LocalPoint.fromScene(x, y);
             walkerTile.x = point.getX();
@@ -175,10 +147,6 @@ public class WalkerTile extends RSTile implements Clickable07, Positionable {
 
     public TYPES getType() {
         return type;
-    }
-
-    public enum TYPES {
-        ANIMABLE, LOCAL, WORLD, SCENE;
     }
 
     public int distanceTo(Positionable positionable) {
