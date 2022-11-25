@@ -73,13 +73,6 @@ public interface CacheProvider<T> {
 
     /**
      * Reads the passed file and generates an object definition from it.
-     *
-     * @param file The file to read
-     * @throws FileNotFoundException If the file is not found
-     * @return The object definition generated from the file
-     */
-    /**
-     * Reads the passed file and generates an object definition from it.
      * @param file	The file to read
      * @return	The object definition generated from the file
      * @throws FileNotFoundException    If the file is not found

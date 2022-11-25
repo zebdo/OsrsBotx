@@ -5,7 +5,6 @@ import net.runelite.api.*;
 import net.runelite.cache.definitions.NpcDefinition;
 import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.util.OutputObjectComparer;
-import net.runelite.rsb.wrappers.common.CacheProvider;
 import net.runelite.rsb.wrappers.common.Clickable07;
 import net.runelite.rsb.wrappers.common.Positionable;
 import net.runelite.rsb.wrappers.subwrap.WalkerTile;

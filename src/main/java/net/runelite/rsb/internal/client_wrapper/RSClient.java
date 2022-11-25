@@ -15,9 +15,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.FutureTask;
 
 /*
-Wrapper around runelite Client, adds synchronization with ClientThread for methods that require it.
-In order to synchronize Widget methods, all returned Widget instances are also wrapped.
-Running methods on client thread comes with a performance hit, so only methods that are confirmed to cause problems are synchronized.
+  Wrapper around runelite Client, adds synchronization with ClientThread for methods that require it.
+  In order to synchronize Widget methods, all returned Widget instances are also wrapped.  Running
+  methods on client thread comes with a performance hit, so only methods that are confirmed to cause
+  problems are synchronized.
 */
 public class RSClient extends BaseClientWrapper {
     private final Queue<FutureTask<Object>> taskQueue = new ConcurrentLinkedQueue<>();
