@@ -161,30 +161,6 @@ public class Game {
 		};
 	}
 
-	// /**
-	//  * Excludes Loginbot, BankPin, TeleotherCloser, CloseAllInterface,
-	//  * ImprovedRewardsBox
-	//  *
-	//  * @return True if player is in a random
-	//  * TODO: this feels broken
-	//  */
-	// public Boolean inRandom() {
-	// 	for (Random random : ctx.runeLite.getScriptHandler().getRandoms()) {
-	// 		if (random.getClass().equals(new LoginBot())) {
-	// 				//|| random.getClass().equals(new BankPins())
-	// 				//|| random.getClass().equals(new TeleotherCloser())
-	// 				//|| random.getClass().equals(new CloseAllInterface())
-	// 				//|| random.getClass().equals(new ImprovedRewardsBox())) {
-	// 			continue;
-	// 		} else {
-	// 			if (random.activateCondition()) {
-	// 				return true;
-	// 			}
-	// 		}
-	// 	}
-	// 	return false;
-	// }
-
 	/**
 	 * Returns the valid chat component.
 	 *

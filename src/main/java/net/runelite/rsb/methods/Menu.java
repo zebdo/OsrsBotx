@@ -108,12 +108,15 @@ public class Menu {
         return clickMain(idx);
     }
 
+	private FontMetrics getFontMetrics() {
+		return ctx.proxy.getCanvas().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+	}
 
     private boolean clickMain(final int i) {
         MenuEntry[] entries = getEntries();
         String item = (entries[i].getOption() + " " + entries[i].getTarget().replaceAll("<.*?>", ""));
         Point menu = getLocation();
-        FontMetrics fm = ctx.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+        FontMetrics fm = getFontMetrics();
 
         int width = (fm.stringWidth(item) + MENU_SIDE_BORDER) / 2;
         int rwidth = Math.max(2, (int) (width * 0.8));
@@ -192,7 +195,8 @@ public class Menu {
     protected int calculateWidth() {
         MenuEntry[] entries = getEntries();
         final int MIN_MENU_WIDTH = 102;
-        FontMetrics fm = ctx.runeLite.getLoader().getGraphics().getFontMetrics(FontManager.getRunescapeBoldFont());
+		FontMetrics fm = getFontMetrics();
+
         int longestEntry = 0;
         for (MenuEntry entry : entries) longestEntry = (fm.stringWidth(entry.getOption() + " " +
                 entry.getTarget().replaceAll("<.*?>", ""))
