@@ -11,6 +11,7 @@ import net.runelite.client.modified.RuneLite;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
 import net.runelite.rsb.internal.input.InputManager;
+
 import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
@@ -147,11 +148,11 @@ public class BotLite extends RuneLite {
             while (this.getClient() == null) {
 			}
 
-			im = new InputManager(this);
 			proxy = new RSClient(injector.getInstance(Client.class),
 								 injector.getInstance(ClientThread.class));
 
-			ctx = new MethodContext(this, proxy);
+			im = new InputManager(this, proxy);
+			ctx = new MethodContext(this, proxy, im);
 
 			// starting thread
 			final RemotePy py = new RemotePy(this, ctx, im, sh);

@@ -1,17 +1,21 @@
 package net.runelite.rsb.internal.input;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.methods.MethodContext;
+
+import net.runelite.rsb.internal.client_wrapper.RSClient;
 
 import java.applet.Applet;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+
 @Slf4j
 @SuppressWarnings("removal")
 public class VirtualMouse {
-    private MethodContext methods;
+
+	private RSClient proxy;
+
     private int clientX;
     private int clientY;
     private int clientPressX = -1;
@@ -21,8 +25,8 @@ public class VirtualMouse {
     private boolean clientPressed;
     private boolean clientInFocus;
 
-    public VirtualMouse(MethodContext ctx) {
-        this.methods = ctx;
+    public VirtualMouse(RSClient proxy) {
+        this.proxy = proxy;
     }
 
     public int getClientX() {
@@ -56,14 +60,6 @@ public class VirtualMouse {
     public boolean isClientInFocus() {
         return clientInFocus;
     }
-
-    // public void _focusGained(FocusEvent e) {
-    //     clientInFocus = true;
-    // }
-
-    // public void _focusLost(FocusEvent e) {
-    //     clientInFocus = false;
-    // }
 
     public final void mouseClicked(MouseEvent e) {
         clientX = e.getX();
@@ -147,7 +143,7 @@ public class VirtualMouse {
                 throw new InternalError(e.toString());
             }
 
-			methods.proxy.getComponent(0).dispatchEvent(e);
+			proxy.getCanvas().dispatchEvent(e);
 
         } catch (NullPointerException ignored) {
             log.debug("Listener is being re-instantiated on the client", ignored);

@@ -1,7 +1,5 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.rsb.internal.input.VirtualKeyboard;
-import net.runelite.rsb.internal.input.VirtualMouse;
 import net.runelite.rsb.internal.input.InputManager;
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
@@ -50,32 +48,32 @@ public class MethodContext {
 	// these need to refactored - possible only mouse/keyboard
 	public final Mouse mouse;
 	public final Keyboard keyboard;
-	public final VirtualMouse virtualMouse;
-	public final VirtualKeyboard virtualKeyboard;
 
 	// also should be directly accessible (passed into mouse/keyboard virtual...)
+	// ZZZ
 	public final InputManager inputManager;
 
-	// XXX this shouldn't be accessed via context (or ever to be honest)
+	// ZZZ this shouldn't be accessed via context (or ever to be honest)
 	public final BotLite runeLite;
 
 	/**
 	 * Creates a method context for this client
 	 * @param runeLite The client to provide method contexts for
 	 */
-	public MethodContext(BotLite runeLite, RSClient proxy) {
+	public MethodContext(BotLite runeLite, RSClient proxy, InputManager inputManager) {
+
 		this.runeLite = runeLite;
 		this.proxy = proxy;
 
-		this.inputManager = runeLite.getInputManager();
+		this.inputManager = inputManager;
+		this.mouse = new Mouse(this, inputManager);
+		this.keyboard = new Keyboard(this, inputManager);
 
 		this.bank = new Bank(this);
 		this.game = new Game(this);
 		this.calc = new Calculations(this);
 		this.interfaces = new Interfaces(this);
 		this.gui = new GameGUI(this);
-		this.mouse = new Mouse(this);
-		this.keyboard = new Keyboard(this);
 		this.menu = new Menu(this);
 		this.npcs = new NPCs(this);
 		this.players = new Players(this);
@@ -94,9 +92,6 @@ public class MethodContext {
 		this.trade = new Trade(this);
 		this.equipment = new Equipment(this);
 		this.grandExchange = new GrandExchange(this);
-
-		this.virtualMouse = new VirtualMouse(this);
-		this.virtualKeyboard = new VirtualKeyboard(this);
 		this.worldHopper = new WorldHopper(this);
 	}
 

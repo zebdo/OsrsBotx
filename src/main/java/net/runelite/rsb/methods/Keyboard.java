@@ -1,13 +1,17 @@
 package net.runelite.rsb.methods;
 
+import net.runelite.rsb.internal.input.InputManager;
+
 /**
  * Keyboard related operations.
  */
 public class Keyboard {
 
 	private MethodContext ctx;
-	Keyboard(final MethodContext ctx) {
+	private InputManager inputManager;
+	Keyboard(MethodContext ctx, InputManager im) {
 		this.ctx = ctx;
+		this.inputManager = im;
 	}
 
 	/**
@@ -16,7 +20,7 @@ public class Keyboard {
 	 * @param c The character to press.
 	 */
 	public void sendKey(final char c) {
-		ctx.inputManager.sendKey(c);
+		inputManager.sendKey(c);
 	}
 
 	/**
@@ -26,7 +30,7 @@ public class Keyboard {
 	 * @param pressEnter <code>true</code> to press enter after pressing the text.
 	 */
 	public void sendText(final String text, final boolean pressEnter) {
-		ctx.inputManager.sendKeys(text, pressEnter);
+		inputManager.sendKeys(text, pressEnter);
 	}
 
 	/**
@@ -36,7 +40,7 @@ public class Keyboard {
 	 * @param pressEnter <code>true</code> to press enter after pressing the text.
 	 */
 	public void sendTextInstant(final String text, final boolean pressEnter) {
-		ctx.inputManager.sendKeysInstant(text, pressEnter);
+		inputManager.sendKeysInstant(text, pressEnter);
 	}
 
 	/**
@@ -46,7 +50,7 @@ public class Keyboard {
 	 * @see #releaseKey(char)
 	 */
 	public void pressKey(final char c) {
-		ctx.inputManager.pressKey(c);
+		inputManager.pressKey(c);
 	}
 
 	/**
@@ -56,6 +60,6 @@ public class Keyboard {
 	 * @see #pressKey(char)
 	 */
 	public void releaseKey(final char c) {
-		ctx.inputManager.releaseKey(c);
+		inputManager.releaseKey(c);
 	}
 }

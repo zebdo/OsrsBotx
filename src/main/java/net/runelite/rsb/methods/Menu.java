@@ -6,7 +6,9 @@ import net.runelite.cache.definitions.ItemDefinition;
 import net.runelite.rsb.wrappers.RSItem;
 import net.runelite.client.ui.FontManager;
 
-import java.awt.*;
+import net.runelite.api.Point;
+
+import java.awt.FontMetrics;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 
@@ -123,7 +125,7 @@ public class Menu {
 
         int yOff = TOP_OF_MENU_BAR + (((MENU_ENTRY_LENGTH * i) + ctx.random(2, MENU_ENTRY_LENGTH - 2)));
 
-        ctx.mouse.move(menu.x + xOff, menu.y + yOff);
+        ctx.mouse.move(menu.getX() + xOff, menu.getY() + yOff);
         ctx.sleepRandom(75, 150);
 
         if (this.isOpen()) {
@@ -219,7 +221,12 @@ public class Menu {
         if (isOpen()) {
             final int MIN_MENU_WIDTH = 102;
             int width = calculateWidth();
-            return (width + MENU_SIDE_BORDER < MIN_MENU_WIDTH) ? (ctx.virtualMouse.getClientPressX() - (MIN_MENU_WIDTH / 2)) : (ctx.virtualMouse.getClientPressX() - (width / 2));
+			Point p = ctx.mouse.getPressLocation();
+            if (width + MENU_SIDE_BORDER < MIN_MENU_WIDTH) {
+				return p.getX() - (MIN_MENU_WIDTH / 2);
+			} else {
+				return p.getX() - (width / 2);
+			}
         }
         return -1;
     }
@@ -233,14 +240,19 @@ public class Menu {
         if (isOpen()) {
             final int CANVAS_LENGTH = ctx.proxy.getCanvasHeight();
             MenuEntry[] entries = getEntries();
-            int offset = CANVAS_LENGTH - (ctx.virtualMouse.getClientPressY() + calculateHeight());
+
+			Point p = ctx.mouse.getPressLocation();
+
+            int offset = CANVAS_LENGTH - (p.getY() + calculateHeight());
             if (offset < 0 && entries.length >= MAX_DISPLAYABLE_ENTRIES) {
                 return 0;
             }
+
             if (offset < 0) {
-                return ctx.virtualMouse.getClientPressY() + offset;
+                return p.getY() + offset;
             }
-            return ctx.virtualMouse.getClientPressY();
+
+            return p.getY();
         }
         return -1;
     }

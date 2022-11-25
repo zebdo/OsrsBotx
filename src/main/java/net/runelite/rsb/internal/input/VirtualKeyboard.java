@@ -1,8 +1,9 @@
 package net.runelite.rsb.internal.input;
 
 import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.client.input.KeyListener;
-import net.runelite.rsb.methods.MethodContext;
+import net.runelite.rsb.internal.client_wrapper.RSClient;
 
 import java.applet.Applet;
 import java.awt.*;
@@ -14,10 +15,10 @@ import java.awt.event.KeyEvent;
 @SuppressWarnings("removal")
 public class VirtualKeyboard implements KeyListener {
 
-    private MethodContext methods;
+	private RSClient proxy;
 
-    public VirtualKeyboard(MethodContext ctx) {
-        this.methods = ctx;
+    public VirtualKeyboard(RSClient proxy) {
+        this.proxy = proxy;
     }
 
     public void keyPressed(KeyEvent e) {
@@ -45,9 +46,9 @@ public class VirtualKeyboard implements KeyListener {
 
 		// why focus gained on each keystroke?
         EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+
 		// XXX this is actually mental
-        eventQueue.postEvent(new FocusEvent(methods.proxy.getComponent(0),
-                                            FocusEvent.FOCUS_GAINED));
+        eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_GAINED));
         eventQueue.postEvent(e);
     }
 

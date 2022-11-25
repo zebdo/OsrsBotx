@@ -1,7 +1,8 @@
 package net.runelite.rsb.methods;
 
-import net.runelite.rsb.internal.input.MouseHandler;
 import net.runelite.api.Point;
+
+import net.runelite.rsb.internal.input.InputManager;
 
 /**
  * Mouse related operations.
@@ -18,8 +19,10 @@ public class Mouse {
 	private int tempDefaultMaxMoveAfter = 0;
 
 	private MethodContext ctx;
-	Mouse(final MethodContext ctx) {
+	private InputManager inputManager;
+	Mouse(MethodContext ctx, InputManager im) {
 		this.ctx = ctx;
+		inputManager = im;
 	}
 
 	public void pushDefaultMoveAfter(int moveAfter) {
@@ -140,7 +143,7 @@ public class Mouse {
 	 * @param y The y coordinate to drag to.
 	 */
 	public void drag(final int x, final int y) {
-		ctx.inputManager.dragMouse(x, y);
+		inputManager.dragMouse(x, y);
 	}
 
 	/**
@@ -186,7 +189,7 @@ public class Mouse {
 	}
 
 	public synchronized void click(final boolean leftClick, final int moveAfterDist) {
-		ctx.inputManager.clickMouse(leftClick);
+		inputManager.clickMouse(leftClick);
 		if (moveAfterDist > 0) {
 			// ZZZ slower?
 			ctx.sleepRandom(150, 350);
@@ -225,7 +228,7 @@ public class Mouse {
 			y += ctx.random(-randY, randY, sd);
 		}
 
-		ctx.inputManager.windMouse(x, y);
+		inputManager.windMouse(x, y);
 	}
 
 	/**
@@ -235,7 +238,7 @@ public class Mouse {
 	 * @param y The y coordinate
 	 */
 	public synchronized void hop(final int x, final int y) {
-		ctx.inputManager.hopMouse(x, y);
+		inputManager.hopMouse(x, y);
 	}
 
 	/**
@@ -265,23 +268,28 @@ public class Mouse {
 	}
 
 	public Point getLocation() {
-		return new Point(ctx.virtualMouse.getClientX(), ctx.virtualMouse.getClientY());
+		var vm = inputManager.getVirtualMouse();
+		return new Point(vm.getClientX(), vm.getClientY());
 	}
 
 	public Point getPressLocation() {
-		return new Point(ctx.virtualMouse.getClientPressX(), ctx.virtualMouse.getClientPressY());
+		var vm = inputManager.getVirtualMouse();
+		return new Point(vm.getClientPressX(), vm.getClientPressY());
 	}
 
 	public long getPressTime() {
-		return ctx.virtualMouse.getClientPressTime();
+		var vm = inputManager.getVirtualMouse();
+		return vm.getClientPressTime();
 	}
 
 	public boolean isPresent() {
-		return ctx.virtualMouse.isClientPresent();
+		var vm = inputManager.getVirtualMouse();
+		return vm.isClientPresent();
 	}
 
 	public boolean isPressed() {
-		return ctx.virtualMouse.isClientPressed();
+		var vm = inputManager.getVirtualMouse();
+		return vm.isClientPressed();
 	}
 
 }
