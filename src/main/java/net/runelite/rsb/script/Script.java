@@ -1,17 +1,16 @@
 package net.runelite.rsb.script;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.rsb.methods.MethodContext;
 
+import net.runelite.rsb.internal.launcher.BotLite;
 
-// XXX detach script from runnable
 
 @Slf4j
 public abstract class Script implements Runnable {
-	protected MethodContext ctx;
-
 	private volatile boolean running = false;
 	private volatile boolean paused = false;
+
+	protected BotLite bot;
 
 	public abstract boolean onStart();
 	public abstract int loop();
@@ -19,30 +18,23 @@ public abstract class Script implements Runnable {
 
 	public abstract void onInit();
 
-	public final void init(MethodContext ctx) {
-		this.ctx = ctx;
+	public final void init(BotLite bot) {
+		this.bot = bot;
 		this.onInit();
 	}
 
 	public final void cleanup() {
-		ctx.mouse.moveOffScreen();
-		// ZZZ pass the script handler in
-		ctx.runeLite.getScriptHandler().stopScript();
+		// moves it offscreen
+		bot.getInputManager().windMouse(-10, -10);
+		bot.getScriptHandler().stopScript();
 	}
 
-	/**
-	 * For internal use only. Deactivates this script if
-	 * the appropriate id is provided.
-	 *
-	 */
 	public final void deactivate() {
 		this.running = false;
 	}
 
 	/**
 	 * Pauses/resumes this script.
-	 *
-	 * @param paused <code>true</code> to pause; <code>false</code> to resume.
 	 */
 	public final void setPaused(boolean paused) {
 		if (running) {
@@ -52,8 +44,6 @@ public abstract class Script implements Runnable {
 
 	/**
 	 * Returns whether or not this script is paused.
-	 *
-	 * @return <code>true</code> if paused; otherwise <code>false</code>.
 	 */
 	public final boolean isPaused() {
 		return this.paused;
@@ -69,18 +59,16 @@ public abstract class Script implements Runnable {
 	/**
 	 * Stops the current script; player can be logged out before
 	 * the script is stopped.
-	 *
-	 * @param logout <code>true</code> if the player should be logged
-	 *               out before the script is stopped.
 	 */
 	public void stopScript(boolean logout) {
 		this.running = false;
 		log.info("Script stopping from within Script...");
-		if (logout) {
-			if (ctx.game.isLoggedIn()) {
-				ctx.game.logout();
-			}
-		}
+		// XXX oh dear
+		// if (logout) {
+		// 	if (ctx.game.isLoggedIn()) {
+		// 		ctx.game.logout();
+		// 	}
+		// }
 	}
 
 	public final void run() {
@@ -158,10 +146,11 @@ public abstract class Script implements Runnable {
 					}
 				}
 
-				ctx.sleep(25);
+				Thread.sleep(25);
 				msecs -= Math.min(25, msecs);
 			}
 
+		} catch (InterruptedException e) {
 		} catch (ThreadDeath td) {
 			log.error("ThreadDeath in Script.sleep()");
 		}

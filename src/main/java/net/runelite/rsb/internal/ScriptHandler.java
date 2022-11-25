@@ -35,7 +35,7 @@ public class ScriptHandler {
 
 	public void runScript(Script script) {
 		if (theScript == null) {
-			script.init(bot.getMethodContext());
+			script.init(bot);
 
 			Thread t = new Thread(script, "SCRIPT");
 			theScript = script;

@@ -12,17 +12,11 @@ import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.input.Canvas;
 import net.runelite.rsb.internal.input.InputManager;
 
-import net.runelite.rsb.internal.globval.GlobalConfiguration;
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
-import net.runelite.rsb.methods.MethodContext;
 import net.runelite.rsb.plugin.ScriptSelector;
 
-import net.runelite.rsb.wrappers.common.CacheProvider;
-
 import java.applet.Applet;
-import java.io.IOException;
-import java.io.File;
 
 import java.util.concurrent.Executors;
 
@@ -30,9 +24,6 @@ import java.util.concurrent.Executors;
 @Slf4j
 @SuppressWarnings("removal")
 public class BotLite extends RuneLite {
-
-	// XXXX idea is not to have this on here
-    private MethodContext ctx;
 
     private InputManager im;
     private ScriptHandler sh;
@@ -43,22 +34,11 @@ public class BotLite extends RuneLite {
     public Client getClient() {
         return client = injector.getInstance(Client.class);
     }
-
-    public Applet getApplet() {
-		return applet = injector.getInstance(Applet.class);
-	}
-
-    public Applet getLoader() {
-        return (Applet) this.getClient();
-    }
-
+	// XXX used in inventory code to get selected item
+	// XXX can't we just runelite api?
     public ItemManager getItemManager() {
 		return injector.getInstance(ItemManager.class);
 	}
-
-    public MethodContext getMethodContext() {
-        return ctx;
-    }
 
     public InputManager getInputManager() {
         return im;
@@ -66,6 +46,10 @@ public class BotLite extends RuneLite {
 
     public ScriptHandler getScriptHandler() {
         return sh;
+    }
+
+	public RSClient getProxy() {
+        return proxy;
     }
 
     /**
@@ -90,44 +74,6 @@ public class BotLite extends RuneLite {
         return canvas;
     }
 
-	/**
-	 * Checks if the cache exists and if it does, loads it
-	 * if not it creates a new cache and saves it
-	 *
-	 * @throws IOException If the file isn't found or is inaccessible then an IOException has occurred.
-	 */
-	public void checkForCacheAndLoad() {
-		try {
-			String gameCacheLocation = GlobalConfiguration.Paths.getRuneLiteGameCacheDirectory();
-			String objectCacheLocation = GlobalConfiguration.Paths.getObjectsCacheDirectory();
-			String itemCacheLocation = GlobalConfiguration.Paths.getItemsCacheDirectory();
-			String npcCacheLocation = GlobalConfiguration.Paths.getNPCsCacheDirectory();
-			String spriteCacheLocation = GlobalConfiguration.Paths.getSpritesCacheDirectory();
-			//TODO Some sort of better validation here
-			//Add a version check
-			if (!new File(itemCacheLocation).exists() && new File(itemCacheLocation).getTotalSpace() < 100) {
-				String[] itemArgs = {"--cache", gameCacheLocation, "--items", itemCacheLocation};
-				String[] objectArgs = {"--cache", gameCacheLocation, "--objects", objectCacheLocation};
-				String[] npcArgs = {"--cache", gameCacheLocation, "--npcs", npcCacheLocation};
-				String[] spriteArgs = {"--cache", gameCacheLocation, "--sprites", spriteCacheLocation};
-
-				net.runelite.cache.Cache.main(itemArgs);
-				net.runelite.cache.Cache.main(objectArgs);
-				net.runelite.cache.Cache.main(npcArgs);
-
-				if (!new File(spriteCacheLocation).exists()) {
-					new File(spriteCacheLocation).mkdir();
-					net.runelite.cache.Cache.main(spriteArgs);
-				}
-			} else {
-				CacheProvider.fillFileCache();
-			}
-		} catch (Exception e) {
-			log.warn("checkForCacheAndLoad failed " + e);
-			e.printStackTrace();
-		}
-	}
-
     /**
      * The actual method associated with initializing the client-related data. Such as creating the client sizing and
      * binding the plethora of handlers, listeners, and managers to this particular RuneLite instance
@@ -141,7 +87,7 @@ public class BotLite extends RuneLite {
 	}
 
     public BotLite() throws Exception {
-		this.checkForCacheAndLoad();
+		//ZZZthis.checkForCacheAndLoad();
 		sh = new ScriptHandler(this);
 
         Executors.newSingleThreadScheduledExecutor().submit(() -> {
@@ -152,11 +98,6 @@ public class BotLite extends RuneLite {
 								 injector.getInstance(ClientThread.class));
 
 			im = new InputManager(this, proxy);
-			ctx = new MethodContext(this, proxy, im);
-
-			// starting thread
-			final RemotePy py = new RemotePy(this, ctx, im, sh);
-			py.startServer(2905);
 
 			});
     }
