@@ -336,7 +336,7 @@ public class Game {
 	 * @return The canvas' width.
 	 */
 	public int getWidth() {
-		return ctx.runeLite.getCanvas().getWidth();
+		return ctx.proxy.getCanvasWidth();
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class Game {
 	 * @return The canvas' height.
 	 */
 	public int getHeight() {
-		return ctx.runeLite.getCanvas().getHeight();
+		return ctx.proxy.getCanvasHeight();
 	}
 
 }
