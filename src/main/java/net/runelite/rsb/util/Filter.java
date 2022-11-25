@@ -1,4 +1,4 @@
-package net.runelite.rsb.internal.wrappers;
+package net.runelite.rsb.utils;
 
 import java.util.Objects;
 import java.util.function.Predicate;

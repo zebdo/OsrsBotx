@@ -1,7 +1,7 @@
 package net.runelite.rsb.methods;
 
 import net.runelite.api.Player;
-import net.runelite.rsb.internal.wrappers.Filter;
+import net.runelite.rsb.utils.Filter;
 import net.runelite.rsb.wrappers.RSPlayer;
 
 import java.util.HashSet;

@@ -6,7 +6,8 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.geometry.SimplePolygon;
 import net.runelite.api.model.Jarvis;
-import net.runelite.rsb.internal.wrappers.Filter;
+
+import net.runelite.rsb.utils.Filter;
 import net.runelite.rsb.methods.MethodContext;
 
 import java.awt.*;

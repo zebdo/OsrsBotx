@@ -1,7 +1,7 @@
 package net.runelite.rsb.methods;
 
 import net.runelite.api.*;
-import net.runelite.rsb.internal.wrappers.Filter;
+import net.runelite.rsb.utils.Filter;
 import net.runelite.rsb.wrappers.RSGroundItem;
 import net.runelite.rsb.wrappers.RSItem;
 import net.runelite.rsb.wrappers.RSTile;

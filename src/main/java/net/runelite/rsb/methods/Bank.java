@@ -5,8 +5,8 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.cache.definitions.ObjectDefinition;
 
+import net.runelite.rsb.utils.Filter;
 import net.runelite.rsb.internal.globval.*;
-import net.runelite.rsb.internal.wrappers.Filter;
 import net.runelite.rsb.wrappers.*;
 
 import java.lang.Integer;
