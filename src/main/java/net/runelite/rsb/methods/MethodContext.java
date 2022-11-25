@@ -49,10 +49,6 @@ public class MethodContext {
 	public final Mouse mouse;
 	public final Keyboard keyboard;
 
-	// also should be directly accessible (passed into mouse/keyboard virtual...)
-	// ZZZ
-	public final InputManager inputManager;
-
 	// ZZZ this shouldn't be accessed via context (or ever to be honest)
 	public final BotLite runeLite;
 
@@ -65,7 +61,6 @@ public class MethodContext {
 		this.runeLite = runeLite;
 		this.proxy = proxy;
 
-		this.inputManager = inputManager;
 		this.mouse = new Mouse(this, inputManager);
 		this.keyboard = new Keyboard(this, inputManager);
 

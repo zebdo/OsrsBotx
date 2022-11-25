@@ -487,7 +487,7 @@ public class Bank {
 					if (!item.doAction("Deposit-" + number)) {
 						if (item.doAction("Deposit-X")) {
 							ctx.sleepRandom(1000, 1300);
-							ctx.inputManager.sendKeys(String.valueOf(number), true);
+							ctx.keyboard.sendText(String.valueOf(number), true);
 						}
 					}
 					break;
@@ -683,7 +683,7 @@ public class Bank {
 			ctx.sleepRandom(250, 750);
 		}
 		if (isOpen() && isSearchOpen()) {
-			ctx.inputManager.sendKeys(itemName, false);
+			ctx.keyboard.sendText(itemName, false);
 			ctx.sleepRandom(300, 700);
 			return true;
 		}

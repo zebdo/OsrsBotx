@@ -207,7 +207,7 @@ public class Camera {
 		if (curAlt == percent) {
 			return true;
 		} else if (curAlt < percent) {
-			ctx.inputManager.pressKey((char) KeyEvent.VK_UP);
+			ctx.keyboard.pressKey((char) KeyEvent.VK_UP);
 			long start = System.currentTimeMillis();
 			while (curAlt < percent && System.currentTimeMillis() - start < ctx.random(50, 100)) {
 				if (lastAlt != curAlt) {
@@ -217,10 +217,10 @@ public class Camera {
 				ctx.sleepRandom(20, 30);
 				curAlt = getPitch();
 			}
-			ctx.inputManager.releaseKey((char) KeyEvent.VK_UP);
+			ctx.keyboard.releaseKey((char) KeyEvent.VK_UP);
 			return true;
 		} else {
-			ctx.inputManager.pressKey((char) KeyEvent.VK_DOWN);
+			ctx.keyboard.pressKey((char) KeyEvent.VK_DOWN);
 			long start = System.currentTimeMillis();
 			while (curAlt > percent && System.currentTimeMillis() - start < ctx.random(50, 100)) {
 				if (lastAlt != curAlt) {
@@ -230,7 +230,7 @@ public class Camera {
 				ctx.sleepRandom(20, 30);
 				curAlt = getPitch();
 			}
-			ctx.inputManager.releaseKey((char) KeyEvent.VK_DOWN);
+			ctx.keyboard.releaseKey((char) KeyEvent.VK_DOWN);
 			return true;
 		}
 	}
@@ -246,17 +246,17 @@ public class Camera {
 		int vertical = ctx.random(0, 20) < 15 ? KeyEvent.VK_UP : KeyEvent.VK_DOWN;
 		int horizontal = ctx.random(0, 20) < 5 ? KeyEvent.VK_LEFT : KeyEvent.VK_RIGHT;
 		if (ctx.random(0, 10) < 8) {
-			ctx.inputManager.pressKey((char) vertical);
+			ctx.keyboard.pressKey((char) vertical);
 		}
 		if (ctx.random(0, 10) < 8) {
-			ctx.inputManager.pressKey((char) horizontal);
+			ctx.keyboard.pressKey((char) horizontal);
 		}
 		while (timeToHold.isRunning() &&
 			   ctx.proxy.getCameraZ() >= lowestCamAltPossible) {
 			ctx.sleep(10);
 		}
-		ctx.inputManager.releaseKey((char) vertical);
-		ctx.inputManager.releaseKey((char) horizontal);
+		ctx.keyboard.releaseKey((char) vertical);
+		ctx.keyboard.releaseKey((char) horizontal);
 	}
 
 	/**
@@ -266,22 +266,22 @@ public class Camera {
 	 */
 	public void setAngle(int degrees) {
 		if (getAngleTo(degrees) > 5) {
-			ctx.inputManager.pressKey((char) KeyEvent.VK_LEFT);
+			ctx.keyboard.pressKey((char) KeyEvent.VK_LEFT);
 			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) > 5) {
 				ctx.sleepRandom(10, 25);
 			}
 
-			ctx.inputManager.releaseKey((char) KeyEvent.VK_LEFT);
+			ctx.keyboard.releaseKey((char) KeyEvent.VK_LEFT);
 
 		} else if (getAngleTo(degrees) < -5) {
-			ctx.inputManager.pressKey((char) KeyEvent.VK_RIGHT);
+			ctx.keyboard.pressKey((char) KeyEvent.VK_RIGHT);
 			// XXX set a max time of 2 seconds and break - this can hang
 			while (getAngleTo(degrees) < -5) {
 				ctx.sleepRandom(10, 25);
 			}
 
-			ctx.inputManager.releaseKey((char) KeyEvent.VK_RIGHT);
+			ctx.keyboard.releaseKey((char) KeyEvent.VK_RIGHT);
 		}
 	}
 
