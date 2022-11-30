@@ -50,7 +50,7 @@ import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.rs.ClientLoader;
 import net.runelite.client.rs.ClientUpdateCheckMode;
 import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.overlay.WidgetOverlay;
+import net.runelite.client.ui.overlay.WidgetOverlays;
 import okhttp3.Request;
 import okhttp3.Response;
 import net.runelite.client.ui.ClientUI;
@@ -61,9 +61,6 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
 import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-
-// yuk XXX
-import net.runelite.rsb.internal.launcher.BotLite;
 
 
 @Slf4j
@@ -100,6 +97,9 @@ public class RuneLite extends net.runelite.client.RuneLite {
 
     @Inject
     public OverlayManager overlayManager;
+
+	@Inject
+	private WidgetOverlays widgetOverlays;
 
     @Inject
     public Provider<TooltipOverlay> tooltipOverlay;
@@ -271,7 +271,7 @@ public class RuneLite extends net.runelite.client.RuneLite {
                     )));
 
             setInjector(injector);
-            injector.getInstance(BotLite.class).init();
+            injector.getInstance(RuneLite.class).start();
 
             final long end = System.currentTimeMillis();
             final RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();

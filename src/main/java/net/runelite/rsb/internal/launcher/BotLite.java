@@ -74,20 +74,7 @@ public class BotLite extends RuneLite {
         return canvas;
     }
 
-    /**
-     * The actual method associated with initializing the client-related data. Such as creating the client sizing and
-     * binding the plethora of handlers, listeners, and managers to this particular RuneLite instance
-     * (outside the injector binding)
-     *
-     * @throws Exception        Any exception the client, bot, or RuneLite might throw.
-     */
-
-	public void init() throws Exception {
-		this.start();
-	}
-
     public BotLite() throws Exception {
-		//ZZZthis.checkForCacheAndLoad();
 		sh = new ScriptHandler(this);
 
         Executors.newSingleThreadScheduledExecutor().submit(() -> {

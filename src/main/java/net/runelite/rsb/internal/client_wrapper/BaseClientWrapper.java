@@ -1,7 +1,7 @@
 package net.runelite.rsb.internal.client_wrapper;
 
 import net.runelite.api.*;
-import net.runelite.api.Point;
+
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
@@ -14,14 +14,18 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.awt.Canvas;
+import java.awt.Component;
+import java.awt.Dimension;
+
 import java.applet.Applet;
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 /*
-Base class for wrapping runelite Client, along with some weird Applet shenanigans.
+  Base class for wrapping runelite Client, along with some weird Applet shenanigans.
 */
 @SuppressWarnings("removal")
 public class BaseClientWrapper implements Client {
@@ -29,10 +33,6 @@ public class BaseClientWrapper implements Client {
 
     public BaseClientWrapper(Client client) {
         this.wrappedClient = client;
-    }
-
-    public Component getComponent(int n) {
-        return ((Applet) wrappedClient).getComponent(n);
     }
 
     @Override
@@ -526,17 +526,15 @@ public class BaseClientWrapper implements Client {
         return wrappedClient.getVar(varPlayer);
     }
 
+	// XXX cheap fix - should fix downstream
     public int getServerVar(VarPlayer varPlayer) {
-		// XXX cheap fix
         return wrappedClient.getVarpValue(varPlayer);
     }
 
     @Override
     public int getVarpValue(VarPlayer varPlayer) {
-		// XXX cheap fix
         return wrappedClient.getVarpValue(varPlayer);
     }
-
 
     @Override
     @Deprecated
@@ -1317,20 +1315,22 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-    public boolean getSpellSelected() {
-        return wrappedClient.getSpellSelected();
+    public boolean isWidgetSelected() {
+        return wrappedClient.isWidgetSelected();
     }
 
     @Override
-    public void setSpellSelected(boolean selected) {
-        wrappedClient.setSpellSelected(selected);
+    public void setWidgetSelected(boolean selected) {
+        wrappedClient.setWidgetSelected(selected);
     }
 
+	@Deprecated
     @Override
     public int getSelectedItem() {
         return wrappedClient.getSelectedItem();
     }
 
+	@Deprecated
     @Override
     public int getSelectedItemIndex() {
         return wrappedClient.getSelectedItemIndex();

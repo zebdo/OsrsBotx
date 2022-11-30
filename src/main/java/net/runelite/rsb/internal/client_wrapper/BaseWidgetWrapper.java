@@ -6,7 +6,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
 
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.Collection;
 
 /*
@@ -115,11 +115,6 @@ public abstract class BaseWidgetWrapper implements Widget {
     @Deprecated
     public void setRelativeY(int y) {
         wrappedWidget.setRelativeY(y);
-    }
-
-    @Override
-    public void setForcedPosition(int x, int y) {
-        wrappedWidget.setForcedPosition(x, y);
     }
 
     @Override
