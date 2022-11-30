@@ -24,8 +24,13 @@ public class ScriptHandler {
 
 	public boolean pauseScript() {
 		if (theScript != null) {
-			theScript.setPaused(!theScript.isPaused());
-			log.info("pauseScript(): script was paused {}", theScript.isPaused());
+			boolean wasPaused = theScript.togglePaused();
+			if (wasPaused) {
+				log.info("pauseScript(): script was unpaused");
+			} else {
+				log.info("pauseScript(): script was paused");
+			}
+
 			return true;
 		}
 
@@ -66,7 +71,7 @@ public class ScriptHandler {
 				}
 			} else {
 				// will stop eventually... but...
-				theScript.stopScript();
+				theScript.deactivate();
 			}
 
 			if (curThread == null) {

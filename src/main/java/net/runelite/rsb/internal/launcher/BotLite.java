@@ -35,7 +35,7 @@ public class BotLite extends RuneLite {
         return client = injector.getInstance(Client.class);
     }
 	// XXX used in inventory code to get selected item
-	// XXX can't we just runelite api?
+	// XXX can't we just use runelite api?
     public ItemManager getItemManager() {
 		return injector.getInstance(ItemManager.class);
 	}
