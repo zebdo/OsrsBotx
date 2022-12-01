@@ -50,7 +50,7 @@ import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.rs.ClientLoader;
 import net.runelite.client.rs.ClientUpdateCheckMode;
 import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.overlay.WidgetOverlays;
+import net.runelite.client.ui.overlay.WidgetOverlay;
 import okhttp3.Request;
 import okhttp3.Response;
 import net.runelite.client.ui.ClientUI;
@@ -99,7 +99,7 @@ public class RuneLite extends net.runelite.client.RuneLite {
     public OverlayManager overlayManager;
 
 	@Inject
-	private WidgetOverlays widgetOverlays;
+	private WidgetOverlay widgetOverlays;
 
     @Inject
     public Provider<TooltipOverlay> tooltipOverlay;

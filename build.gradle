@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 
-def lastSupportedVersion = "1.9.4"
+def lastSupportedVersion = "1.9.4.1"
 def runeLiteVersion = getRuneLiteVersion()
 if (runeLiteVersion != lastSupportedVersion) {
     println("Warning - client has been updated")
