@@ -293,6 +293,11 @@ public class RSClient extends BaseClientWrapper {
         }
 
         @Override
+        public boolean isHidden() {
+            return runOnClientThread(super::isHidden);
+        }
+
+        @Override
         public Widget setHidden(boolean hidden) {
             return convertResult(super.setHidden(hidden));
         }
