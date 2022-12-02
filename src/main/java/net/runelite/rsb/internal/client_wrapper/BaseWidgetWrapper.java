@@ -122,7 +122,6 @@ public abstract class BaseWidgetWrapper implements Widget {
         wrappedWidget.setForcedPosition(x, y);
     }
 
-
     @Override
     public String getText() {
         return wrappedWidget.getText();
