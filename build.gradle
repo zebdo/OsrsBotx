@@ -11,13 +11,6 @@ repositories {
     mavenCentral()
 }
 
-def lastSupportedVersion = "1.9.4.1"
-def runeLiteVersion = getRuneLiteVersion()
-if (runeLiteVersion != lastSupportedVersion) {
-    println("Warning - client has been updated")
-    throw new Exception("Out of date (last supported: " + lastSupportedVersion + " current client: " + runeLiteVersion + ")")
-}
-
 static def getRuneLiteVersion() {
     URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")
     URLConnection urlConnection = url.openConnection()
@@ -33,6 +26,15 @@ static def getRuneLiteVersion() {
     }
     bufferedReader.close()
     return latestName
+}
+
+// this needs an internet connection to build...
+def checkForRecentVersion = true
+def runeLiteVersion = "1.9.4.1"
+
+if (checkForRecentVersion && runeLiteVersion != getRuneLiteVersion()) {
+    println("Warning - client has been updated")
+    throw new Exception("Out of date (last supported: " + runeLiteVersion + " current client: " + getRuneLiteVersion() + ")")
 }
 
 dependencies {
