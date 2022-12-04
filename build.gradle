@@ -2,7 +2,6 @@
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.10'
 }
 
 repositories {
@@ -56,10 +55,6 @@ dependencies {
     // jython stuff:
     // https://mavenlibs.com/maven/dependency/org.python/jython-standalone
     implementation group: 'org.python', name: 'jython-standalone', version: '2.7.3'
-
-    // kotlin stuff:
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    implementation 'io.github.microutils:kotlin-logging:2.1.20'
 }
 
 sourceSets {
@@ -103,18 +98,6 @@ task connectedVPN {
         println "NOT connected to VPN"
         throw new GradleException('NOT Connected')
    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 task botRun(type: JavaExec) {
