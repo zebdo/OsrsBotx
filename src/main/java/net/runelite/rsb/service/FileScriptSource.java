@@ -42,6 +42,8 @@ public class FileScriptSource {
 			ioEx.printStackTrace();
 		}
 
+		scriptDefinitions.sort((x, y) -> x.name.compareTo(y.name));
+
 		return scriptDefinitions;
 	}
 
