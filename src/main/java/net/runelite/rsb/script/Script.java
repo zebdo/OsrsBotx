@@ -24,7 +24,6 @@ public abstract class Script implements Runnable {
 
 	public final void cleanup() {
 		// moves it offscreen
-		bot.getInputManager().windMouse(-10, -10);
 		bot.getScriptHandler().stopScript();
 	}
 
