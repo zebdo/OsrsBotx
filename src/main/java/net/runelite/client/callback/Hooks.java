@@ -417,9 +417,9 @@ public class Hooks implements Callbacks
 		if (bot.getInputManager() != null) {
 			Graphics2D g2 = (Graphics2D) finalImage.getGraphics();
 			g2.setColor(Color.red);
-			g2.drawOval(bot.getInputManager().getX(),
-						bot.getInputManager().getY(),
-						15, 15);
+			g2.drawOval(bot.getInputManager().getX() - 7,
+						bot.getInputManager().getY() - 7,
+						14, 14);
 		}
 
         // Draw the image onto the game canvas
