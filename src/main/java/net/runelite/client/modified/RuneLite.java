@@ -193,8 +193,8 @@ public class RuneLite extends net.runelite.client.RuneLite {
      * @throws IOException  Any input/output exception
      */
     public static void handleOptions(OptionParser parser,
-									 ArgumentAcceptingOptionSpec<?>[] optionSpecs,
-									 OptionSet options) throws IOException {
+                                     ArgumentAcceptingOptionSpec<?>[] optionSpecs,
+                                     OptionSet options) throws IOException {
 
         if (options.has("help")) {
             parser.printHelpOn(System.out);

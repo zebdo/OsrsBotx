@@ -69,11 +69,11 @@ public class VarpIndices {
      */
     public static final int QUEST_POINTS_COUNT = 101;
     /**
-     * 	Poison immune = -1
-     * 	Poisoned = 0 - 1000000
-     * 	Envenomed = this >= 1000000
-     * 	Poison damage = ceil(this / 5.0f)
-     * 	Venom damage = (this - 999997) * 2
+     *  Poison immune = -1
+     *  Poisoned = 0 - 1000000
+     *  Envenomed = this >= 1000000
+     *  Poison damage = ceil(this / 5.0f)
+     *  Venom damage = (this - 999997) * 2
      */
     public static final int POISON = 102;
     /**

@@ -12,52 +12,52 @@ import java.net.URLClassLoader;
  */
 class ScriptClassLoader extends URLClassLoader {
 
-	private final URL base;
+    private final URL base;
 
-	public ScriptClassLoader(URL url) {
-		super(new URL[]{url}, ScriptClassLoader.class.getClassLoader());
-		this.base = url;
-	}
+    public ScriptClassLoader(URL url) {
+        super(new URL[]{url}, ScriptClassLoader.class.getClassLoader());
+        this.base = url;
+    }
 
-	@SuppressWarnings("rawtypes")
-	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		Class clazz = findLoadedClass(name);
+    @SuppressWarnings("rawtypes")
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        Class clazz = findLoadedClass(name);
 
-		if (clazz == null) {
-			try {
-				InputStream in = getResourceAsStream(name.replace('.', '/') + ".class");
-				byte[] buffer = new byte[4096];
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				int n;
-				while ((n = in.read(buffer, 0, 4096)) != -1) {
-					out.write(buffer, 0, n);
-				}
-				byte[] bytes = out.toByteArray();
-				clazz = defineClass(name, bytes, 0, bytes.length);
-				if (resolve) {
-					resolveClass(clazz);
-				}
-			} catch (Exception e) {
-				clazz = super.loadClass(name, resolve);
-			}
-		}
+        if (clazz == null) {
+            try {
+                InputStream in = getResourceAsStream(name.replace('.', '/') + ".class");
+                byte[] buffer = new byte[4096];
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                int n;
+                while ((n = in.read(buffer, 0, 4096)) != -1) {
+                    out.write(buffer, 0, n);
+                }
+                byte[] bytes = out.toByteArray();
+                clazz = defineClass(name, bytes, 0, bytes.length);
+                if (resolve) {
+                    resolveClass(clazz);
+                }
+            } catch (Exception e) {
+                clazz = super.loadClass(name, resolve);
+            }
+        }
 
-		return clazz;
-	}
+        return clazz;
+    }
 
-	public URL getResource(String name) {
-		try {
-			return new URL(base, name);
-		} catch (MalformedURLException e) {
-			return null;
-		}
-	}
+    public URL getResource(String name) {
+        try {
+            return new URL(base, name);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
 
-	public InputStream getResourceAsStream(String name) {
-		try {
-			return new URL(base, name).openStream();
-		} catch (IOException e) {
-			return null;
-		}
-	}
+    public InputStream getResourceAsStream(String name) {
+        try {
+            return new URL(base, name).openStream();
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }

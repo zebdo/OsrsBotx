@@ -5,6 +5,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScriptManifest {
-	String name();
-	String[] authors();
+    String name();
+    String[] authors();
 }

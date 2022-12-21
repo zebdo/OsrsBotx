@@ -15,7 +15,7 @@ import java.awt.event.KeyEvent;
 @SuppressWarnings("removal")
 public class VirtualKeyboard implements KeyListener {
 
-	private RSClient proxy;
+    private RSClient proxy;
 
     public VirtualKeyboard(RSClient proxy) {
         this.proxy = proxy;
@@ -44,10 +44,10 @@ public class VirtualKeyboard implements KeyListener {
             keyReleased(e);
         }
 
-		// why focus gained on each keystroke?
+        // why focus gained on each keystroke?
         EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
 
-		// XXX this is actually mental
+        // XXX this is actually mental
         eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_GAINED));
         eventQueue.postEvent(e);
     }

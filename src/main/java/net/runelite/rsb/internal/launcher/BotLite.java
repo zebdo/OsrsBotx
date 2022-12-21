@@ -33,28 +33,28 @@ public class BotLite extends RuneLite {
         return sh;
     }
 
-	public RSClient getProxy() {
+    public RSClient getProxy() {
         return proxy;
     }
 
     public BotLite() throws Exception {
-		sh = new ScriptHandler(this);
+        sh = new ScriptHandler(this);
 
         Executors.newSingleThreadScheduledExecutor().submit(() -> {
             while (injector.getInstance(Client.class) == null) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
 
-			proxy = new RSClient(injector.getInstance(Client.class),
-								 injector.getInstance(ClientThread.class));
+            proxy = new RSClient(injector.getInstance(Client.class),
+                                 injector.getInstance(ClientThread.class));
 
-			im = new InputManager(this, proxy);
+            im = new InputManager(this, proxy);
 
-			});
+            });
     }
 
 }

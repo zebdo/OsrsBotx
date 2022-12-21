@@ -14,7 +14,7 @@ import java.awt.event.MouseWheelEvent;
 @SuppressWarnings("removal")
 public class VirtualMouse {
 
-	private RSClient proxy;
+    private RSClient proxy;
 
     private int clientX;
     private int clientY;
@@ -105,7 +105,7 @@ public class VirtualMouse {
 
     public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e) {
         try {
-			// huh??? infinite loop!
+            // huh??? infinite loop!
             mouseWheelMoved(e);
         } catch (AbstractMethodError ame) {
             // it might not be implemented!
@@ -132,7 +132,7 @@ public class VirtualMouse {
             } else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
                 mouseReleased(e);
             } else if (e.getID() == MouseEvent.MOUSE_WHEEL) {
-				log.debug("mouseWheelMoved Mouse event might not be implemented");
+                log.debug("mouseWheelMoved Mouse event might not be implemented");
                 // try {
                 //     mouseWheelMoved((MouseWheelEvent) e);
                 // } catch (AbstractMethodError ignored) {
@@ -143,7 +143,7 @@ public class VirtualMouse {
                 throw new InternalError(e.toString());
             }
 
-			proxy.getCanvas().dispatchEvent(e);
+            proxy.getCanvas().dispatchEvent(e);
 
         } catch (NullPointerException ignored) {
             log.debug("Listener is being re-instantiated on the client", ignored);

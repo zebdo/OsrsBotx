@@ -92,12 +92,12 @@ public enum InterfaceTab {
         return hotkey;
     }
 
-	public GlobalWidgetInfo getWidgetInfo(ViewportLayout layout) {
-		return switch (layout) {
-			case FIXED_CLASSIC -> fixedClassicInfo;
-			case RESIZABLE_CLASSIC -> resizableClassicInfo;
-			case RESIZABLE_MODERN -> resizableModernInfo;
-		};
-	}
+    public GlobalWidgetInfo getWidgetInfo(ViewportLayout layout) {
+        return switch (layout) {
+            case FIXED_CLASSIC -> fixedClassicInfo;
+            case RESIZABLE_CLASSIC -> resizableClassicInfo;
+            case RESIZABLE_MODERN -> resizableModernInfo;
+        };
+    }
 
 }

@@ -136,8 +136,8 @@ public class RSClient extends BaseClientWrapper {
         return convertResult(super.getScriptDotWidget());
     }
 
-	@Override
-	public void setHintArrow(LocalPoint point) {
+    @Override
+    public void setHintArrow(LocalPoint point) {
         super.setHintArrow(point);
     }
 

@@ -33,14 +33,14 @@ import javax.swing.*;
 import java.awt.*;
 
 class BotPanel extends PluginPanel {
-	public BotPanel(ScriptPanel scriptPanel) {
-		super(false);
-		setLayout(new BorderLayout());
-		setBackground(ColorScheme.DARK_GRAY_COLOR);
+    public BotPanel(ScriptPanel scriptPanel) {
+        super(false);
+        setLayout(new BorderLayout());
+        setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-		JScrollPane botPanelScrollPane = new JScrollPane(scriptPanel,
-														 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-														 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		add(botPanelScrollPane, BorderLayout.NORTH);
-	}
+        JScrollPane botPanelScrollPane = new JScrollPane(scriptPanel,
+                                                         ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        add(botPanelScrollPane, BorderLayout.NORTH);
+    }
 }

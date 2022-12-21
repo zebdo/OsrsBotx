@@ -7,42 +7,42 @@ import net.runelite.rsb.internal.launcher.BotLite;
 
 @Slf4j
 public abstract class Script implements Runnable {
-	protected volatile boolean running = false;
-	protected volatile boolean paused = false;
+    protected volatile boolean running = false;
+    protected volatile boolean paused = false;
 
-	protected BotLite bot;
+    protected BotLite bot;
 
-	// internal - should not propagate to end user
-	public abstract void onInit();
-	public abstract void doRun();
+    // internal - should not propagate to end user
+    public abstract void onInit();
+    public abstract void doRun();
 
-	// all called from ScriptHandler
-	public final void init(BotLite bot) {
-		this.bot = bot;
-		onInit();
-	}
+    // all called from ScriptHandler
+    public final void init(BotLite bot) {
+        this.bot = bot;
+        onInit();
+    }
 
-	public final void cleanup() {
-		// moves it offscreen
-		bot.getScriptHandler().stopScript();
-	}
+    public final void cleanup() {
+        // moves it offscreen
+        bot.getScriptHandler().stopScript();
+    }
 
-	public final void deactivate() {
-		this.running = false;
-		this.paused = false;
-	}
+    public final void deactivate() {
+        this.running = false;
+        this.paused = false;
+    }
 
-	public final boolean togglePaused() {
-		boolean result = paused;
-		if (running) {
-			this.paused = !paused;
-		}
+    public final boolean togglePaused() {
+        boolean result = paused;
+        if (running) {
+            this.paused = !paused;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public final void run() {
-		this.doRun();
-	}
+    public final void run() {
+        this.doRun();
+    }
 
 }

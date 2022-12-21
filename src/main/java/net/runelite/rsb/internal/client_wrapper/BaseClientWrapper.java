@@ -526,7 +526,7 @@ public class BaseClientWrapper implements Client {
         return wrappedClient.getVar(varPlayer);
     }
 
-	// XXX cheap fix - should fix downstream
+    // XXX cheap fix - should fix downstream
     public int getServerVar(VarPlayer varPlayer) {
         return wrappedClient.getVarpValue(varPlayer);
     }
@@ -1324,13 +1324,13 @@ public class BaseClientWrapper implements Client {
         wrappedClient.setWidgetSelected(selected);
     }
 
-	@Deprecated
+    @Deprecated
     @Override
     public int getSelectedItem() {
         return wrappedClient.getSelectedItem();
     }
 
-	@Deprecated
+    @Deprecated
     @Override
     public int getSelectedItemIndex() {
         return wrappedClient.getSelectedItemIndex();
@@ -1499,14 +1499,14 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-	public void setIdleTimeout(int ticks) {
+    public void setIdleTimeout(int ticks) {
         wrappedClient.setIdleTimeout(ticks);
-	}
+    }
 
     @Override
-	public int getIdleTimeout() {
+    public int getIdleTimeout() {
         return wrappedClient.getIdleTimeout();
-	}
+    }
 
     @Override
     public boolean isMinimapZoom() {
