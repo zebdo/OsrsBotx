@@ -18,12 +18,21 @@ public abstract class Script implements Runnable {
     // all called from ScriptHandler
     public final void init(BotLite bot) {
         this.bot = bot;
+
+		// XXX not good
+		//var c = bot.getProxy().getCanvas();
+		//c.setEnabled(false);
+
         onInit();
     }
 
     public final void cleanup() {
         // moves it offscreen
         bot.getScriptHandler().stopScript();
+
+		// XXX not good
+		//var c = bot.getProxy().getCanvas();
+		//c.setEnabled(true);
     }
 
     public final void deactivate() {
