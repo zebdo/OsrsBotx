@@ -60,7 +60,6 @@ public class FileScriptSource {
 	}
 
 	private void load(ClassLoader loader, LinkedList<ScriptDefinition> scripts, JarFile jar) {
-		log.warn("guess we get here 2!");
 		Enumeration<JarEntry> entries = jar.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry e = entries.nextElement();
@@ -73,8 +72,6 @@ public class FileScriptSource {
 	}
 
 	private void loadClazz(ClassLoader loader, LinkedList<ScriptDefinition> scripts, String name) {
-		log.warn("and now here {}", name);
-
 		Class<?> clazz;
 		try {
 			clazz = loader.loadClass(name);
@@ -87,7 +84,6 @@ public class FileScriptSource {
 		}
 
 		if (clazz.isAnnotationPresent(ScriptManifest.class)) {
-			log.warn("and we add to our scripts here (well the defintion) {}", name);
 			ScriptDefinition def = new ScriptDefinition();
 			ScriptManifest manifest = clazz.getAnnotation(ScriptManifest.class);
 			def.name = manifest.name();
