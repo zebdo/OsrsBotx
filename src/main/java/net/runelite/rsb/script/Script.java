@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.runelite.rsb.internal.launcher.BotLite;
 
-
 @Slf4j
 public abstract class Script implements Runnable {
     protected volatile boolean running = false;

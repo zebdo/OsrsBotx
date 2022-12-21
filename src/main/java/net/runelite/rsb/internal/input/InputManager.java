@@ -43,18 +43,6 @@ public class InputManager {
     }
 
     private boolean isOnCanvas(final int x, final int y) {
-        // if (bot.getCanvas().getWidth() != proxy.getCanvasWidth()) {
-        //  log.warn(String.format("WTF canvas: %d proxy: %d",
-        //                         bot.getCanvas().getWidth(),
-        //                         proxy.getCanvasWidth()));
-        // }
-
-        // if (bot.getCanvas().getHeight() != proxy.getCanvasHeight()) {
-        //  log.warn(String.format("WTF canvas: %d proxy: %d",
-        //                         bot.getCanvas().getHeight(),
-        //                         proxy.getCanvasHeight()));
-        // }
-
         return (x > 0 && x < proxy.getCanvasWidth() &&
                 y > 0 && y < proxy.getCanvasHeight());
     }
