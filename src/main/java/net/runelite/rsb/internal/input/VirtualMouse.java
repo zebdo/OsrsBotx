@@ -8,7 +8,7 @@ import java.applet.Applet;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-
+import java.awt.*;
 
 @Slf4j
 @SuppressWarnings("removal")
@@ -27,6 +27,13 @@ public class VirtualMouse {
 
     public VirtualMouse(RSClient proxy) {
         this.proxy = proxy;
+    }
+
+    private void checkFocused() {
+        if (clientPresent && !proxy.getCanvas().isFocusOwner()) {
+            EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+            eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_GAINED));
+        }
     }
 
     public int getClientX() {
@@ -64,34 +71,47 @@ public class VirtualMouse {
     public final void mouseClicked(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
+
+        checkFocused();
     }
 
     public final void mouseDragged(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
+
+        checkFocused();
     }
 
     public final void mouseEntered(MouseEvent e) {
         clientPresent = true;
         clientX = e.getX();
         clientY = e.getY();
+
+        checkFocused();
     }
 
     public final void mouseExited(MouseEvent e) {
         clientPresent = false;
         clientX = e.getX();
         clientY = e.getY();
+
+        EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+        eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_LOST));
     }
 
     public final void mouseMoved(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
+
+        checkFocused();
     }
 
     public final void mousePressed(MouseEvent e) {
         clientPressed = true;
         clientX = e.getX();
         clientY = e.getY();
+
+        checkFocused();
     }
 
     public final void mouseReleased(MouseEvent e) {
@@ -101,6 +121,8 @@ public class VirtualMouse {
         clientPressY = e.getY();
         clientPressTime = System.currentTimeMillis();
         clientPressed = false;
+
+        checkFocused();
     }
 
     public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e) {

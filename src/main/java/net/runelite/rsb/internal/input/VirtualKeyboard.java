@@ -49,7 +49,8 @@ public class VirtualKeyboard implements KeyListener {
 
         // XXX this is actually mental
         eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_GAINED));
-        eventQueue.postEvent(e);
+
+        proxy.getCanvas().dispatchEvent(e);
     }
 
 }
