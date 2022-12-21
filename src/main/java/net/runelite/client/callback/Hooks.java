@@ -421,7 +421,7 @@ public class Hooks implements Callbacks
 		}
 
         // Draw the image onto the game canvas
-        graphics.drawImage(finalImage, 0, 0, bot.getCanvas());
+        graphics.drawImage(finalImage, 0, 0, client.getCanvas());
 
 		// finalImage is backed by the client buffer which will change soon. make a copy
 		// so that callbacks can safely use it later from threads.
