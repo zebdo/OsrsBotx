@@ -6,6 +6,7 @@ import net.runelite.rsb.internal.launcher.BotLite;
 
 import java.applet.Applet;
 import java.awt.event.*;
+import java.awt.Canvas;
 
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
@@ -125,9 +126,8 @@ public class InputManager {
 		}
 	}
 
-	@SuppressWarnings("removal")
-	private Applet getTarget() {
-		return (Applet) bot.getClient();
+	private java.awt.Canvas getTarget() {
+		return proxy.getCanvas();
 	}
 
 	public int getX() {
