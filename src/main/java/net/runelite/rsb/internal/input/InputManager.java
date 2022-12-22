@@ -40,35 +40,6 @@ public class InputManager {
         return virtualKeyboard;
     }
 
-    public void clickMouse(final boolean left) {
-        if (!virtualMouse.isClientPresent()) {
-            log.warn("clickMouse not present x:{} y:{} - onCanvas: {}", getX(), getY(),
-					 virtualMouse.isOnCanvas(getX(), getY()));
-            return; // Can't click off the canvas
-        }
-
-        virtualMouse.pressMouse(getX(), getY(), left);
-		// XXX this needs to be better
-        sleepNoException(random(50, 100));
-        virtualMouse.releaseMouse(getX(), getY(), left);
-    }
-
-    private void moveMouse(final int x, final int y) {
-		virtualMouse.moveMouse(x, y);
-    }
-
-    private char getKeyChar(final char c) {
-        if ((c >= 36) && (c <= 40)) {
-            return KeyEvent.VK_UNDEFINED;
-        } else {
-            return c;
-        }
-    }
-
-    private java.awt.Canvas getTarget() {
-        return proxy.getCanvas();
-    }
-
     public int getX() {
         return virtualMouse.getClientX();
     }
@@ -76,6 +47,35 @@ public class InputManager {
     public int getY() {
         return virtualMouse.getClientY();
     }
+
+    public void pressMouse(final boolean left) {
+        virtualMouse.pressMouse(left);
+	}
+
+    public void releaseMouse(final boolean left) {
+        virtualMouse.releaseMouse(left);
+	}
+
+    public void clickMouse(final boolean left) {
+        if (!virtualMouse.isClientPresent()) {
+            log.warn("clickMouse not present x:{} y:{} - onCanvas: {}",
+					 virtualMouse.getClientX(),
+					 virtualMouse.getClientY(),
+					 virtualMouse.isOnCanvas());
+            return; // Can't click off the canvas
+        }
+
+        virtualMouse.pressMouse(left);
+		// XXX this needs to be better
+        sleepNoException(random(50, 100));
+
+        virtualMouse.releaseMouse(left);
+    }
+
+    public void hopMouse(final int x, final int y) {
+		// this should very much be discouraged
+		virtualMouse.moveMouse(x, y);
+	}
 
     public void windMouse(final int x, final int y) {
         int beforeX = getX();
@@ -89,7 +89,7 @@ public class InputManager {
             log.info(String.format("from %d %d -> at %d %d in %d msecs",
                                    beforeX, beforeY, getX(), getY(), end - start));
 
-            if (!virtualMouse.isOnCanvas(getX(), getY())) {
+            if (!virtualMouse.isOnCanvas()) {
                 log.info(String.format("ZZZ off CANVAS: %d %d",
                                        proxy.getCanvasWidth(),
                                        proxy.getCanvasHeight()));
@@ -97,10 +97,35 @@ public class InputManager {
         }
     }
 
+
+
+
+
+
+
+
+
+	// key stuff:
+
+    private java.awt.Canvas getTarget() {
+        return proxy.getCanvas();
+    }
+
+
     public int random(final int min, final int max) {
         final int n = Math.abs(max - min);
         return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
     }
+
+
+    private char getKeyChar(final char c) {
+        if ((c >= 36) && (c <= 40)) {
+            return KeyEvent.VK_UNDEFINED;
+        } else {
+            return c;
+        }
+    }
+
 
     public void holdKey(final int keyCode, final int ms) {
         KeyEvent ke;

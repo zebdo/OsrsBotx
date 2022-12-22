@@ -4,19 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.runelite.rsb.internal.client_wrapper.RSClient;
 
-import java.applet.Applet;
+import java.awt.Toolkit;
+import java.awt.EventQueue;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.*;
 
 @Slf4j
-@SuppressWarnings("removal")
 public class VirtualMouse {
 
     private RSClient proxy;
 
     private byte dragLength = 0;
+
+	// XXX rename this clientXXX
     private int clientX;
     private int clientY;
     private int clientPressX = -1;
@@ -34,9 +35,13 @@ public class VirtualMouse {
         return proxy.getCanvas();
     }
 
-    public boolean isOnCanvas(final int x, final int y) {
-        return (x >= 0 && x < proxy.getCanvasWidth() &&
-                y >= 0 && y < proxy.getCanvasHeight());
+    public boolean isOnCanvas() {
+		return isOnCanvas(clientX, clientY);
+    }
+
+    private boolean isOnCanvas(int x, int y) {
+        return (clientX >= 0 && clientX < proxy.getCanvasWidth() &&
+                clientY >= 0 && clientY < proxy.getCanvasHeight());
     }
 
     private void checkFocused() {
@@ -78,29 +83,32 @@ public class VirtualMouse {
         return clientInFocus;
     }
 
-    public void pressMouse(final int x, final int y, final boolean isLeft) {
+    public void pressMouse(final boolean isLeft) {
         if (isClientPressed() || !isClientPresent()) {
             log.info("isPressed(): {}, isPresent(): {}", isClientPressed(), isClientPresent());
             return;
         }
 
-        final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y,
+        final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(),
+											 0, clientX, clientY,
                                              1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
         sendEvent(me);
 	}
 
-    public void releaseMouse(final int x, final int y, final boolean isLeft) {
+    public void releaseMouse(final boolean isLeft) {
         if (!isClientPressed()) {
             return;
         }
 
-        MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1,
-                                       false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+        MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(),
+									   0, clientX, clientY,
+                                       1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
         sendEvent(me);
 
         if ((dragLength & 0xFF) <= 3) {
-            me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, x, y, 1, false,
-                                isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+            me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(),
+								0, clientX, clientY,
+								1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
             sendEvent(me);
         }
 
