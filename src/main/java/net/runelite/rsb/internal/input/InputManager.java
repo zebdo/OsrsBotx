@@ -22,8 +22,6 @@ public class InputManager {
     private VirtualKeyboard virtualKeyboard;
     private RSClient proxy;
 
-    private byte dragLength = 0;
-
     // ZZZ shouldnt be here?
     private boolean LOG_MOUSE = false;
 
@@ -42,69 +40,22 @@ public class InputManager {
         return virtualKeyboard;
     }
 
-    private boolean isOnCanvas(final int x, final int y) {
-        return (x > 0 && x < proxy.getCanvasWidth() &&
-                y > 0 && y < proxy.getCanvasHeight());
-    }
-
     public void clickMouse(final boolean left) {
         if (!virtualMouse.isClientPresent()) {
-            log.warn("clickMouse not present x:{} y:{} - onCanvas: {}", getX(), getY(), isOnCanvas(getX(), getY()));
+            log.warn("clickMouse not present x:{} y:{} - onCanvas: {}", getX(), getY(),
+					 virtualMouse.isOnCanvas(getX(), getY()));
             return; // Can't click off the canvas
         }
 
-        pressMouse(getX(), getY(), left);
+        virtualMouse.pressMouse(getX(), getY(), left);
+		// XXX this needs to be better
         sleepNoException(random(50, 100));
-        releaseMouse(getX(), getY(), left);
+        virtualMouse.releaseMouse(getX(), getY(), left);
     }
 
-    private void pressMouse(final int x, final int y, final boolean isLeft) {
-        if (LOG_MOUSE) {
-            log.info("pressMouse x:{} y:{} isLeft: {} ", x, y, isLeft);
-        }
-
-        if (virtualMouse.isClientPressed() || !virtualMouse.isClientPresent()) {
-            log.info("isPressed(): {}, isPresent(): {}",
-                     virtualMouse.isClientPressed(),
-                     virtualMouse.isClientPresent());
-            return;
-        }
-
-        final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y,
-                                             1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
-        virtualMouse.sendEvent(me);
+    private void moveMouse(final int x, final int y) {
+		virtualMouse.moveMouse(x, y);
     }
-
-
-    private void releaseMouse(final int x, final int y, final boolean leftClick) {
-        if (!virtualMouse.isClientPressed()) {
-            return;
-        }
-
-        MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1,
-                                       false, leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
-        virtualMouse.sendEvent(me);
-
-        if ((dragLength & 0xFF) <= 3) {
-            me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, x, y, 1, false,
-                                leftClick ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
-            virtualMouse.sendEvent(me);
-        }
-        // reset
-        dragLength = 0;
-    }
-
-    // ZZZ not sure this should be here either
-    public void dragMouse(final int x, final int y) {
-        pressMouse(getX(), getY(), true);
-        sleepNoException(random(300, 500));
-
-        // XXX this wasn't using naturalmouse, but now is
-        windMouse(x, y);
-        sleepNoException(random(300, 500));
-        releaseMouse(x, y, true);
-    }
-
 
     private char getKeyChar(final char c) {
         if ((c >= 36) && (c <= 40)) {
@@ -126,10 +77,6 @@ public class InputManager {
         return virtualMouse.getClientY();
     }
 
-    public void hopMouse(final int x, final int y) {
-        moveMouse(x, y);
-    }
-
     public void windMouse(final int x, final int y) {
         int beforeX = getX();
         int beforeY = getY();
@@ -142,46 +89,11 @@ public class InputManager {
             log.info(String.format("from %d %d -> at %d %d in %d msecs",
                                    beforeX, beforeY, getX(), getY(), end - start));
 
-            if (!isOnCanvas(getX(), getY())) {
+            if (!virtualMouse.isOnCanvas(getX(), getY())) {
                 log.info(String.format("ZZZ off CANVAS: %d %d",
                                        proxy.getCanvasWidth(),
                                        proxy.getCanvasHeight()));
             }
-        }
-    }
-
-    private void moveMouse(final int x, final int y) {
-        // Firstly invoke drag events
-        if (virtualMouse.isClientPressed()) {
-            final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(), 0, x, y, 0, false);
-
-            virtualMouse.sendEvent(me);
-            if ((dragLength & 0xFF) != 0xFF) {
-                dragLength++;
-            }
-        } else {
-            long curTime = System.currentTimeMillis();
-
-            // moving on to screen
-            if (!virtualMouse.isClientPresent() && isOnCanvas(x, y)) {
-                final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_ENTERED,
-                                                     curTime, 0, x, y, 0, false);
-                virtualMouse.sendEvent(me);
-
-                return;
-            }
-
-            // moving off of screen
-            if (virtualMouse.isClientPresent() && !isOnCanvas(x, y)) {
-                final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_EXITED,
-                                                     curTime, 0, x, y, 0, false);
-                virtualMouse.sendEvent(me);
-                return;
-            }
-
-            final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED,
-                                                 curTime, 0, x, y, 0, false);
-            virtualMouse.sendEvent(me);
         }
     }
 

@@ -42,6 +42,6 @@ public class RSBSystemCalls implements SystemCalls {
      */
     @Override
     public void setMousePosition(int x, int y) {
-        inputManager.hopMouse(x, y);
+        inputManager.getVirtualMouse().moveMouse(x, y);
     }
 }

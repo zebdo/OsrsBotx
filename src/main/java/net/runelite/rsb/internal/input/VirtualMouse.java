@@ -16,6 +16,7 @@ public class VirtualMouse {
 
     private RSClient proxy;
 
+    private byte dragLength = 0;
     private int clientX;
     private int clientY;
     private int clientPressX = -1;
@@ -27,6 +28,15 @@ public class VirtualMouse {
 
     public VirtualMouse(RSClient proxy) {
         this.proxy = proxy;
+    }
+
+    private java.awt.Canvas getTarget() {
+        return proxy.getCanvas();
+    }
+
+    public boolean isOnCanvas(final int x, final int y) {
+        return (x >= 0 && x < proxy.getCanvasWidth() &&
+                y >= 0 && y < proxy.getCanvasHeight());
     }
 
     private void checkFocused() {
@@ -68,21 +78,85 @@ public class VirtualMouse {
         return clientInFocus;
     }
 
-    public final void mouseClicked(MouseEvent e) {
+    public void pressMouse(final int x, final int y, final boolean isLeft) {
+        if (isClientPressed() || !isClientPresent()) {
+            log.info("isPressed(): {}, isPresent(): {}", isClientPressed(), isClientPresent());
+            return;
+        }
+
+        final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y,
+                                             1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+        sendEvent(me);
+	}
+
+    public void releaseMouse(final int x, final int y, final boolean isLeft) {
+        if (!isClientPressed()) {
+            return;
+        }
+
+        MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1,
+                                       false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+        sendEvent(me);
+
+        if ((dragLength & 0xFF) <= 3) {
+            me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, x, y, 1, false,
+                                isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+            sendEvent(me);
+        }
+
+        // reset
+        dragLength = 0;
+	}
+
+    public void moveMouse(final int x, final int y) {
+        // Firstly invoke drag events
+        if (isClientPressed()) {
+            final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(), 0, x, y, 0, false);
+
+            sendEvent(me);
+            if ((dragLength & 0xFF) != 0xFF) {
+                dragLength++;
+            }
+        } else {
+            long curTime = System.currentTimeMillis();
+
+            // moving on to screen
+            if (!isClientPresent() && isOnCanvas(x, y)) {
+                final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_ENTERED,
+                                                     curTime, 0, x, y, 0, false);
+                sendEvent(me);
+                return;
+            }
+
+            // moving off of screen
+            if (isClientPresent() && !isOnCanvas(x, y)) {
+                final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_EXITED,
+                                                     curTime, 0, x, y, 0, false);
+                sendEvent(me);
+                return;
+            }
+
+            final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_MOVED,
+                                                 curTime, 0, x, y, 0, false);
+            sendEvent(me);
+        }
+	}
+
+    private final void mouseClicked(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
 
         checkFocused();
     }
 
-    public final void mouseDragged(MouseEvent e) {
+    private final void mouseDragged(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
 
         checkFocused();
     }
 
-    public final void mouseEntered(MouseEvent e) {
+    private final void mouseEntered(MouseEvent e) {
         clientPresent = true;
         clientX = e.getX();
         clientY = e.getY();
@@ -90,7 +164,7 @@ public class VirtualMouse {
         checkFocused();
     }
 
-    public final void mouseExited(MouseEvent e) {
+    private final void mouseExited(MouseEvent e) {
         clientPresent = false;
         clientX = e.getX();
         clientY = e.getY();
@@ -99,14 +173,14 @@ public class VirtualMouse {
         eventQueue.postEvent(new FocusEvent(proxy.getCanvas(), FocusEvent.FOCUS_LOST));
     }
 
-    public final void mouseMoved(MouseEvent e) {
+    private final void mouseMoved(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
 
         checkFocused();
     }
 
-    public final void mousePressed(MouseEvent e) {
+    private final void mousePressed(MouseEvent e) {
         clientPressed = true;
         clientX = e.getX();
         clientY = e.getY();
@@ -114,7 +188,7 @@ public class VirtualMouse {
         checkFocused();
     }
 
-    public final void mouseReleased(MouseEvent e) {
+    private final void mouseReleased(MouseEvent e) {
         clientX = e.getX();
         clientY = e.getY();
         clientPressX = e.getX();
@@ -125,9 +199,9 @@ public class VirtualMouse {
         checkFocused();
     }
 
-    public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e) {
+    private MouseWheelEvent mouseWheelMoved(MouseWheelEvent e) {
         try {
-            // huh??? infinite loop!
+            // XXX huh??? infinite loop!
             mouseWheelMoved(e);
         } catch (AbstractMethodError ame) {
             // it might not be implemented!
@@ -135,7 +209,7 @@ public class VirtualMouse {
         return e;
     }
 
-    public final void sendEvent(MouseEvent e) {
+    private final void sendEvent(MouseEvent e) {
         this.clientX = e.getX();
         this.clientY = e.getY();
         try {
