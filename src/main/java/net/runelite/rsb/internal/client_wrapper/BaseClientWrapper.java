@@ -1527,4 +1527,14 @@ public class BaseClientWrapper implements Client {
     public void setMinimapZoom(double zoom) {
         wrappedClient.setMinimapZoom(zoom);
     }
+
+    @Override
+	public void setMinimapTileDrawer(TileFunction drawTile) {
+        wrappedClient.setMinimapTileDrawer(drawTile);
+	}
+
+    @Override
+	public Rasterizer getRasterizer() {
+        return wrappedClient.getRasterizer();
+	}
 }
