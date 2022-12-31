@@ -127,6 +127,12 @@ public class RSClient extends BaseClientWrapper {
     }
 
     @Override
+    public ObjectComposition getObjectDefinition(int objectId) {
+        return runOnClientThread(() -> super.getObjectDefinition(objectId));
+    }
+
+
+    @Override
     public Widget getScriptActiveWidget() {
         return convertResult(super.getScriptActiveWidget());
     }
