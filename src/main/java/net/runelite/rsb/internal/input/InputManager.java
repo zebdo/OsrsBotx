@@ -17,7 +17,6 @@ public class InputManager {
     private final java.util.Random random = new java.util.Random();
     private final MouseHandler mouseMovementManager = new MouseHandler(this);
 
-    private final BotLite bot;
     private VirtualMouse virtualMouse;
     private VirtualKeyboard virtualKeyboard;
     private RSClient proxy;
@@ -25,8 +24,7 @@ public class InputManager {
     // ZZZ shouldnt be here?
     private boolean LOG_MOUSE = false;
 
-    public InputManager(BotLite bot, RSClient proxy) {
-        this.bot = bot;
+    public InputManager(RSClient proxy) {
         this.proxy = proxy;
         this.virtualMouse = new VirtualMouse(proxy);
         this.virtualKeyboard = new VirtualKeyboard(proxy);

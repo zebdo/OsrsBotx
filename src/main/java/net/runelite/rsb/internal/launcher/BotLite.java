@@ -52,7 +52,7 @@ public class BotLite extends RuneLite {
             proxy = new RSClient(injector.getInstance(Client.class),
                                  injector.getInstance(ClientThread.class));
 
-            im = new InputManager(this, proxy);
+            im = new InputManager(proxy);
 
             });
     }
