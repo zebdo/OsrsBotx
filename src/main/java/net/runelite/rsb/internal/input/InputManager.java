@@ -48,32 +48,32 @@ public class InputManager {
 
     public void pressMouse(final boolean left) {
         virtualMouse.pressMouse(left);
-	}
+    }
 
     public void releaseMouse(final boolean left) {
         virtualMouse.releaseMouse(left);
-	}
+    }
 
     public void clickMouse(final boolean left) {
         if (!virtualMouse.isClientPresent()) {
             log.warn("clickMouse not present x:{} y:{} - onCanvas: {}",
-					 virtualMouse.getClientX(),
-					 virtualMouse.getClientY(),
-					 virtualMouse.isOnCanvas());
+                     virtualMouse.getClientX(),
+                     virtualMouse.getClientY(),
+                     virtualMouse.isOnCanvas());
             return; // Can't click off the canvas
         }
 
         virtualMouse.pressMouse(left);
-		// XXX this needs to be better
+        // XXX this needs to be better
         sleepNoException(random(50, 100));
 
         virtualMouse.releaseMouse(left);
     }
 
     public void hopMouse(final int x, final int y) {
-		// this should very much be discouraged
-		virtualMouse.moveMouse(x, y);
-	}
+        // this should very much be discouraged
+        virtualMouse.moveMouse(x, y);
+    }
 
     public void windMouse(final int x, final int y) {
         int beforeX = getX();
@@ -103,7 +103,7 @@ public class InputManager {
 
 
 
-	// key stuff:
+    // key stuff:
 
     private java.awt.Canvas getTarget() {
         return proxy.getCanvas();

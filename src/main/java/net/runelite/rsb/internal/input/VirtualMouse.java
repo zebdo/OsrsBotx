@@ -17,7 +17,7 @@ public class VirtualMouse {
 
     private byte dragLength = 0;
 
-	// XXX rename this clientXXX
+    // XXX rename this clientXXX
     private int clientX;
     private int clientY;
     private int clientPressX = -1;
@@ -36,7 +36,7 @@ public class VirtualMouse {
     }
 
     public boolean isOnCanvas() {
-		return isOnCanvas(clientX, clientY);
+        return isOnCanvas(clientX, clientY);
     }
 
     private boolean isOnCanvas(int x, int y) {
@@ -90,10 +90,10 @@ public class VirtualMouse {
         }
 
         final MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(),
-											 0, clientX, clientY,
+                                             0, clientX, clientY,
                                              1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
         sendEvent(me);
-	}
+    }
 
     public void releaseMouse(final boolean isLeft) {
         if (!isClientPressed()) {
@@ -101,20 +101,20 @@ public class VirtualMouse {
         }
 
         MouseEvent me = new MouseEvent(getTarget(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(),
-									   0, clientX, clientY,
+                                       0, clientX, clientY,
                                        1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
         sendEvent(me);
 
         if ((dragLength & 0xFF) <= 3) {
             me = new MouseEvent(getTarget(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(),
-								0, clientX, clientY,
-								1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
+                                0, clientX, clientY,
+                                1, false, isLeft ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
             sendEvent(me);
         }
 
         // reset
         dragLength = 0;
-	}
+    }
 
     public void moveMouse(final int x, final int y) {
         // Firstly invoke drag events
@@ -148,7 +148,7 @@ public class VirtualMouse {
                                                  curTime, 0, x, y, 0, false);
             sendEvent(me);
         }
-	}
+    }
 
     private final void mouseClicked(MouseEvent e) {
         clientX = e.getX();

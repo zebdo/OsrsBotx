@@ -473,7 +473,7 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-	@Deprecated
+    @Deprecated
     public int getMapAngle() {
         return wrappedClient.getMapAngle();
     }
@@ -928,24 +928,24 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-	public int getCameraYawTarget() {
-		return wrappedClient.getCameraYawTarget();
-	}
+    public int getCameraYawTarget() {
+        return wrappedClient.getCameraYawTarget();
+    }
 
     @Override
-	public int getCameraPitchTarget() {
-		return wrappedClient.getCameraPitchTarget();
-	}
+    public int getCameraPitchTarget() {
+        return wrappedClient.getCameraPitchTarget();
+    }
 
     @Override
-	public void setCameraYawTarget(int cameraYawTarget) {
-		wrappedClient.setCameraYawTarget(cameraYawTarget);
-	}
+    public void setCameraYawTarget(int cameraYawTarget) {
+        wrappedClient.setCameraYawTarget(cameraYawTarget);
+    }
 
     @Override
-	public void setCameraPitchTarget(int cameraPitchTarget) {
-		wrappedClient.setCameraPitchTarget(cameraPitchTarget);
-	}
+    public void setCameraPitchTarget(int cameraPitchTarget) {
+        wrappedClient.setCameraPitchTarget(cameraPitchTarget);
+    }
 
     @Override
     public void setCameraPitchRelaxerEnabled(boolean enabled) {
@@ -1552,12 +1552,12 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-	public void setMinimapTileDrawer(TileFunction drawTile) {
+    public void setMinimapTileDrawer(TileFunction drawTile) {
         wrappedClient.setMinimapTileDrawer(drawTile);
-	}
+    }
 
     @Override
-	public Rasterizer getRasterizer() {
+    public Rasterizer getRasterizer() {
         return wrappedClient.getRasterizer();
-	}
+    }
 }

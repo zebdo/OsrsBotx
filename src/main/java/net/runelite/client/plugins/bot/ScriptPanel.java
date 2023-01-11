@@ -76,7 +76,7 @@ public class ScriptPanel extends PluginPanel {
     private MaterialTab buttonPauseTab;
     private MaterialTab buttonStartTab;
     private MaterialTab buttonReloadTab;
-	private boolean testingPanel = false;
+    private boolean testingPanel = false;
 
     public ScriptPanel(BotLite bot) {
         this.bot = bot;
@@ -150,20 +150,20 @@ public class ScriptPanel extends PluginPanel {
         scriptPanelToolbar.addTab(buttonReloadTab);
         assignLayouts();
 
-		if (testingPanel) {
-			EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						JFrame frame = new JFrame("Testing");
-						frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-						frame.setLayout(new BorderLayout());
-						frame.add(new TestPane());
-						frame.pack();
-						frame.setLocationRelativeTo(null);
-						frame.setVisible(true);
-					}
-				});
-		}
+        if (testingPanel) {
+            EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        JFrame frame = new JFrame("Testing");
+                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        frame.setLayout(new BorderLayout());
+                        frame.add(new TestPane());
+                        frame.pack();
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    }
+                });
+        }
     }
 
     /**
