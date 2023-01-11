@@ -1,6 +1,5 @@
 package net.runelite.client.callback;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -20,10 +19,9 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
-import net.runelite.api.RenderOverview;
 import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
-import net.runelite.api.WorldMapManager;
+import net.runelite.api.worldmap.WorldMapRenderer;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
@@ -34,6 +32,7 @@ import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetInfo.WORLD_MAP_VIEW;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.Notifier;
 import net.runelite.client.TelemetryClient;
 import net.runelite.client.chat.ChatMessageManager;
@@ -51,6 +50,7 @@ import net.runelite.client.util.DeferredEventBus;
 import net.runelite.client.util.RSTimeUnit;
 
 // KKK - only for drawing mouse cursor:
+import java.awt.Color;
 import com.google.inject.Injector;
 import net.runelite.client.modified.RuneLite;
 import net.runelite.rsb.internal.launcher.BotLite;
@@ -101,7 +101,7 @@ public class Hooks implements Callbacks
 	private boolean rateLimitedError;
 	private int errorBackoff = 1;
 
-	// XXX our stuff;
+    // KKK our stuff:
     private final Injector injector = RuneLite.getInjector();
     private final BotLite bot = injector.getInstance(BotLite.class);
 
@@ -111,6 +111,7 @@ public class Hooks implements Callbacks
 		boolean draw(Renderable renderable, boolean ui);
 	}
 
+	// KKK - full path
 	private final List<net.runelite.client.callback.Hooks.RenderableDrawListener> renderableDrawListeners = new ArrayList<>();
 
 	/**
@@ -256,19 +257,17 @@ public class Hooks implements Callbacks
 			return;
 		}
 
-		RenderOverview renderOverview = client.getRenderOverview();
-
-		if (renderOverview == null)
+		WorldMap worldMap = client.getWorldMap();
+		if (worldMap == null)
 		{
 			return;
 		}
 
-		WorldMapManager manager = renderOverview.getWorldMapManager();
-
+		WorldMapRenderer manager = worldMap.getWorldMapRenderer();
 		if (manager != null && manager.isLoaded())
 		{
 			log.debug("World map was closed, reinitializing");
-			renderOverview.initializeWorldMap(renderOverview.getWorldMapData());
+			worldMap.initializeWorldMap(worldMap.getWorldMapData());
 		}
 	}
 

@@ -11,6 +11,8 @@ import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.worldmap.MapElementConfig;
+import net.runelite.api.worldmap.WorldMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,13 +21,12 @@ import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import java.applet.Applet;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 /*
-  Base class for wrapping runelite Client, along with some weird Applet shenanigans.
+  Base class for wrapping runelite Client
 */
 @SuppressWarnings("removal")
 public class BaseClientWrapper implements Client {
@@ -472,13 +473,9 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
+	@Deprecated
     public int getMapAngle() {
         return wrappedClient.getMapAngle();
-    }
-
-    @Override
-    public void setCameraYawTarget(int cameraYawTarget) {
-        wrappedClient.setCameraYawTarget(cameraYawTarget);
     }
 
     @Override
@@ -679,8 +676,8 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-    public MapElementConfig[] getMapElementConfigs() {
-        return wrappedClient.getMapElementConfigs();
+    public MapElementConfig getMapElementConfig(int id) {
+        return wrappedClient.getMapElementConfig(id);
     }
 
     @Override
@@ -931,6 +928,26 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
+	public int getCameraYawTarget() {
+		return wrappedClient.getCameraYawTarget();
+	}
+
+    @Override
+	public int getCameraPitchTarget() {
+		return wrappedClient.getCameraPitchTarget();
+	}
+
+    @Override
+	public void setCameraYawTarget(int cameraYawTarget) {
+		wrappedClient.setCameraYawTarget(cameraYawTarget);
+	}
+
+    @Override
+	public void setCameraPitchTarget(int cameraPitchTarget) {
+		wrappedClient.setCameraPitchTarget(cameraPitchTarget);
+	}
+
+    @Override
     public void setCameraPitchRelaxerEnabled(boolean enabled) {
         wrappedClient.setCameraPitchRelaxerEnabled(enabled);
     }
@@ -945,9 +962,15 @@ public class BaseClientWrapper implements Client {
         wrappedClient.setInvertPitch(invertPitch);
     }
 
+    @Deprecated
     @Override
     public RenderOverview getRenderOverview() {
         return wrappedClient.getRenderOverview();
+    }
+
+    @Override
+    public WorldMap getWorldMap() {
+        return wrappedClient.getWorldMap();
     }
 
     @Override
