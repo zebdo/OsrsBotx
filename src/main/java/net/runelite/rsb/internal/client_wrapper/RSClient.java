@@ -53,14 +53,17 @@ public class RSClient extends BaseClientWrapper {
         task.get();
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T convertResult(T result) {
         if (result instanceof Widget concreteResult) {
             return (T) new WidgetWrapper(concreteResult);
+
         } else if (result instanceof Widget[] concreteResult) {
             WidgetWrapper[] convertedResult = new WidgetWrapper[concreteResult.length];
             for (int i = 0 ; i < concreteResult.length ; i++) {
                 convertedResult[i] = new WidgetWrapper(concreteResult[i]);
             }
+
             return (T) convertedResult;
         }
         return result;
@@ -79,6 +82,7 @@ public class RSClient extends BaseClientWrapper {
     }
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     private <T> T runOnClientThread(Callable<T> method) {
         final var task = new FutureTask<Object>(() -> convertResult(method.call()));
         runTask(task);

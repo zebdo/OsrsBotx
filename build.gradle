@@ -83,6 +83,13 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     //options.deprecation = true
 }
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
 task botRun(type: JavaExec) {
     group = "Execution"
     description = "Runs the main method within RSB"

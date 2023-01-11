@@ -232,6 +232,7 @@ public class RuneLite extends net.runelite.client.RuneLite {
      * @param optionSpecs   The associated fields to the corresponding options
      * @param options       The actual set of options required for initialization
      */
+    @SuppressWarnings("deprecation")
     public static void initializeClient(ArgumentAcceptingOptionSpec<?>[] optionSpecs, OptionSet options) {
         final OkHttpClient okHttpClient = buildHttpClient(options.has("insecure-skip-tls-verification"));
         RuneLiteAPI.CLIENT = okHttpClient;

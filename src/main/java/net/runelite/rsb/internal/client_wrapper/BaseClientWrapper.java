@@ -519,6 +519,7 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
+    @Deprecated
     public int getVar(VarPlayer varPlayer) {
         return wrappedClient.getVar(varPlayer);
     }
@@ -1134,6 +1135,7 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
+    @Deprecated
     public int getItemPressedDuration() {
         return wrappedClient.getItemPressedDuration();
     }

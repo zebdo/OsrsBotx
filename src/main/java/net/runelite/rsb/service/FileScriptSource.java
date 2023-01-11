@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author GigiaJ
@@ -49,7 +50,13 @@ public class FileScriptSource {
 
     public Script instantiate(ScriptDefinition def) {
         try {
-            return def.clazz.asSubclass(Script.class).newInstance();
+            return def.clazz.asSubclass(Script.class).getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
         } catch (InstantiationException e) {
             e.printStackTrace();
             return null;
