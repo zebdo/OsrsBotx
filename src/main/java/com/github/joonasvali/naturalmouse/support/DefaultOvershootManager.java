@@ -28,11 +28,17 @@ public class DefaultOvershootManager implements OvershootManager {
     if (distance < minDistanceForOvershoots) {
       return 0;
     }
-    return overshoots;
+
+    if (random.nextDouble() > 0.8) {
+        return random.nextInt(overshoots + 1);
+    }
+
+    return 0;
   }
 
   @Override
-  public Point getOvershootAmount(double distanceToRealTargetX, double distanceToRealTargetY, long mouseMovementMs, int overshootsRemaining) {
+  public Point getOvershootAmount(double distanceToRealTargetX, double distanceToRealTargetY,
+                                  long mouseMovementMs, int overshootsRemaining) {
     double distanceToRealTarget = Math.hypot(distanceToRealTargetX, distanceToRealTargetY);
 
     double randomModifier = distanceToRealTarget / overshootRandomModifierDivider;
@@ -72,6 +78,7 @@ public class DefaultOvershootManager implements OvershootManager {
   }
 
   public int getOvershoots() {
+
     return overshoots;
   }
 
