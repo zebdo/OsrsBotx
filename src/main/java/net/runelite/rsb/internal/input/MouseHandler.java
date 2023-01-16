@@ -26,13 +26,12 @@ public class MouseHandler {
         var nature = new DefaultMouseMotionNature(calls, new DefaultMouseInfoAccessor());
         this.motionFactory = create(nature);
 
-        // this massively slows things down - need to figure out how to do % of the time
-        setOvershoots(5);
-    }
+        // XXX overshooting massively slows things down
+        var man = (DefaultOvershootManager) this.motionFactory.getOvershootManager();
+        man.setOvershoots(5);
 
-    public void setOvershoots(int num) {
-        var overshootManager = (DefaultOvershootManager) this.motionFactory.getOvershootManager();
-        overshootManager.setOvershoots(num);
+        // XXX current I hacked in DefaultOvershootManager to do in a percentage of the time
+        man.setOvershootPct(10);
     }
 
     private MouseMotionFactory create(MouseMotionNature nature) {
@@ -51,8 +50,8 @@ public class MouseHandler {
         factory.setDeviationProvider(new SinusoidalDeviationProvider(SinusoidalDeviationProvider.DEFAULT_SLOPE_DIVIDER));
         factory.setNoiseProvider(new DefaultNoiseProvider(DefaultNoiseProvider.DEFAULT_NOISINESS_DIVIDER));
 
-        factory.getNature().setReactionTimeVariationMs(85);
-        manager.setMouseMovementBaseTimeMs(150);
+        factory.getNature().setReactionTimeVariationMs(90);
+        manager.setMouseMovementBaseTimeMs(250);
 
         factory.setSpeedManager(manager);
         factory.setMouseInfo(() -> new Point(inputManager.getX(), inputManager.getY()));

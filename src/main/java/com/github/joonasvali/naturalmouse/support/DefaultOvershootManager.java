@@ -17,6 +17,9 @@ public class DefaultOvershootManager implements OvershootManager {
   private double overshootRandomModifierDivider  = OVERSHOOT_RANDOM_MODIFIER_DIVIDER;
   private double overshootSpeedupDivider = OVERSHOOT_SPEEDUP_DIVIDER;
   private int overshoots = DEFAULT_OVERSHOOT_AMOUNT;
+
+  // how much percentage to return a valid amount
+  private int overshootPct = 100;
   private final Random random;
 
   public DefaultOvershootManager(Random random) {
@@ -29,7 +32,8 @@ public class DefaultOvershootManager implements OvershootManager {
       return 0;
     }
 
-    if (random.nextDouble() > 0.8) {
+    double prob = (100 - overshootPct) / 100.0;
+    if (random.nextDouble() > prob) {
         return random.nextInt(overshoots + 1);
     }
 
@@ -84,6 +88,10 @@ public class DefaultOvershootManager implements OvershootManager {
 
   public void setOvershoots(int overshoots) {
     this.overshoots = overshoots;
+  }
+
+  public void setOvershootPct(int pct) {
+    this.overshootPct = pct;
   }
 
   public long getMinDistanceForOvershoots() {
