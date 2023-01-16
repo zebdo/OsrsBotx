@@ -8,8 +8,8 @@ import net.runelite.client.config.ConfigItem;
 public interface BotConfig extends Config {
     @ConfigItem(
             keyName = "bot",
-            name = "OSRSBot",
-            description = "Fuck Adam",
+            name = "OSRSBotx",
+            description = "rainy day women",
             position = 0
     )
 
