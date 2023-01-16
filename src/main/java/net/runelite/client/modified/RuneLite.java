@@ -147,8 +147,6 @@ public class RuneLite extends net.runelite.client.RuneLite {
      * @return          The ArgumentAcceptingOptionSpec array (the fields for our options)
      */
     public static ArgumentAcceptingOptionSpec<?>[] handleParsing(OptionParser parser) {
-        parser.accepts("bot-runelite", "Starts the client in Bot RuneLite mode");
-        //parser.accepts("headless", "Starts a client without the additional features of RuneLite");
         parser.accepts("developer-mode", "Enable developer tools");
         parser.accepts("ea", "Enable assertions");
         parser.accepts("debug", "Show extra debugging output");

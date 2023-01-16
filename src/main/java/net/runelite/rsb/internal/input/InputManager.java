@@ -2,7 +2,6 @@ package net.runelite.rsb.internal.input;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.rsb.internal.launcher.BotLite;
 
 import java.applet.Applet;
 import java.awt.event.*;

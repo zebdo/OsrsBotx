@@ -96,7 +96,8 @@ task botRun(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
     getMainClass() set "net.runelite.rsb.internal.launcher.Application"
     jvmArgs "-debug"
-    args "--bot-runelite --developer-mode".split(" ")
+    args "--developer-mode".split(" ")
 
+    dependsOn(connectedVPN)
     dependsOn(jar)
 }
