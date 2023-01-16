@@ -1,4 +1,4 @@
-package net.runelite.rsb.internal.globval;
+package net.runelite.rsb.internal;
 
 import java.awt.*;
 import java.io.*;
@@ -29,7 +29,7 @@ public class GlobalConfiguration {
             final String env = System.getenv(GlobalConfiguration.NAME.toUpperCase() + "_HOME");
             if (env == null || env.isEmpty()) {
                 String homeDirBuilder;
-                switch(GlobalConfiguration.getCurrentOperatingSystem()) {
+                switch (GlobalConfiguration.CURRENT_OS) {
                     case LINUX:
                         homeDirBuilder = System.getProperty("user.home")
                                 + File.separator + ".config";
@@ -140,18 +140,7 @@ public class GlobalConfiguration {
         }
     }
 
-    public static URL getResourceURL(final String path) throws MalformedURLException {
-        return new File(path).toURI().toURL();
-    }
-
-    public static Image getImage(String resource) {
-        try {
-            return Toolkit.getDefaultToolkit().getImage(getResourceURL(resource));
-        } catch (Exception e) { }
-        return null;
-    }
-
-    public static OperatingSystem getCurrentOperatingSystem() {
+    private OperatingSystem getCurrentOperatingSystem() {
         return GlobalConfiguration.CURRENT_OS;
     }
 
