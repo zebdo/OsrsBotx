@@ -28,10 +28,10 @@ public class MouseHandler {
 
         // XXX overshooting massively slows things down
         var man = (DefaultOvershootManager) this.motionFactory.getOvershootManager();
-        man.setOvershoots(5);
+        man.setOvershoots(3);
 
         // XXX current I hacked in DefaultOvershootManager to do in a percentage of the time
-        man.setOvershootPct(10);
+        man.setOvershootPct(35);
     }
 
     private MouseMotionFactory create(MouseMotionNature nature) {
