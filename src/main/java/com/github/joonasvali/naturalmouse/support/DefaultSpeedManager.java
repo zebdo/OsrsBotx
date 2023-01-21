@@ -4,10 +4,15 @@ import com.github.joonasvali.naturalmouse.api.SpeedManager;
 import com.github.joonasvali.naturalmouse.util.FlowTemplates;
 import com.github.joonasvali.naturalmouse.util.Pair;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+
+@Slf4j
 public class DefaultSpeedManager implements SpeedManager {
   private static final double SMALL_DELTA = 10e-6;
   private final List<Flow> flows = new ArrayList<>();
@@ -33,7 +38,9 @@ public class DefaultSpeedManager implements SpeedManager {
 
   @Override
   public Pair<Flow, Long> getFlowWithTime(double distance) {
-    double time = mouseMovementTimeMs + (long)(Math.random() * mouseMovementTimeMs);
+    //log.info("getFlowWithTime distance {}", distance);
+    double scale = Math.min(3.0, Math.max(0.25, distance / 250.0));
+    double time = mouseMovementTimeMs + (Math.random() / 4.0 * mouseMovementTimeMs);
     Flow flow = flows.get((int) (Math.random() * flows.size()));
 
     // Let's ignore waiting time, e.g 0's in flow, by increasing the total time
@@ -45,6 +52,7 @@ public class DefaultSpeedManager implements SpeedManager {
       }
     }
 
+    time *= scale;
     return new Pair<>(flow, (long)time);
   }
 

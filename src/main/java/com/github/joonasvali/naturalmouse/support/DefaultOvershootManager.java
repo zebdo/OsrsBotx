@@ -33,8 +33,12 @@ public class DefaultOvershootManager implements OvershootManager {
     }
 
     double prob = (100 - overshootPct) / 100.0;
-    if (random.nextDouble() > prob) {
-        return 1 + random.nextInt(overshoots);
+    if (overshoots > 0 && random.nextDouble() > prob) {
+        if (overshoots == 1) {
+            return 1;
+        } else {
+            return 1 + random.nextInt(overshoots - 1);
+        }
     }
 
     return 0;
