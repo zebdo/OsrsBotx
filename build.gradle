@@ -26,7 +26,7 @@ static def getRuneLiteVersion() {
 
 // this needs an internet connection to build...
 def checkForRecentVersion = true
-def runeLiteVersion = "1.9.8"
+def runeLiteVersion = "1.9.9"
 
 if (checkForRecentVersion && runeLiteVersion != getRuneLiteVersion()) {
     println("Warning - client has been updated")
@@ -81,8 +81,9 @@ jar {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-    //options.deprecation = true
+    // options.deprecation = true
 }
+
 allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {
@@ -98,6 +99,5 @@ task botRun(type: JavaExec) {
     jvmArgs "-debug"
     args "--developer-mode".split(" ")
 
-    dependsOn(connectedVPN)
     dependsOn(jar)
 }
