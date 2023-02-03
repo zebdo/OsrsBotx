@@ -45,7 +45,7 @@ public class MouseHandler {
         factory.getNature().setReactionTimeVariationMs(100);
         factory.getNature().setTimeToStepsDivider(DefaultMouseMotionNature.TIME_TO_STEPS_DIVIDER - 2);
 
-        manager.setMouseMovementBaseTimeMs(450);
+        manager.setMouseMovementBaseTimeMs(500);
 
         factory.setSpeedManager(manager);
         factory.setMouseInfo(() -> new Point(inputManager.getX(), inputManager.getY()));
@@ -55,11 +55,11 @@ public class MouseHandler {
         man.setMinDistanceForOvershoots(3);
         man.setOvershootRandomModifierDivider(DefaultOvershootManager.OVERSHOOT_RANDOM_MODIFIER_DIVIDER / 2f);
         man.setOvershootSpeedupDivider(DefaultOvershootManager.OVERSHOOT_SPEEDUP_DIVIDER * 2);
-        man.setOvershoots(3);
+        man.setOvershoots(5);
 
-        // XXX overshooting massively slows things down
+        // overshooting massively slows things down
         // so currently hacked in DefaultOvershootManager to do only a percentage of the time
-        man.setOvershootPct(25);
+        man.setOvershootPct(40);
 
         return factory;
     }
