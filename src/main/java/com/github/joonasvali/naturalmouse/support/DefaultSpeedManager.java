@@ -40,6 +40,12 @@ public class DefaultSpeedManager implements SpeedManager {
   public Pair<Flow, Long> getFlowWithTime(double distance) {
     //log.info("getFlowWithTime distance {}", distance);
     double scale = Math.min(3.0, Math.max(0.25, distance / 250.0));
+
+    // randomize short distances
+    if (scale < 0.7) {
+        scale = Math.max(Math.random(), scale);
+    }
+
     double time = mouseMovementTimeMs + (Math.random() / 4.0 * mouseMovementTimeMs);
     Flow flow = flows.get((int) (Math.random() * flows.size()));
 
