@@ -26,7 +26,7 @@ static def getRuneLiteVersion() {
 
 // this needs an internet connection to build...
 def checkForRecentVersion = true
-def runeLiteVersion = "1.9.9"
+def runeLiteVersion = "1.9.10"
 
 if (checkForRecentVersion && runeLiteVersion != getRuneLiteVersion()) {
     println("Warning - client has been updated")
