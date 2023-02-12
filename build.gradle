@@ -8,6 +8,11 @@ repositories {
     mavenCentral()
 }
 
+// config
+// this needs an internet connection to build...
+def checkForRecentVersion = true
+def runeLiteVersion = "1.9.10"
+
 static def getRuneLiteVersion() {
     URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")
     URLConnection urlConnection = url.openConnection()
@@ -24,10 +29,6 @@ static def getRuneLiteVersion() {
     return latestName
 }
 
-// this needs an internet connection to build...
-def checkForRecentVersion = true
-def runeLiteVersion = "1.9.10"
-
 if (checkForRecentVersion && runeLiteVersion != getRuneLiteVersion()) {
     println("Warning - client has been updated")
     throw new Exception("Out of date (last supported: " + runeLiteVersion + " current client: " + getRuneLiteVersion() + ")")
@@ -40,18 +41,7 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.slf4j:slf4j-simple:2.0.5'
-    testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion, {
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-    }
-
-    implementation group: 'javassist', name: 'javassist', version: '3.12.1.GA'
-    implementation group: 'net.sf.jopt-simple', name:'jopt-simple', version: '5.0.4'
-
-    // jython stuff:
-    // https://mavenlibs.com/maven/dependency/org.python/jython-standalone
-    implementation group: 'org.python', name: 'jython-standalone', version: '2.7.3'
 }
 
 sourceSets {
@@ -91,6 +81,7 @@ allprojects {
         }
     }
 }
+
 task botRun(type: JavaExec) {
     group = "Execution"
     description = "Runs the main method within RSB"
