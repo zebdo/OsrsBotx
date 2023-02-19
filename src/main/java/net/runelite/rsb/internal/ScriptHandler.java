@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.runelite.rsb.script.Script;
 import net.runelite.rsb.script.ScriptManifest;
-import net.runelite.rsb.internal.launcher.BotLite;
 
 import java.util.*;
 
@@ -12,10 +11,8 @@ import java.util.*;
 public class ScriptHandler {
     private Script theScript;
     private Thread scriptThread;
-    private final BotLite bot;
 
-    public ScriptHandler(BotLite bot) {
-        this.bot = bot;
+    public ScriptHandler() {
     }
 
     public boolean scriptRunning() {
@@ -40,7 +37,7 @@ public class ScriptHandler {
 
     public void runScript(Script script) {
         if (theScript == null) {
-            script.init(bot);
+            script.init(this);
 
             Thread t = new Thread(script, "SCRIPT");
             theScript = script;

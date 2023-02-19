@@ -11,7 +11,7 @@ repositories {
 // config
 // this needs an internet connection to build...
 def checkForRecentVersion = true
-def runeLiteVersion = "1.9.10"
+def runeLiteVersion = "1.9.11.1"
 
 static def getRuneLiteVersion() {
     URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")
@@ -42,6 +42,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     testImplementation 'org.slf4j:slf4j-simple:2.0.5'
+
+    // for jython:
+    implementation group: 'org.python', name: 'jython-standalone', version: '2.7.3'
 }
 
 sourceSets {
@@ -82,13 +85,31 @@ allprojects {
     }
 }
 
+task connectedVPN {
+    def nord = "nordvpn status".execute().text.trim()
+    if (nord.find("Status: Connected") != null) {
+        println "connected to VPN"
+
+    } else {
+        println "NOT connected to VPN"
+        println "NOT connected to VPN"
+        println "NOT connected to VPN"
+        throw new GradleException('NOT Connected')
+   }
+}
+
+tasks.withType(JavaExec) {
+     enableAssertions = true
+}
+
 task botRun(type: JavaExec) {
     group = "Execution"
     description = "Runs the main method within RSB"
     classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
     getMainClass() set "net.runelite.rsb.internal.launcher.Application"
     jvmArgs "-debug"
-    args "--developer-mode".split(" ")
+    args "--developer-mode --disable-telemetry".split(" ")
 
+    dependsOn(connectedVPN)
     dependsOn(jar)
 }

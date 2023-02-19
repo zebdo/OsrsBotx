@@ -1,3 +1,12 @@
+		// KKK This is the virtual mouse cursor
+        //BotLite bot = RuneLite.getInjector().getInstance(BotLite.class);
+		//if (bot.getInputManager() != null) {
+		//	graphics2d.setColor(Color.red);
+	//		graphics2d.drawOval(bot.getInputManager().getX() - 7, bot.getInputManager().getY() - 7, 14, 14);
+	//		graphics2d.fillOval(bot.getInputManager().getX() - 2, bot.getInputManager().getY() - 2, 4, 4);
+	//	}
+
+
 package net.runelite.client.plugins.bot;
 
 import com.google.inject.Provides;
@@ -7,7 +16,8 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
-import net.runelite.rsb.internal.launcher.BotLite;
+
+import net.runelite.rsb.internal.ScriptHandler;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -32,7 +42,8 @@ public class BotPlugin extends Plugin {
 
     private NavigationButton navButton;
 
-    private static ScriptPanel scriptPanel;
+    private ScriptPanel scriptPanel;
+    private ScriptHandler sh;
 
     public BotPlugin() {
     }
@@ -44,11 +55,11 @@ public class BotPlugin extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
+        this.sh = new ScriptHandler();
+
         BufferedImage icon = imageToBufferedImage(BotPlugin.class.getResourceAsStream("rsb.png"));
 
-        BotLite bot = injector.getInstance(BotLite.class);
-        scriptPanel = new ScriptPanel(bot);
-
+        scriptPanel = new ScriptPanel(sh);
         BotPanel panel = new BotPanel(scriptPanel);
 
         navButton = NavigationButton.builder()

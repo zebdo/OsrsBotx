@@ -4,8 +4,9 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.rsb.internal.launcher.BotLite;
+
 import net.runelite.rsb.plugin.ScriptSelector;
+import net.runelite.rsb.internal.ScriptHandler;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -65,7 +66,6 @@ public class ScriptPanel extends PluginPanel {
         }
     }
 
-    private BotLite bot;
     private JScrollPane scriptsSelectionScrollPane;
     private JTable scriptsTable;
 
@@ -78,9 +78,8 @@ public class ScriptPanel extends PluginPanel {
     private MaterialTab buttonReloadTab;
     private boolean testingPanel = false;
 
-    public ScriptPanel(BotLite bot) {
-        this.bot = bot;
-        scriptSelector = new ScriptSelector(bot);
+    public ScriptPanel(ScriptHandler sh) {
+        scriptSelector = new ScriptSelector(sh);
         initComponents();
     }
 

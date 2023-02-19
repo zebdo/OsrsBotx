@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 
-import net.runelite.rsb.internal.launcher.BotLite;
 import net.runelite.rsb.internal.ScriptHandler;
 import net.runelite.rsb.internal.GlobalConfiguration;
 
@@ -39,17 +38,17 @@ public class ScriptSelector extends JDialog {
     private ScriptTableModel model;
     public JTable table;
 
-    // ZZZ none of these should be here
-    private BotLite bot;
+    // XXX this should not be should be here
     private List<ScriptDefinition> scripts;
+    private ScriptHandler scriptHandler;
 
     static FileScriptSource SCRIPTS_SOURCE = new FileScriptSource(new File(GlobalConfiguration.Paths.getScriptsDirectory()));
 
-    // ZZZ only ScriptHandler (or rename ScriptManager)
-
-    public ScriptSelector(BotLite bot) {
+    public ScriptSelector(ScriptHandler scriptHandler) {
         super((Frame.getFrames().length > 0) ? Frame.getFrames()[0] : null, "Script Selector", false);
-        this.bot = bot;
+
+        this.scriptHandler = scriptHandler;
+
         this.scripts = new ArrayList<>();
         this.model = new ScriptTableModel(this.scripts);
     }
@@ -69,11 +68,9 @@ public class ScriptSelector extends JDialog {
      * Loads the scripts from the script directories
      */
     public void load() {
+        scriptHandler.stopScript();
 
-        ScriptHandler sh = bot.getScriptHandler();
-        sh.stopScript();
-
-        while (sh.scriptRunning()) {
+        while (scriptHandler.scriptRunning()) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -96,17 +93,16 @@ public class ScriptSelector extends JDialog {
 
         Script s = def.source.instantiate(def);
         if (s != null) {
-            bot.getScriptHandler().runScript(def.source.instantiate(def));
+            scriptHandler.runScript(def.source.instantiate(def));
         }
     }
 
     public void stopAction() {
-        ScriptHandler sh = bot.getScriptHandler();
-        sh.stopScript();
+        scriptHandler.stopScript();
     }
 
     public void pauseAction() {
-        bot.getScriptHandler().pauseScript();
+        scriptHandler.pauseScript();
     }
 
     private void setColumnWidths(JTable table, int... widths) {

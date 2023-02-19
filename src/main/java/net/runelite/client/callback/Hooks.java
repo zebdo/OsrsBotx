@@ -51,9 +51,7 @@ import net.runelite.client.util.RSTimeUnit;
 
 // KKK - only for drawing mouse cursor:
 import java.awt.Color;
-import com.google.inject.Injector;
 import net.runelite.client.modified.RuneLite;
-import net.runelite.rsb.internal.launcher.BotLite;
 
 /**
  * This class contains field required for mixins and runelite hooks to work.
@@ -100,10 +98,6 @@ public class Hooks implements Callbacks
 	private long nextError;
 	private boolean rateLimitedError;
 	private int errorBackoff = 1;
-
-    // KKK our stuff:
-    private final Injector injector = RuneLite.getInjector();
-    private final BotLite bot = injector.getInstance(BotLite.class);
 
 	@FunctionalInterface
 	public interface RenderableDrawListener
@@ -361,13 +355,6 @@ public class Hooks implements Callbacks
 		// Draw clientUI overlays
 		clientUi.paintOverlays(graphics2d);
 
-		// KKK This is the virtual mouse cursor
-		if (bot.getInputManager() != null) {
-			graphics2d.setColor(Color.red);
-			graphics2d.drawOval(bot.getInputManager().getX() - 7, bot.getInputManager().getY() - 7, 14, 14);
-			graphics2d.fillOval(bot.getInputManager().getX() - 2, bot.getInputManager().getY() - 2, 4, 4);
-		}
-
 		if (client.isGpu())
 		{
 			// processDrawComplete gets called on GPU by the gpu plugin at the end of its
@@ -619,6 +606,33 @@ public class Hooks implements Callbacks
 	@Override
 	public void error(String message, Throwable reason)
 	{
-		// KKK no telemetry errors
+		if (telemetryClient == null)
+		{
+			return;
+		}
+
+		long now = System.currentTimeMillis();
+		if (now > nextError)
+		{
+			telemetryClient.submitError(
+				"client error",
+				message + " - " + reason);
+
+			if (rateLimitedError)
+			{
+				errorBackoff++;
+				rateLimitedError = false;
+			}
+			else
+			{
+				errorBackoff = 1;
+			}
+
+			nextError = now + (10_000L * errorBackoff);
+		}
+		else
+		{
+			rateLimitedError = true;
+		}
 	}
 }

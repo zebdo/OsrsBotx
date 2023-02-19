@@ -163,6 +163,11 @@ public class RSClient extends BaseClientWrapper {
         return convertResult(super.getSelectedWidget());
     }
 
+    @Override
+    public int getVarbitValue(int varbit) {
+        return runOnClientThread(() -> super.getVarbitValue(varbit));
+    }
+
     @Nullable
     @Override
     public LocalPoint getLocalDestinationLocation() { // tested, causes freezes without runOnClientThread
@@ -234,7 +239,7 @@ public class RSClient extends BaseClientWrapper {
 
         @Override
         public Widget[] getNestedChildren() { // tested, no need to runOnClientThread
-            return convertResult(super.getNestedChildren());
+            return runOnClientThread(() -> convertResult(super.getNestedChildren()));
         }
 
         @Override
