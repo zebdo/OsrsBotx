@@ -152,18 +152,6 @@ public class RSClient extends BaseClientWrapper {
     }
 
     @Override
-    @Deprecated
-    public Widget getIf1DraggedWidget() {
-        return convertResult(super.getIf1DraggedWidget());
-    }
-
-    @Override
-    @Nullable
-    public Widget getSelectedWidget() {
-        return convertResult(super.getSelectedWidget());
-    }
-
-    @Override
     public int getVarbitValue(int varbit) {
         return runOnClientThread(() -> super.getVarbitValue(varbit));
     }

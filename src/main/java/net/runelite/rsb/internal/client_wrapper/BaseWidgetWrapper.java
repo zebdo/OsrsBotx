@@ -7,7 +7,6 @@ import net.runelite.api.widgets.WidgetItem;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
-import java.util.Collection;
 
 /*
 Base class for wrapping runelite Widget.
@@ -305,18 +304,6 @@ public abstract class BaseWidgetWrapper implements Widget {
     @Override
     public Rectangle getBounds() {
         return wrappedWidget.getBounds();
-    }
-
-    @Override
-    @Deprecated
-    public Collection<WidgetItem> getWidgetItems() {
-        return wrappedWidget.getWidgetItems();
-    }
-
-    @Override
-    @Deprecated
-    public WidgetItem getWidgetItem(int index) {
-        return wrappedWidget.getWidgetItem(index);
     }
 
     @Override

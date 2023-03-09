@@ -6,6 +6,7 @@ import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.dbtable.DBRowConfig;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.vars.AccountType;
@@ -677,6 +678,11 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
+    public DBRowConfig getDBRowConfig(int rowID) {
+        return wrappedClient.getDBRowConfig(rowID);
+    }
+
+    @Override
     public MapElementConfig getMapElementConfig(int id) {
         return wrappedClient.getMapElementConfig(id);
     }
@@ -1135,12 +1141,6 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-    @Deprecated
-    public int getItemPressedDuration() {
-        return wrappedClient.getItemPressedDuration();
-    }
-
-    @Override
     @Nullable
     public CollisionData[] getCollisionMaps() {
         return wrappedClient.getCollisionMaps();
@@ -1328,18 +1328,6 @@ public class BaseClientWrapper implements Client {
     }
 
     @Override
-    @Deprecated
-    public Widget getIf1DraggedWidget() {
-        return wrappedClient.getIf1DraggedWidget();
-    }
-
-    @Override
-    @Deprecated
-    public int getIf1DraggedItemIndex() {
-        return wrappedClient.getIf1DraggedItemIndex();
-    }
-
-    @Override
     public boolean isWidgetSelected() {
         return wrappedClient.isWidgetSelected();
     }
@@ -1347,18 +1335,6 @@ public class BaseClientWrapper implements Client {
     @Override
     public void setWidgetSelected(boolean selected) {
         wrappedClient.setWidgetSelected(selected);
-    }
-
-    @Deprecated
-    @Override
-    public int getSelectedItem() {
-        return wrappedClient.getSelectedItem();
-    }
-
-    @Deprecated
-    @Override
-    public int getSelectedItemIndex() {
-        return wrappedClient.getSelectedItemIndex();
     }
 
     @Override
@@ -1562,4 +1538,5 @@ public class BaseClientWrapper implements Client {
     public Rasterizer getRasterizer() {
         return wrappedClient.getRasterizer();
     }
+
 }
