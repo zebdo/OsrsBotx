@@ -11,7 +11,7 @@ repositories {
 // config
 // this needs an internet connection to build...
 def checkForRecentVersion = true
-def runeLiteVersion = "1.9.11.1"
+def runeLiteVersion = "1.9.12"
 
 static def getRuneLiteVersion() {
     URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")
@@ -85,19 +85,6 @@ allprojects {
     }
 }
 
-task connectedVPN {
-    def nord = "nordvpn status".execute().text.trim()
-    if (nord.find("Status: Connected") != null) {
-        println "connected to VPN"
-
-    } else {
-        println "NOT connected to VPN"
-        println "NOT connected to VPN"
-        println "NOT connected to VPN"
-        throw new GradleException('NOT Connected')
-   }
-}
-
 tasks.withType(JavaExec) {
      enableAssertions = true
 }
@@ -110,6 +97,5 @@ task botRun(type: JavaExec) {
     jvmArgs "-debug"
     args "--developer-mode --disable-telemetry".split(" ")
 
-    dependsOn(connectedVPN)
     dependsOn(jar)
 }
