@@ -29,7 +29,7 @@ import java.util.Map;
 /*
   Base class for wrapping runelite Client
 */
-@SuppressWarnings("removal")
+
 public class BaseClientWrapper implements Client {
     public final Client wrappedClient;
 
@@ -517,22 +517,6 @@ public class BaseClientWrapper implements Client {
     @Override
     public Map<Integer, Object> getVarcMap() {
         return wrappedClient.getVarcMap();
-    }
-
-    @Override
-    @Deprecated
-    public int getVar(VarPlayer varPlayer) {
-        return wrappedClient.getVar(varPlayer);
-    }
-
-    // XXX cheap fix - should fix downstream
-    public int getServerVar(VarPlayer varPlayer) {
-        return wrappedClient.getVarpValue(varPlayer);
-    }
-
-    @Override
-    public int getVarpValue(VarPlayer varPlayer) {
-        return wrappedClient.getVarpValue(varPlayer);
     }
 
     @Override
