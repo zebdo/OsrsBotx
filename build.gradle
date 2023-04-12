@@ -11,7 +11,7 @@ repositories {
 // config
 // this needs an internet connection to build...
 def checkForRecentVersion = true
-def runeLiteVersion = "1.9.13.1"
+def runeLiteVersion = "1.9.14"
 
 static def getRuneLiteVersion() {
     URL url = new URL("http://repo.runelite.net/net/runelite/client/maven-metadata.xml")

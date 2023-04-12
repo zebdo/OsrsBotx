@@ -57,15 +57,12 @@ public class BotPlugin extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
-
         log.info("BotPlugin startUp():");
         log.info("RUNELITE_DIR {}", RuneLite.RUNELITE_DIR);
         log.info("CACHE_DIR {}", RuneLite.CACHE_DIR);
         log.info("PLUGINS_DIR {}", RuneLite.PLUGINS_DIR);
         log.info("SCREENSHOT_DIR {}", RuneLite.SCREENSHOT_DIR);
         log.info("DIR {}", RuneLite.LOGS_DIR);
-        log.info("DEFAULT_SESSION_FILE {}", RuneLite.DEFAULT_SESSION_FILE);
-        log.info("DEFAULT_CONFIG_FILE {}", RuneLite.DEFAULT_CONFIG_FILE);
         log.info("USER_AGENT {}", RuneLite.USER_AGENT);
 
         this.sh = new ScriptHandler();
